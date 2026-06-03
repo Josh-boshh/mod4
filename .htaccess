@@ -85,12 +85,6 @@
     RewriteCond %{REQUEST_URI} ^/assets/?$
     RewriteRule ^ - [F,L]
 
-    # If the requested path does not map to a real file or directory,
-    # trigger a 404 error which Apache will serve with custom 404.html
-    RewriteCond %{REQUEST_URI} !^/404\.html$ 
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ - [F,L]
   </IfModule>
 
   # ── 5. Cache-control for static assets ───────────────────────────────────────
