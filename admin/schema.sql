@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS mod_admin_users (
     password_hash VARCHAR(255) NOT NULL,
     created_at    TIMESTAMP    NOT NULL DEFAULT NOW()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+INSERT INTO `mod_admin_users` (`id`, `email`, `password_hash`, `created_at`) VALUES
+(1, 'admin@defence.gov.ng', '$2y$10$f9Jm9dyEDp3.0OKyjk/BRuni6r01k6XwAUTVjwgdhuSlxIaPGvjny', '2026-05-26 07:09:46');
 CREATE TABLE IF NOT EXISTS mod_settings (
     name  VARCHAR(191) NOT NULL PRIMARY KEY,
     value TEXT         NOT NULL
