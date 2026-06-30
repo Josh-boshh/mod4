@@ -1,6 +1,6 @@
 ﻿<?php
 require_once __DIR__ . '/config.php';
-// requireAdminLogin();
+requireAdminLogin();
 runMigrations();
 
 function escapeHtml($value): string {
@@ -37,20 +37,74 @@ function uploadImageFile(string $fieldName, string $relativeDir, string $current
     if (!in_array($extension, $allowed, true)) {
         return $current;
     }
+    // Check file size (max 5MB for images)
+    if ($upload['size'] > 5 * 1024 * 1024) {
+        error_log('[MOD upload] Image too large: ' . $upload['size']);
+        return $current;
+    }
+    // Verify actual MIME type — not just extension
+    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $mime = mime_content_type($upload['tmp_name']);
+    if (!in_array($mime, $allowedMimes, true)) {
+        error_log('[MOD upload] Image MIME mismatch: ' . $mime);
+        return $current;
+    }
 
     $targetDir = __DIR__ . '/../' . trim($relativeDir, '/');
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true);
     }
 
-    $safeName = preg_replace('/[^a-z0-9_-]+/i', '-', pathinfo($upload['name'], PATHINFO_FILENAME));
-    $fileName = sprintf('%s-%s.%s', $safeName ?: 'image', time(), $extension);
+    // Use random filename to prevent enumeration
+    $fileName = sprintf('%s-%s.%s', bin2hex(random_bytes(8)), time(), $extension);
     $destination = $targetDir . '/' . $fileName;
 
     if (!move_uploaded_file($upload['tmp_name'], $destination)) {
         return $current;
     }
 
+    return trim($relativeDir, '/') . '/' . $fileName;
+}
+
+function uploadDocumentFile(string $fieldName, string $relativeDir, string $current = ''): string
+{
+    if (empty($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] !== UPLOAD_ERR_OK) {
+        return $current;
+    }
+    $upload = $_FILES[$fieldName];
+    $extension = strtolower(pathinfo($upload['name'], PATHINFO_EXTENSION));
+    $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'zip'];
+    if (!in_array($extension, $allowed, true)) {
+        return $current;
+    }
+    // Check file size (max 10MB for documents)
+    if ($upload['size'] > 10 * 1024 * 1024) {
+        error_log('[MOD upload] Document too large: ' . $upload['size']);
+        return $current;
+    }
+    // Verify actual MIME type
+    $allowedDocMimes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/zip', 'application/x-zip-compressed', 'application/octet-stream',
+    ];
+    $mime = mime_content_type($upload['tmp_name']);
+    if (!in_array($mime, $allowedDocMimes, true)) {
+        error_log('[MOD upload] Doc MIME mismatch: ' . $mime);
+        return $current;
+    }
+    $targetDir = __DIR__ . '/../' . trim($relativeDir, '/');
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true);
+    }
+    $fileName = sprintf('%s-%s.%s', bin2hex(random_bytes(8)), time(), $extension);
+    $destination = $targetDir . '/' . $fileName;
+    if (!move_uploaded_file($upload['tmp_name'], $destination)) {
+        return $current;
+    }
     return trim($relativeDir, '/') . '/' . $fileName;
 }
 
@@ -221,10 +275,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pressId = (int)($_POST['press_id'] ?? 0);
             $title = trim($_POST['press_title'] ?? '');
             $excerpt = trim($_POST['press_excerpt'] ?? '');
+            $body = trim($_POST['press_body'] ?? '');
             $category = trim($_POST['press_category'] ?? '');
             $publishedAt = trim($_POST['press_published_at'] ?? '');
             $imageUrl = trim($_POST['press_image_url'] ?? '');
-            $linkUrl = trim($_POST['press_link_url'] ?? '');
+            $linkUrl = '';
             $slug = trim($_POST['press_slug'] ?? '');
             $sortOrder = (int)($_POST['press_order'] ?? 0);
             $active = isset($_POST['press_active']) ? 1 : 0;
@@ -252,9 +307,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($pressId) {
-                dbQuery('UPDATE mod_press_items SET title = :title, excerpt = :excerpt, category = :category, published_at = :published_at, image_url = :image_url, link_url = :link_url, slug = :slug, sort_order = :sort_order, active = :active WHERE id = :id', [
+                dbQuery('UPDATE mod_press_items SET title = :title, excerpt = :excerpt, body = :body, category = :category, published_at = :published_at, image_url = :image_url, link_url = :link_url, slug = :slug, sort_order = :sort_order, active = :active WHERE id = :id', [
                     'title' => $title,
                     'excerpt' => $excerpt,
+                    'body' => $body,
                     'category' => $category,
                     'published_at' => $publishedAt,
                     'image_url' => $imageUrl,
@@ -266,9 +322,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 setFlash('success', 'Press item updated successfully.');
             } else {
-                dbQuery('INSERT INTO mod_press_items (title, excerpt, category, published_at, image_url, link_url, slug, sort_order, active) VALUES (:title, :excerpt, :category, :published_at, :image_url, :link_url, :slug, :sort_order, :active)', [
+                dbQuery('INSERT INTO mod_press_items (title, excerpt, body, category, published_at, image_url, link_url, slug, sort_order, active) VALUES (:title, :excerpt, :body, :category, :published_at, :image_url, :link_url, :slug, :sort_order, :active)', [
                     'title' => $title,
                     'excerpt' => $excerpt,
+                    'body' => $body,
                     'category' => $category,
                     'published_at' => $publishedAt,
                     'image_url' => $imageUrl,
@@ -317,6 +374,196 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirectTo('settings');
             break;
 
+        case 'save_gallery_image':
+            $galleryId  = (int)($_POST['gallery_id'] ?? 0);
+            $imageUrl   = trim($_POST['gallery_image_url'] ?? '');
+            $altText    = trim($_POST['gallery_alt'] ?? '');
+            $caption    = trim($_POST['gallery_caption'] ?? '');
+            $eventDate  = trim($_POST['gallery_event_date'] ?? '') ?: null;
+            $category   = trim($_POST['gallery_category'] ?? 'General') ?: 'General';
+            $sortOrder  = (int)($_POST['gallery_order'] ?? 0);
+            $active     = isset($_POST['gallery_active']) ? 1 : 0;
+            $existing   = '';
+            if ($galleryId) {
+                $existing = dbFetch('SELECT image_url FROM mod_gallery_images WHERE id = ? LIMIT 1', [$galleryId])['image_url'] ?? '';
+            }
+            $uploadedPath = uploadImageFile('gallery_image_file', 'assets/images/gallery', $existing);
+            if ($uploadedPath) {
+                $imageUrl = $uploadedPath;
+            }
+            if (!$imageUrl) {
+                setFlash('error', 'An image is required. Upload a file or enter a valid image URL.');
+                redirectTo('gallery');
+            }
+            if ($galleryId) {
+                dbQuery('UPDATE mod_gallery_images SET image_url=:image_url, alt_text=:alt_text, caption=:caption, event_date=:event_date, category=:category, sort_order=:sort_order, active=:active WHERE id=:id', [
+                    'image_url' => $imageUrl, 'alt_text' => $altText, 'caption' => $caption,
+                    'event_date' => $eventDate, 'category' => $category,
+                    'sort_order' => $sortOrder, 'active' => $active, 'id' => $galleryId,
+                ]);
+                setFlash('success', 'Gallery image updated.');
+            } else {
+                dbQuery('INSERT INTO mod_gallery_images (image_url, alt_text, caption, event_date, category, sort_order, active) VALUES (:image_url,:alt_text,:caption,:event_date,:category,:sort_order,:active)', [
+                    'image_url' => $imageUrl, 'alt_text' => $altText, 'caption' => $caption,
+                    'event_date' => $eventDate, 'category' => $category,
+                    'sort_order' => $sortOrder, 'active' => $active,
+                ]);
+                setFlash('success', 'Gallery image added.');
+            }
+            redirectTo('gallery');
+            break;
+
+        case 'delete_gallery_image':
+            $galleryId = (int)($_POST['gallery_id'] ?? 0);
+            if ($galleryId) {
+                dbQuery('DELETE FROM mod_gallery_images WHERE id = ?', [$galleryId]);
+                setFlash('success', 'Gallery image removed.');
+            }
+            redirectTo('gallery');
+            break;
+
+        case 'save_operation':
+            $opId      = (int)($_POST['op_id'] ?? 0);
+            $region    = trim($_POST['op_region'] ?? '');
+            $name      = trim($_POST['op_name'] ?? '');
+            $desc      = trim($_POST['op_description'] ?? '');
+            $sortOrder = (int)($_POST['op_order'] ?? 0);
+            $active    = isset($_POST['op_active']) ? 1 : 0;
+            if (!$name) {
+                setFlash('error', 'Operation name is required.');
+                redirectTo('operations');
+            }
+            if ($opId) {
+                dbQuery('UPDATE mod_operations SET region=:region, name=:name, description=:description, sort_order=:sort_order, active=:active WHERE id=:id', [
+                    'region'=>$region,'name'=>$name,'description'=>$desc,'sort_order'=>$sortOrder,'active'=>$active,'id'=>$opId,
+                ]);
+                setFlash('success', 'Operation updated.');
+            } else {
+                dbQuery('INSERT INTO mod_operations (region, name, description, sort_order, active) VALUES (:region,:name,:description,:sort_order,:active)', [
+                    'region'=>$region,'name'=>$name,'description'=>$desc,'sort_order'=>$sortOrder,'active'=>$active,
+                ]);
+                setFlash('success', 'Operation added.');
+            }
+            redirectTo('operations');
+            break;
+
+        case 'delete_operation':
+            $opId = (int)($_POST['op_id'] ?? 0);
+            if ($opId) {
+                dbQuery('DELETE FROM mod_operations WHERE id = ?', [$opId]);
+                setFlash('success', 'Operation removed.');
+            }
+            redirectTo('operations');
+            break;
+
+        case 'save_tender':
+            $tenderId   = (int)($_POST['tender_id'] ?? 0);
+            $type       = in_array($_POST['tender_type'] ?? '', ['tender','award']) ? $_POST['tender_type'] : 'tender';
+            $title      = trim($_POST['tender_title'] ?? '');
+            $ref        = trim($_POST['tender_ref'] ?? '');
+            $category   = trim($_POST['tender_category'] ?? '');
+            $method     = trim($_POST['tender_method'] ?? '');
+            $closesAt   = trim($_POST['tender_closes_at'] ?? '') ?: null;
+            $desc       = trim($_POST['tender_description'] ?? '');
+            $sortOrder  = (int)($_POST['tender_order'] ?? 0);
+            $active     = isset($_POST['tender_active']) ? 1 : 0;
+            $existing   = '';
+            if ($tenderId) {
+                $existing = dbFetch('SELECT doc_url FROM mod_tenders WHERE id = ? LIMIT 1', [$tenderId])['doc_url'] ?? '';
+            }
+            $docUrl = uploadDocumentFile('tender_doc_file', 'assets/documents/tenders', $existing);
+            if (!$docUrl) $docUrl = trim($_POST['tender_doc_url'] ?? '') ?: $existing;
+            if (!$title) {
+                setFlash('error', 'Tender title is required.');
+                redirectTo('procurement');
+            }
+            if ($tenderId) {
+                dbQuery('UPDATE mod_tenders SET type=:type,title=:title,ref_number=:ref,category=:category,method=:method,closes_at=:closes_at,doc_url=:doc_url,description=:desc,sort_order=:sort_order,active=:active WHERE id=:id', [
+                    'type'=>$type,'title'=>$title,'ref'=>$ref,'category'=>$category,'method'=>$method,
+                    'closes_at'=>$closesAt,'doc_url'=>$docUrl,'desc'=>$desc,'sort_order'=>$sortOrder,'active'=>$active,'id'=>$tenderId,
+                ]);
+                setFlash('success', 'Tender updated.');
+            } else {
+                dbQuery('INSERT INTO mod_tenders (type,title,ref_number,category,method,closes_at,doc_url,description,sort_order,active) VALUES (:type,:title,:ref,:category,:method,:closes_at,:doc_url,:desc,:sort_order,:active)', [
+                    'type'=>$type,'title'=>$title,'ref'=>$ref,'category'=>$category,'method'=>$method,
+                    'closes_at'=>$closesAt,'doc_url'=>$docUrl,'desc'=>$desc,'sort_order'=>$sortOrder,'active'=>$active,
+                ]);
+                setFlash('success', 'Tender added.');
+            }
+            redirectTo('procurement');
+            break;
+
+        case 'delete_tender':
+            $tenderId = (int)($_POST['tender_id'] ?? 0);
+            if ($tenderId) {
+                dbQuery('DELETE FROM mod_tenders WHERE id = ?', [$tenderId]);
+                setFlash('success', 'Tender removed.');
+            }
+            redirectTo('procurement');
+            break;
+
+        case 'save_report':
+            $reportId  = (int)($_POST['report_id'] ?? 0);
+            $year      = (int)($_POST['report_year'] ?? 0);
+            $title     = trim($_POST['report_title'] ?? '');
+            $desc      = trim($_POST['report_description'] ?? '');
+            $status    = in_array($_POST['report_status'] ?? '', ['latest','published','pending']) ? $_POST['report_status'] : 'published';
+            $sortOrder = (int)($_POST['report_order'] ?? 0);
+            $active    = isset($_POST['report_active']) ? 1 : 0;
+            $existing  = '';
+            if ($reportId) {
+                $existing = dbFetch('SELECT doc_url FROM mod_annual_reports WHERE id = ? LIMIT 1', [$reportId])['doc_url'] ?? '';
+            }
+            $docUrl = uploadDocumentFile('report_doc_file', 'assets/documents/reports', $existing);
+            if (!$docUrl) $docUrl = trim($_POST['report_doc_url'] ?? '') ?: $existing;
+            if (!$year || !$title) {
+                setFlash('error', 'Year and title are required.');
+                redirectTo('annual-reports');
+            }
+            if ($reportId) {
+                dbQuery('UPDATE mod_annual_reports SET year=:year,title=:title,description=:desc,doc_url=:doc_url,status=:status,sort_order=:sort_order,active=:active WHERE id=:id', [
+                    'year'=>$year,'title'=>$title,'desc'=>$desc,'doc_url'=>$docUrl,'status'=>$status,'sort_order'=>$sortOrder,'active'=>$active,'id'=>$reportId,
+                ]);
+                setFlash('success', 'Report updated.');
+            } else {
+                dbQuery('INSERT INTO mod_annual_reports (year,title,description,doc_url,status,sort_order,active) VALUES (:year,:title,:desc,:doc_url,:status,:sort_order,:active)', [
+                    'year'=>$year,'title'=>$title,'desc'=>$desc,'doc_url'=>$docUrl,'status'=>$status,'sort_order'=>$sortOrder,'active'=>$active,
+                ]);
+                setFlash('success', 'Report added.');
+            }
+            redirectTo('annual-reports');
+            break;
+
+        case 'delete_report':
+            $reportId = (int)($_POST['report_id'] ?? 0);
+            if ($reportId) {
+                dbQuery('DELETE FROM mod_annual_reports WHERE id = ?', [$reportId]);
+                setFlash('success', 'Report removed.');
+            }
+            redirectTo('annual-reports');
+            break;
+
+        case 'save_director':
+            $deptSlug  = trim($_POST['director_dept_slug'] ?? '');
+            $dirName   = trim($_POST['director_name'] ?? '');
+            $dirRole   = trim($_POST['director_role'] ?? '');
+            $photoUrl  = trim($_POST['director_photo_url'] ?? '');
+            $existing  = getDirectorBySlug($deptSlug)['photo_url'] ?? '';
+            $uploaded  = uploadImageFile('director_photo_file', 'assets/images/directors', $existing);
+            if ($uploaded) $photoUrl = $uploaded;
+            if (!$deptSlug || !$dirName) {
+                setFlash('error', 'Department and director name are required.');
+                redirectTo('directors');
+            }
+            dbQuery('INSERT INTO mod_directors (dept_slug, director, role, photo_url) VALUES (:slug, :name, :role, :photo)
+                     ON DUPLICATE KEY UPDATE director=:name2, role=:role2, photo_url=:photo2', [
+                'slug' => $deptSlug, 'name' => $dirName, 'role' => $dirRole, 'photo' => $photoUrl,
+                'name2' => $dirName, 'role2' => $dirRole, 'photo2' => $photoUrl,
+            ]);
+            setFlash('success', 'Director updated.');
+            redirectTo('directors');
+            break;
+
         default:
             setFlash('error', 'Unknown action.');
             redirectTo();
@@ -327,6 +574,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $dbSlides = safeDbFetchAll('SELECT * FROM mod_hero_slides ORDER BY sort_order ASC, id ASC');
 $dbLeaders = safeDbFetchAll('SELECT * FROM mod_leaders ORDER BY sort_order ASC, id ASC');
 $dbPressItems = safeDbFetchAll('SELECT * FROM mod_press_items ORDER BY sort_order ASC, id ASC');
+$galleryImages = getGalleryImages(false);
+
+$editGalleryImage = null;
+if (!empty($_GET['edit_gallery'])) {
+    $editGalleryImage = dbFetch('SELECT * FROM mod_gallery_images WHERE id = ? LIMIT 1', [(int)$_GET['edit_gallery']]);
+}
+
+$operations = getOperations(false);
+$editOperation = null;
+if (!empty($_GET['edit_operation'])) {
+    $editOperation = dbFetch('SELECT * FROM mod_operations WHERE id = ? LIMIT 1', [(int)$_GET['edit_operation']]);
+}
+
+$tenders = getTenders('tender', false);
+$awards  = getTenders('award', false);
+$editTender = null;
+if (!empty($_GET['edit_tender'])) {
+    $editTender = dbFetch('SELECT * FROM mod_tenders WHERE id = ? LIMIT 1', [(int)$_GET['edit_tender']]);
+}
+
+$annualReports = getAnnualReports(false);
+$directors = getDirectors();
+$editReport = null;
+if (!empty($_GET['edit_report'])) {
+    $editReport = dbFetch('SELECT * FROM mod_annual_reports WHERE id = ? LIMIT 1', [(int)$_GET['edit_report']]);
+}
 
 $slides = $dbSlides ?: getHeroSlides(false);
 $leaders = $dbLeaders ?: getLeadership(false);
@@ -402,6 +675,26 @@ $csrf = csrfToken();
       <a class="admin-nav-btn" href="#leadership">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
         Leadership
+      </a>
+      <a class="admin-nav-btn" href="#gallery">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+        Gallery
+      </a>
+      <a class="admin-nav-btn" href="#operations">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+        Operations
+      </a>
+      <a class="admin-nav-btn" href="#procurement">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+        Procurement
+      </a>
+      <a class="admin-nav-btn" href="#annual-reports">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+        Annual Reports
+      </a>
+      <a class="admin-nav-btn" href="#directors">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        Directors
       </a>
 
       <div class="nav-section-label">Audience</div>
@@ -526,6 +819,20 @@ $csrf = csrfToken();
           <div class="stat-num"><?= count($leaders) ?></div>
           <div class="stat-label">Leadership profiles</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-card-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="stat-num"><?= count($galleryImages) ?></div>
+          <div class="stat-label">Gallery images</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="stat-num"><?= count($operations) ?></div>
+          <div class="stat-label">Active operations</div>
+        </div>
       </div>
 
       <!-- Grid: quick actions + activity -->
@@ -536,6 +843,7 @@ $csrf = csrfToken();
             <a class="btn btn-green btn-sm" href="#press" data-open-edit-modal="press">+ Press release</a>
             <a class="btn btn-outline btn-sm" href="#slides" data-open-edit-modal="slide">+ Hero slide</a>
             <a class="btn btn-outline btn-sm" href="#leadership" data-open-edit-modal="leadership">+ Leader profile</a>
+            <a class="btn btn-outline btn-sm" href="#gallery" data-open-edit-modal="gallery">+ Gallery image</a>
             <a class="btn btn-ghost btn-sm" href="#subscribers">View subscribers</a>
             <a class="btn btn-ghost btn-sm" href="#submissions">View submissions</a>
             <a class="btn btn-ghost btn-sm" href="#settings">Settings</a>
@@ -859,16 +1167,24 @@ $csrf = csrfToken();
               <input type="date" name="press_published_at" value="<?= escapeHtml($editPress['published_at'] ?? date('Y-m-d')) ?>" required />
             </label>
             <label>
-              Article link
-              <input type="text" name="press_link_url" value="<?= escapeHtml($editPress['link_url'] ?? '') ?>" placeholder="press.html#slug" />
+              Sort order
+              <input type="number" name="press_order" value="<?= escapeHtml($editPress['sort_order'] ?? '0') ?>" min="0" />
+              <span class="field-hint">Lower numbers appear first</span>
             </label>
           </div>
 
           <div class="form-section-title">Content</div>
           <div class="form-row full">
             <label>
-              Excerpt / summary
-              <textarea name="press_excerpt" rows="4" placeholder="Short summary shown on the home page and press listing."><?= escapeHtml($editPress['excerpt'] ?? '') ?></textarea>
+              Excerpt / summary <span class="field-hint">(shown on press listing and homepage)</span>
+              <textarea name="press_excerpt" rows="3" placeholder="One or two sentence summary of the press release."><?= escapeHtml($editPress['excerpt'] ?? '') ?></textarea>
+            </label>
+          </div>
+          <div class="form-row full">
+            <label>
+              Full article body <span class="field-hint">(supports basic HTML: &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;blockquote&gt;, &lt;a&gt;)</span>
+              <textarea name="press_body" rows="14" placeholder="Write the full press release here. You may use basic HTML tags for formatting."><?= escapeHtml($editPress['body'] ?? '') ?></textarea>
+              <span class="field-hint">Leave blank to show only the excerpt on the article page.</span>
             </label>
           </div>
 
@@ -887,13 +1203,8 @@ $csrf = csrfToken();
           <div class="form-section-title">Publishing</div>
           <div class="form-row">
             <label>
-              Slug
+              Slug <span class="field-hint">(auto-generated from title if left blank)</span>
               <input type="text" name="press_slug" value="<?= escapeHtml($editPress['slug'] ?? '') ?>" placeholder="url-friendly-slug" />
-              <span class="field-hint">Used in URLs — no spaces</span>
-            </label>
-            <label>
-              Sort order
-              <input type="number" name="press_order" value="<?= escapeHtml($editPress['sort_order'] ?? '0') ?>" min="0" />
             </label>
           </div>
 
@@ -1057,6 +1368,696 @@ $csrf = csrfToken();
         </form>
       </div>
     </section>
+
+
+    <!-- ─────────────── GALLERY ─────────────── -->
+    <section class="admin-section" id="gallery">
+      <div class="admin-header">
+        <div class="admin-header-text">
+          <h1>Gallery.</h1>
+          <p>Manage the public photo gallery. Images are displayed on the <a href="../gallery.html" target="_blank" style="color:var(--green);">Gallery page</a>.</p>
+        </div>
+        <div class="admin-header-actions">
+          <a class="btn btn-green btn-sm" href="#gallery" data-open-edit-modal="gallery">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add image
+          </a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Gallery images</h3>
+            <p>Upload a file or provide a URL. Lower sort-order numbers appear first.</p>
+          </div>
+        </div>
+
+        <?php
+        $galleryForSection = getGalleryImages(false);
+        if (!$galleryForSection) { $galleryForSection = []; }
+        ?>
+
+        <?php if ($galleryForSection): ?>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Caption</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($galleryForSection as $img): ?>
+                  <tr>
+                    <td><img src="<?= escapeHtml(resolveAdminImageUrl($img['image_url'])) ?>" alt="<?= escapeHtml($img['alt_text']) ?>" /></td>
+                    <td><?= escapeHtml(mb_strimwidth($img['caption'], 0, 60, '…')) ?></td>
+                    <td><?= escapeHtml($img['category']) ?></td>
+                    <td><?= $img['event_date'] ? escapeHtml(date('j M Y', strtotime($img['event_date']))) : '—' ?></td>
+                    <td><?= escapeHtml($img['sort_order']) ?></td>
+                    <td><span class="badge badge-<?= $img['active'] ? 'active' : 'disabled' ?>"><?= $img['active'] ? 'Active' : 'Hidden' ?></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" href="?edit_gallery=<?= escapeHtml($img['id']) ?>#gallery">Edit</a>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Remove this image from the gallery?');">
+                          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+                          <input type="hidden" name="action" value="delete_gallery_image" />
+                          <input type="hidden" name="gallery_id" value="<?= escapeHtml($img['id']) ?>" />
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <p>No gallery images yet.<br><a href="#gallery" data-open-edit-modal="gallery" style="color:var(--green);">Add the first one →</a></p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Edit / add panel (cloned into modal) -->
+      <div class="panel" id="gallery-edit-panel">
+        <h3><?= $editGalleryImage ? 'Edit gallery image' : 'Add gallery image' ?></h3>
+        <form method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+          <input type="hidden" name="action" value="save_gallery_image" />
+          <input type="hidden" name="gallery_id" value="<?= escapeHtml($editGalleryImage['id'] ?? '0') ?>" />
+
+          <div class="form-section-title">Image</div>
+          <div class="form-row">
+            <label>
+              Image URL or path
+              <input type="text" name="gallery_image_url" value="<?= escapeHtml($editGalleryImage['image_url'] ?? '') ?>" placeholder="https://... or assets/images/gallery/photo.jpg" />
+              <span class="field-hint">Full URL or path relative to site root</span>
+            </label>
+            <label>
+              Upload image file
+              <input type="file" name="gallery_image_file" accept="image/*" />
+              <span class="field-hint">JPG, PNG, WebP — replaces URL above</span>
+            </label>
+          </div>
+
+          <div class="form-section-title" style="margin-top:4px;">Details</div>
+          <div class="form-row">
+            <label>
+              Alt text <span class="field-hint" style="display:inline;">(for screen readers)</span>
+              <input type="text" name="gallery_alt" value="<?= escapeHtml($editGalleryImage['alt_text'] ?? '') ?>" placeholder="Describe the image" />
+            </label>
+            <label>
+              Category
+              <input type="text" name="gallery_category" value="<?= escapeHtml($editGalleryImage['category'] ?? 'General') ?>" placeholder="e.g. Ministerial, Ceremonies, Security" />
+              <span class="field-hint">Used for filtering on the public gallery</span>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Caption
+              <textarea name="gallery_caption" rows="2" placeholder="Short caption shown below the image…"><?= escapeHtml($editGalleryImage['caption'] ?? '') ?></textarea>
+            </label>
+            <label>
+              Event date
+              <input type="date" name="gallery_event_date" value="<?= escapeHtml($editGalleryImage['event_date'] ?? '') ?>" />
+              <span class="field-hint">Leave blank if not event-specific</span>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Sort order
+              <input type="number" name="gallery_order" value="<?= escapeHtml($editGalleryImage['sort_order'] ?? '0') ?>" min="0" />
+              <span class="field-hint">Lower numbers appear first</span>
+            </label>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="gallery_active" value="1" <?= !isset($editGalleryImage['active']) || $editGalleryImage['active'] ? 'checked' : '' ?> />
+            Show this image on the public gallery
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-green"><?= $editGalleryImage ? 'Update image' : 'Save image' ?></button>
+            <?php if ($editGalleryImage): ?><a href="index.php#gallery" class="btn btn-ghost">Cancel</a><?php endif; ?>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ─────────────── OPERATIONS ─────────────── -->
+    <section class="admin-section" id="operations">
+      <div class="admin-header">
+        <div class="admin-header-text">
+          <h1>Operations.</h1>
+          <p>Manage active joint operations displayed on the <a href="../operations.html" target="_blank" style="color:var(--green);">Operations page</a> and the <a href="../military.html" target="_blank" style="color:var(--green);">Military Components page</a>.</p>
+        </div>
+        <div class="admin-header-actions">
+          <a class="btn btn-green btn-sm" href="#operations" data-open-edit-modal="operations">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add operation
+          </a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Active joint operations</h3>
+            <p>Add, edit or remove operations. Changes appear on the public site immediately.</p>
+          </div>
+        </div>
+
+        <?php $opsForSection = getOperations(false); ?>
+
+        <?php if ($opsForSection): ?>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Region / Zone</th>
+                  <th>Description</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($opsForSection as $op): ?>
+                  <tr>
+                    <td><strong><?= escapeHtml($op['name']) ?></strong></td>
+                    <td><?= escapeHtml($op['region']) ?></td>
+                    <td><?= escapeHtml(mb_strimwidth($op['description'], 0, 80, '…')) ?></td>
+                    <td><?= escapeHtml($op['sort_order']) ?></td>
+                    <td><span class="badge badge-<?= $op['active'] ? 'active' : 'disabled' ?>"><?= $op['active'] ? 'Active' : 'Hidden' ?></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" href="?edit_operation=<?= escapeHtml($op['id']) ?>#operations">Edit</a>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Remove this operation?');">
+                          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+                          <input type="hidden" name="action" value="delete_operation" />
+                          <input type="hidden" name="op_id" value="<?= escapeHtml($op['id']) ?>" />
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <p>No operations yet.<br><a href="#operations" data-open-edit-modal="operations" style="color:var(--green);">Add the first one →</a></p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Edit / Add panel -->
+      <div class="panel" id="operations-edit-panel">
+        <h3><?= $editOperation ? 'Edit operation' : 'Add operation' ?></h3>
+        <form method="post">
+          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+          <input type="hidden" name="action" value="save_operation" />
+          <input type="hidden" name="op_id" value="<?= escapeHtml($editOperation['id'] ?? '0') ?>" />
+
+          <div class="form-row">
+            <label>
+              Operation name <span style="color:var(--red)">*</span>
+              <input type="text" name="op_name" value="<?= escapeHtml($editOperation['name'] ?? '') ?>" placeholder="e.g. Operation HADIN KAI" required />
+            </label>
+            <label>
+              Region / Zone
+              <input type="text" name="op_region" value="<?= escapeHtml($editOperation['region'] ?? '') ?>" placeholder="e.g. North-East" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Description
+              <textarea name="op_description" rows="3" placeholder="Brief description of the operation's mandate and area…"><?= escapeHtml($editOperation['description'] ?? '') ?></textarea>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Sort order
+              <input type="number" name="op_order" value="<?= escapeHtml($editOperation['sort_order'] ?? '0') ?>" min="0" />
+              <span class="field-hint">Lower numbers appear first</span>
+            </label>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="op_active" value="1" <?= !isset($editOperation['active']) || $editOperation['active'] ? 'checked' : '' ?> />
+            Show on public site
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-green"><?= $editOperation ? 'Update operation' : 'Save operation' ?></button>
+            <?php if ($editOperation): ?><a href="index.php#operations" class="btn btn-ghost">Cancel</a><?php endif; ?>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ─────────────── PROCUREMENT ─────────────── -->
+    <section class="admin-section" id="procurement">
+      <div class="admin-header">
+        <div class="admin-header-text">
+          <h1>Procurement.</h1>
+          <p>Manage active tenders, expressions of interest and contract awards displayed on the <a href="../procurement.html" target="_blank" style="color:var(--green);">Procurement page</a>. Upload bidding documents for download.</p>
+        </div>
+        <div class="admin-header-actions">
+          <a class="btn btn-green btn-sm" href="#procurement" data-open-edit-modal="procurement">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add tender
+          </a>
+        </div>
+      </div>
+
+      <!-- Active Tenders table -->
+      <div class="panel">
+        <div class="panel-head"><div><h3>Active tenders &amp; EOIs</h3><p>Documents uploaded here appear as download buttons on the public procurement page.</p></div></div>
+        <?php $tendersForSection = getTenders('tender', false); ?>
+        <?php if ($tendersForSection): ?>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Title</th><th>Ref</th><th>Category</th><th>Method</th><th>Closing</th><th>Document</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <?php foreach ($tendersForSection as $t): ?>
+                  <tr>
+                    <td><strong><?= escapeHtml(mb_strimwidth($t['title'],0,60,'…')) ?></strong></td>
+                    <td><?= escapeHtml($t['ref_number']) ?></td>
+                    <td><?= escapeHtml($t['category']) ?></td>
+                    <td><?= escapeHtml($t['method']) ?></td>
+                    <td><?= $t['closes_at'] ? escapeHtml(date('j M Y', strtotime($t['closes_at']))) : '—' ?></td>
+                    <td><?= $t['doc_url'] ? '<a href="../' . escapeHtml($t['doc_url']) . '" target="_blank" class="btn-link">Download</a>' : '<span style="color:var(--text-3)">No file</span>' ?></td>
+                    <td><span class="badge badge-<?= $t['active'] ? 'active' : 'disabled' ?>"><?= $t['active'] ? 'Active' : 'Hidden' ?></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" href="?edit_tender=<?= $t['id'] ?>#procurement">Edit</a>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Remove this tender?');">
+                          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+                          <input type="hidden" name="action" value="delete_tender" />
+                          <input type="hidden" name="tender_id" value="<?= $t['id'] ?>" />
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+            <p>No active tenders yet.<br><a href="#procurement" data-open-edit-modal="procurement" style="color:var(--green);">Add the first one →</a></p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Contract Awards table -->
+      <div class="panel">
+        <div class="panel-head"><div><h3>Contract awards</h3><p>Published awards shown in the Recent Awards section on the procurement page.</p></div>
+          <a class="btn btn-outline btn-sm" href="#procurement" data-open-edit-modal="procurement-award">+ Add award</a>
+        </div>
+        <?php $awardsForSection = getTenders('award', false); ?>
+        <?php if ($awardsForSection): ?>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Title</th><th>Ref</th><th>Method</th><th>Description</th><th>Document</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <?php foreach ($awardsForSection as $t): ?>
+                  <tr>
+                    <td><strong><?= escapeHtml(mb_strimwidth($t['title'],0,60,'…')) ?></strong></td>
+                    <td><?= escapeHtml($t['ref_number']) ?></td>
+                    <td><?= escapeHtml($t['method']) ?></td>
+                    <td><?= escapeHtml(mb_strimwidth($t['description'],0,60,'…')) ?></td>
+                    <td><?= $t['doc_url'] ? '<a href="../' . escapeHtml($t['doc_url']) . '" target="_blank" class="btn-link">Download</a>' : '<span style="color:var(--text-3)">No file</span>' ?></td>
+                    <td><span class="badge badge-<?= $t['active'] ? 'active' : 'disabled' ?>"><?= $t['active'] ? 'Active' : 'Hidden' ?></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" href="?edit_tender=<?= $t['id'] ?>#procurement">Edit</a>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Remove this award?');">
+                          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+                          <input type="hidden" name="action" value="delete_tender" />
+                          <input type="hidden" name="tender_id" value="<?= $t['id'] ?>" />
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+            <p>No contract awards yet.</p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Add / Edit form -->
+      <div class="panel" id="procurement-edit-panel">
+        <h3><?= $editTender ? 'Edit ' . ($editTender['type'] === 'award' ? 'contract award' : 'tender') : 'Add tender / award' ?></h3>
+        <form method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+          <input type="hidden" name="action" value="save_tender" />
+          <input type="hidden" name="tender_id" value="<?= escapeHtml($editTender['id'] ?? '0') ?>" />
+
+          <div class="form-row">
+            <label>
+              Type
+              <select name="tender_type">
+                <option value="tender" <?= (!$editTender || $editTender['type']==='tender') ? 'selected' : '' ?>>Tender / EOI</option>
+                <option value="award" <?= ($editTender && $editTender['type']==='award') ? 'selected' : '' ?>>Contract Award</option>
+              </select>
+            </label>
+            <label>
+              Category
+              <input type="text" name="tender_category" value="<?= escapeHtml($editTender['category'] ?? '') ?>" placeholder="e.g. Supplies, Works, Services, Consultancy" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Title <span style="color:var(--red)">*</span>
+              <input type="text" name="tender_title" value="<?= escapeHtml($editTender['title'] ?? '') ?>" required placeholder="Full title of the tender or award" />
+            </label>
+            <label>
+              Reference number
+              <input type="text" name="tender_ref" value="<?= escapeHtml($editTender['ref_number'] ?? '') ?>" placeholder="e.g. FMOD/2026/IT/01" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Procurement method
+              <input type="text" name="tender_method" value="<?= escapeHtml($editTender['method'] ?? '') ?>" placeholder="e.g. Open Tender · National Competitive Bidding" />
+            </label>
+            <label>
+              Closing date <span class="field-hint">(tenders only)</span>
+              <input type="date" name="tender_closes_at" value="<?= escapeHtml($editTender['closes_at'] ?? '') ?>" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Description / notes
+              <textarea name="tender_description" rows="2" placeholder="Brief description shown on the public page…"><?= escapeHtml($editTender['description'] ?? '') ?></textarea>
+            </label>
+          </div>
+
+          <div class="form-section-title">Bidding document</div>
+          <div class="form-row">
+            <label>
+              Upload document <span class="field-hint">(PDF, DOC, DOCX, XLS, XLSX, ZIP)</span>
+              <input type="file" name="tender_doc_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip" />
+              <?php if (!empty($editTender['doc_url'])): ?>
+                <span class="field-hint">Current: <a href="../<?= escapeHtml($editTender['doc_url']) ?>" target="_blank"><?= escapeHtml(basename($editTender['doc_url'])) ?></a></span>
+              <?php endif; ?>
+            </label>
+            <label>
+              Or enter document URL
+              <input type="text" name="tender_doc_url" value="<?= escapeHtml($editTender['doc_url'] ?? '') ?>" placeholder="https://... or assets/documents/tenders/file.pdf" />
+              <span class="field-hint">File upload takes priority over URL</span>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Sort order
+              <input type="number" name="tender_order" value="<?= escapeHtml($editTender['sort_order'] ?? '0') ?>" min="0" />
+              <span class="field-hint">Lower numbers appear first</span>
+            </label>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="tender_active" value="1" <?= !isset($editTender['active']) || $editTender['active'] ? 'checked' : '' ?> />
+            Show on public procurement page
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-green"><?= $editTender ? 'Update' : 'Save' ?></button>
+            <?php if ($editTender): ?><a href="index.php#procurement" class="btn btn-ghost">Cancel</a><?php endif; ?>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ─────────────── ANNUAL REPORTS ─────────────── -->
+    <section class="admin-section" id="annual-reports">
+      <div class="admin-header">
+        <div class="admin-header-text">
+          <h1>Annual Reports.</h1>
+          <p>Manage annual reports displayed on the <a href="../annual-reports.html" target="_blank" style="color:var(--green);">Annual Reports page</a>. Upload PDFs for download.</p>
+        </div>
+        <div class="admin-header-actions">
+          <a class="btn btn-green btn-sm" href="#annual-reports" data-open-edit-modal="annual-reports">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add report
+          </a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><div><h3>Reports library</h3><p>Upload the PDF for each year. Reports with no file uploaded show a "Request via FOI" prompt on the public page.</p></div></div>
+        <?php $reportsForSection = getAnnualReports(false); ?>
+        <?php if ($reportsForSection): ?>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Year</th><th>Title</th><th>Status</th><th>Document</th><th>Active</th><th>Actions</th></tr></thead>
+              <tbody>
+                <?php foreach ($reportsForSection as $r): ?>
+                  <tr>
+                    <td><strong><?= escapeHtml($r['year']) ?></strong></td>
+                    <td><?= escapeHtml(mb_strimwidth($r['title'],0,60,'…')) ?></td>
+                    <td><span class="badge badge-<?= $r['status']==='latest' ? 'active' : ($r['status']==='published' ? 'active' : 'disabled') ?>"><?= escapeHtml(ucfirst($r['status'])) ?></span></td>
+                    <td><?= $r['doc_url'] ? '<a href="../' . escapeHtml($r['doc_url']) . '" target="_blank" class="btn-link">View PDF</a>' : '<span style="color:var(--text-3)">No file</span>' ?></td>
+                    <td><span class="badge badge-<?= $r['active'] ? 'active' : 'disabled' ?>"><?= $r['active'] ? 'Visible' : 'Hidden' ?></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <a class="btn btn-sm btn-outline" href="?edit_report=<?= $r['id'] ?>#annual-reports">Edit</a>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Remove this report?');">
+                          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+                          <input type="hidden" name="action" value="delete_report" />
+                          <input type="hidden" name="report_id" value="<?= $r['id'] ?>" />
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php else: ?>
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>No reports yet.<br><a href="#annual-reports" data-open-edit-modal="annual-reports" style="color:var(--green);">Add the first one →</a></p>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Add / Edit form -->
+      <div class="panel" id="annual-reports-edit-panel">
+        <h3><?= $editReport ? 'Edit report' : 'Add annual report' ?></h3>
+        <form method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+          <input type="hidden" name="action" value="save_report" />
+          <input type="hidden" name="report_id" value="<?= escapeHtml($editReport['id'] ?? '0') ?>" />
+
+          <div class="form-row">
+            <label>
+              Year <span style="color:var(--red)">*</span>
+              <input type="number" name="report_year" value="<?= escapeHtml($editReport['year'] ?? date('Y')) ?>" min="1990" max="2099" required />
+            </label>
+            <label>
+              Status
+              <select name="report_status">
+                <option value="latest"    <?= ($editReport['status'] ?? '') === 'latest'    ? 'selected' : '' ?>>Latest</option>
+                <option value="published" <?= (!isset($editReport) || ($editReport['status'] ?? '') === 'published') ? 'selected' : '' ?>>Published</option>
+                <option value="pending"   <?= ($editReport['status'] ?? '') === 'pending'   ? 'selected' : '' ?>>Pending / Coming soon</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Title <span style="color:var(--red)">*</span>
+              <input type="text" name="report_title" value="<?= escapeHtml($editReport['title'] ?? '') ?>" placeholder="e.g. Annual Report & Accounts 2024" required />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Description
+              <textarea name="report_description" rows="2" placeholder="Brief description of what the report covers…"><?= escapeHtml($editReport['description'] ?? '') ?></textarea>
+            </label>
+          </div>
+
+          <div class="form-section-title">PDF Document</div>
+          <div class="form-row">
+            <label>
+              Upload PDF
+              <input type="file" name="report_doc_file" accept=".pdf,.doc,.docx" />
+              <?php if (!empty($editReport['doc_url'])): ?>
+                <span class="field-hint">Current: <a href="../<?= escapeHtml($editReport['doc_url']) ?>" target="_blank"><?= escapeHtml(basename($editReport['doc_url'])) ?></a></span>
+              <?php endif; ?>
+            </label>
+            <label>
+              Or enter document URL
+              <input type="text" name="report_doc_url" value="<?= escapeHtml($editReport['doc_url'] ?? '') ?>" placeholder="https://... or assets/documents/reports/report.pdf" />
+              <span class="field-hint">File upload takes priority over URL</span>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              Sort order
+              <input type="number" name="report_order" value="<?= escapeHtml($editReport['sort_order'] ?? '0') ?>" min="0" />
+              <span class="field-hint">Lower = higher in list (0 = top)</span>
+            </label>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="report_active" value="1" <?= !isset($editReport['active']) || $editReport['active'] ? 'checked' : '' ?> />
+            Show on public annual reports page
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-green"><?= $editReport ? 'Update report' : 'Save report' ?></button>
+            <?php if ($editReport): ?><a href="index.php#annual-reports" class="btn btn-ghost">Cancel</a><?php endif; ?>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ─────────────── DIRECTORS ─────────────── -->
+    <section class="admin-section" id="directors">
+      <div class="admin-header">
+        <div class="admin-header-text">
+          <h1>Directors.</h1>
+          <p>Update director names, roles and photos for each department. Changes reflect on <a href="../management.html" target="_blank" style="color:var(--green);">Management</a> and <a href="../departments.html" target="_blank" style="color:var(--green);">Departments</a> pages via the API.</p>
+        </div>
+      </div>
+
+      <!-- Current directors table -->
+      <div class="panel">
+        <div class="panel-head"><div><h3>Current directors</h3><p>Photo and name updates override the static fallback in departments-data.js.</p></div></div>
+        <?php
+        $allDeptSlugs = ['joint-services'=>'Joint Services','human-resources'=>'Human Resource Management','prs'=>'Planning, Research & Statistics','army-affairs'=>'Army Affairs','navy-affairs'=>'Navy Affairs','air-force-affairs'=>'Air Force Affairs','finance-accounts'=>'Finance & Accounts','procurement-dept'=>'Procurement','legal'=>'Legal Services','health-services'=>'Health Services','general-services'=>'General Services','public-relations'=>'Information & Public Relations','education-services'=>'Education Services','internal-audit'=>'Internal Audit','reform-coordination'=>'Reform Coordination & Service Improvement'];
+        $dirBySlug = [];
+        foreach ($directors as $d) { $dirBySlug[$d['dept_slug']] = $d; }
+        ?>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Photo</th><th>Department</th><th>Director name</th><th>Source</th><th>Action</th></tr></thead>
+            <tbody>
+              <?php foreach ($allDeptSlugs as $slug => $deptName): ?>
+                <?php $dir = $dirBySlug[$slug] ?? null; ?>
+                <?php
+                  $photoPath = $dir ? $dir['photo_url'] : ('assets/images/directors/' . $slug . '-director.jpg');
+                  $dirName   = $dir ? $dir['director'] : '(from departments-data.js)';
+                  $source    = $dir ? 'Database' : 'Static fallback';
+                ?>
+                <tr>
+                  <td>
+                    <img src="<?= escapeHtml(resolveAdminImageUrl($photoPath)) ?>"
+                         alt="<?= escapeHtml($dirName) ?>"
+                         style="width:44px;height:44px;border-radius:50%;object-fit:cover;"
+                         onerror="this.style.display='none'" />
+                  </td>
+                  <td><strong><?= escapeHtml($deptName) ?></strong></td>
+                  <td><?= escapeHtml($dir ? $dir['director'] : '—') ?></td>
+                  <td><span class="badge badge-<?= $dir ? 'active' : 'disabled' ?>"><?= escapeHtml($source) ?></span></td>
+                  <td>
+                    <a class="btn btn-sm btn-outline" href="#directors" onclick="fillDirectorForm('<?= escapeHtml($slug) ?>', '<?= escapeHtml(addslashes($dir['director'] ?? '')) ?>', '<?= escapeHtml(addslashes($dir['role'] ?? '')) ?>', '<?= escapeHtml(addslashes($dir['photo_url'] ?? '')) ?>')">Edit</a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Edit form -->
+      <div class="panel">
+        <h3>Update director</h3>
+        <form method="post" enctype="multipart/form-data" id="director-form">
+          <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+          <input type="hidden" name="action" value="save_director" />
+
+          <div class="form-row">
+            <label>
+              Department <span style="color:var(--red)">*</span>
+              <select name="director_dept_slug" id="director-dept-slug">
+                <option value="">— select department —</option>
+                <option value="joint-services">Joint Services</option>
+                <option value="human-resources">Human Resource Management</option>
+                <option value="prs">Planning, Research & Statistics</option>
+                <option value="army-affairs">Army Affairs</option>
+                <option value="navy-affairs">Navy Affairs</option>
+                <option value="air-force-affairs">Air Force Affairs</option>
+                <option value="finance-accounts">Finance & Accounts</option>
+                <option value="procurement-dept">Procurement</option>
+                <option value="legal">Legal Services</option>
+                <option value="health-services">Health Services</option>
+                <option value="general-services">General Services</option>
+                <option value="public-relations">Information & Public Relations</option>
+                <option value="education-services">Education Services</option>
+                <option value="internal-audit">Internal Audit</option>
+                <option value="reform-coordination">Reform Coordination & Service Improvement</option>
+                <option value="permanent-secretary">Office of the Permanent Secretary</option>
+              </select>
+            </label>
+            <label>
+              Director name <span style="color:var(--red)">*</span>
+              <input type="text" name="director_name" id="director-name" placeholder="e.g. Mr. SM Attah" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Role / title
+              <input type="text" name="director_role" id="director-role" placeholder="e.g. Director, Army Affairs" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>
+              Upload new photo
+              <input type="file" name="director_photo_file" accept="image/*" />
+              <span class="field-hint">JPG or PNG — replaces current photo</span>
+            </label>
+            <label>
+              Or enter photo URL / path
+              <input type="text" name="director_photo_url" id="director-photo-url" placeholder="assets/images/directors/..." />
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-green">Save director</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <script>
+    function fillDirectorForm(slug, name, role, photo) {
+      document.getElementById('director-dept-slug').value = slug;
+      document.getElementById('director-name').value = name;
+      document.getElementById('director-role').value = role;
+      document.getElementById('director-photo-url').value = photo;
+      document.getElementById('director-form').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    </script>
 
     <!-- ─────────────── SUBSCRIBERS ─────────────── -->
     <section class="admin-section" id="subscribers">
@@ -1308,7 +2309,7 @@ $csrf = csrfToken();
 
   const sectionLabels = {
     dashboard: 'Dashboard', slides: 'Hero & Slider', press: 'Press Releases',
-    leadership: 'Leadership', subscribers: 'Newsletter', submissions: 'Form Submissions',
+    leadership: 'Leadership', gallery: 'Gallery', operations: 'Operations', procurement: 'Procurement', 'annual-reports': 'Annual Reports', directors: 'Directors', subscribers: 'Newsletter', submissions: 'Form Submissions',
     settings: 'Site Settings'
   };
 
@@ -1338,6 +2339,10 @@ $csrf = csrfToken();
     if (p.has('edit_slide'))  return 'slides';
     if (p.has('edit_press'))  return 'press';
     if (p.has('edit_leader')) return 'leadership';
+    if (p.has('edit_gallery')) return 'gallery';
+    if (p.has('edit_operation')) return 'operations';
+    if (p.has('edit_tender')) return 'procurement';
+    if (p.has('edit_report')) return 'annual-reports';
     return defaultSec;
   }
 
@@ -1400,6 +2405,10 @@ $csrf = csrfToken();
     if (p.has('edit_slide'))  return 'slide';
     if (p.has('edit_press'))  return 'press';
     if (p.has('edit_leader')) return 'leadership';
+    if (p.has('edit_gallery')) return 'gallery';
+    if (p.has('edit_operation')) return 'operations';
+    if (p.has('edit_tender')) return 'procurement';
+    if (p.has('edit_report')) return 'annual-reports';
     return null;
   }
 

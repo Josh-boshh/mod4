@@ -4,14 +4,52 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Components — Defence Headquarters, Army, Navy & Air Force</title>
+  <title>Components — Defence Headquarters, Army, Navy &amp; Air Force</title>
   <meta name="description" content="The four operational components of Nigeria's Armed Forces: Defence Headquarters, Nigerian Army, Nigerian Navy and Nigerian Air Force." />
+  <link rel="canonical" href="https://defence.gov.ng/military.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Nigerian Armed Forces Components — Federal Ministry of Defence" />
+  <meta property="og:description" content="The four operational components of Nigeria's Armed Forces: Defence Headquarters, Nigerian Army, Nigerian Navy and Nigerian Air Force." />
+  <meta property="og:url" content="https://defence.gov.ng/military.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    .comp-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      padding: 32px 24px;
+    }
+    .comp-logo {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      /* strip black backgrounds from PNGs */
+      mix-blend-mode: multiply;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,.12));
+    }
+    /* For dark section backgrounds, use luminosity instead */
+    .cream .comp-logo { mix-blend-mode: multiply; }
+    .comp-card h4 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .comp-card .sub {
+      color: var(--text-3);
+      font-size: .83rem;
+    }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -26,6 +64,7 @@
       </div>
     </section>
 
+    <!-- DHQ -->
     <section id="dhq">
       <div class="container">
         <div class="two-col">
@@ -37,9 +76,9 @@
             <a href="https://defencehq.mil.ng" target="_blank" rel="noopener" class="btn">Visit defencehq.mil.ng</a>
           </div>
           <div>
-            <div class="comp-card" style="background:var(--paper-2); padding:48px;">
-              <div class="logo" style="width:140px; height:140px;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/dhq_logo.png" alt="DHQ" /></div>
-              <h4 style="margin-top:18px; font-size:1.4rem;">Defence Headquarters</h4>
+            <div class="comp-card">
+              <img class="comp-logo" src="assets/images/logos/dhq_logo.png" alt="Defence Headquarters" />
+              <h4>Defence Headquarters</h4>
               <span class="sub">Joint operational command of the Armed Forces</span>
             </div>
           </div>
@@ -47,13 +86,14 @@
       </div>
     </section>
 
+    <!-- Army -->
     <section class="cream" id="army">
       <div class="container">
         <div class="two-col">
           <div>
-            <div class="comp-card" style="background:var(--paper); padding:48px;">
-              <div class="logo" style="width:140px; height:140px;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/army_logo-1.png" alt="Nigerian Army" /></div>
-              <h4 style="margin-top:18px; font-size:1.4rem;">Nigerian Army</h4>
+            <div class="comp-card">
+              <img class="comp-logo" src="assets/images/logos/army_logo.png" alt="Nigerian Army" />
+              <h4>Nigerian Army</h4>
               <span class="sub">Land Component</span>
             </div>
           </div>
@@ -68,6 +108,7 @@
       </div>
     </section>
 
+    <!-- Navy -->
     <section id="navy">
       <div class="container">
         <div class="two-col">
@@ -79,23 +120,24 @@
             <a href="https://navy.mil.ng" target="_blank" rel="noopener" class="btn">Visit navy.mil.ng</a>
           </div>
           <div>
-            <div class="comp-card" style="background:var(--paper-2); padding:48px;">
-              <div class="logo" style="width:140px; height:140px;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/navy_logo-1.png" alt="Nigerian Navy" /></div>
-              <h4 style="margin-top:18px; font-size:1.4rem;">Nigerian Navy</h4>
-              <span class="sub">Maritime defence & EEZ protection</span>
+            <div class="comp-card">
+              <img class="comp-logo" src="assets/images/logos/navy_logo.png" alt="Nigerian Navy" />
+              <h4>Nigerian Navy</h4>
+              <span class="sub">Maritime defence &amp; EEZ protection</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Air Force -->
     <section class="cream" id="airforce">
       <div class="container">
         <div class="two-col">
           <div>
-            <div class="comp-card" style="background:var(--paper); padding:48px;">
-              <div class="logo" style="width:140px; height:140px;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/air_force.png" alt="Nigerian Air Force" /></div>
-              <h4 style="margin-top:18px; font-size:1.4rem;">Nigerian Air Force</h4>
+            <div class="comp-card">
+              <img class="comp-logo" src="assets/images/logos/air_force.png" alt="Nigerian Air Force" />
+              <h4>Nigerian Air Force</h4>
               <span class="sub">Air Component</span>
             </div>
           </div>
@@ -110,15 +152,19 @@
       </div>
     </section>
 
+    <!-- Active operations — dynamic -->
     <section>
       <div class="container">
-        <div class="section-head center"><span class="eyebrow">Theatre Operations</span><h2>Active joint operations.</h2></div>
-        <div class="grid grid-3">
-          <div class="card"><div class="index">North-East</div><h3>Operation HADIN KAI</h3><p>Counter-insurgency operations against Boko Haram and ISWAP in Borno, Yobe and Adamawa States.</p></div>
-          <div class="card"><div class="index">North-West</div><h3>Operation FANSAN YAMMA</h3><p>Counter-banditry operations across Zamfara, Sokoto, Katsina and Kebbi States.</p></div>
-          <div class="card"><div class="index">South-South</div><h3>Operation DELTA SAFE</h3><p>Counter-oil-theft, anti-piracy and economic-asset protection in the Niger Delta.</p></div>
+        <div class="section-head center">
+          <span class="eyebrow">Theatre Operations</span>
+          <h2>Active joint operations.</h2>
         </div>
-        <div class="text-center mt-6"><a href="operations.html" class="btn-link">All joint operations</a></div>
+        <div class="grid grid-3" id="ops-grid">
+          <!-- populated by JS -->
+        </div>
+        <div class="text-center mt-6">
+          <a href="operations.html" class="btn-link">All joint operations</a>
+        </div>
       </div>
     </section>
   </main>
@@ -130,10 +176,44 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FALLBACK = [
+      { region: 'North-East',  name: 'Operation HADIN KAI',   description: 'Counter-insurgency operations against Boko Haram and ISWAP in Borno, Yobe and Adamawa States.' },
+      { region: 'North-West',  name: 'Operation FANSAN YAMMA', description: 'Counter-banditry operations across Zamfara, Sokoto, Katsina and Kebbi States.' },
+      { region: 'South-South', name: 'Operation DELTA SAFE',  description: 'Counter-oil-theft, anti-piracy and economic-asset protection in the Niger Delta.' }
+    ];
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function render(ops) {
+      // Show only first 3 on military.html for brevity
+      var grid = document.getElementById('ops-grid');
+      var slice = ops.slice(0, 3);
+      grid.innerHTML = slice.map(function (op) {
+        return '<div class="card">' +
+          '<div class="index">' + esc(op.region) + '</div>' +
+          '<h3>' + esc(op.name) + '</h3>' +
+          '<p>' + esc(op.description) + '</p>' +
+        '</div>';
+      }).join('');
+    }
+
+    fetch('/api/operations')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { render(d.operations && d.operations.length ? d.operations : FALLBACK); })
+      .catch(function () { render(FALLBACK); });
+  }());
+  </script>
 </body>
 </html>
-

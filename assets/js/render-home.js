@@ -46,7 +46,7 @@
     const feature = document.querySelector(".news-feature");
     if (feature && featured) {
       const a = feature.querySelector("a");
-      if (a) a.setAttribute("href", "press.html#" + (featured.slug || ""));
+      if (a) a.setAttribute("href", "press-release.html?slug=" + encodeURIComponent(featured.slug || ""));
       const img = feature.querySelector(".thumb img");
       if (img) img.setAttribute("src", featured.img);
       const date = feature.querySelector(".date");
@@ -63,25 +63,28 @@
       side.innerHTML = press.slice(1, 5).map((p) => `
         <div class="item">
           <div class="date">${escapeHTML(p.date)} · ${escapeHTML(p.category)}</div>
-          <h4><a href="press.html#${escapeAttr(p.slug)}">${escapeHTML(p.title)}</a></h4>
+          <h4><a href="press-release.html?slug=${encodeURIComponent(p.slug)}">${escapeHTML(p.title)}</a></h4>
         </div>
       `).join("");
     }
 
     // News grid (items 5..7)
     const grid = document.querySelector(".news-grid");
-    if (grid && press.length > 5) {
-      grid.innerHTML = press.slice(5, 8).map((p) => `
-        <article class="news-card">
-          <a href="press.html#${escapeAttr(p.slug)}" style="color:inherit; text-decoration:none;">
-            <div class="thumb"><img src="${escapeAttr(p.img)}" alt="" referrerpolicy="no-referrer" /></div>
-            <div class="body">
-              <div class="date">${escapeHTML(p.date)} · ${escapeHTML(p.category)}</div>
-              <h4>${escapeHTML(p.title)}</h4>
-            </div>
-          </a>
-        </article>
-      `).join("");
+    if (grid) {
+      const gridItems = press.slice(5, 8);
+      if (gridItems.length) {
+        grid.innerHTML = gridItems.map((p) => `
+          <article class="news-card">
+            <a href="press-release.html?slug=${encodeURIComponent(p.slug)}" class="news-card-link">
+              <div class="thumb"><img src="${escapeAttr(p.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" /></div>
+              <div class="body">
+                <div class="date">${escapeHTML(p.date)} · ${escapeHTML(p.category)}</div>
+                <h4>${escapeHTML(p.title)}</h4>
+              </div>
+            </a>
+          </article>
+        `).join("");
+      }
     }
   }
 
@@ -89,28 +92,36 @@
     const L = window.MOD_STORE.leadership();
     if (!L) return;
 
-    const cards = document.querySelectorAll('.leadership-grid .leader-card');
-    const keys = ['minister', 'ministerOfState', 'permSec'];
-    keys.forEach((key, index) => {
-      const leader = L[key];
-      const card = cards[index];
-      if (!leader || !card) return;
+    // Match cards by data-leader attribute for robustness — order-independent
+    const keyMap = {
+      minister: L.minister,
+      ministerOfState: L.ministerOfState,
+      permSec: L.permSec,
+    };
+
+    Object.entries(keyMap).forEach(([key, leader]) => {
+      if (!leader) return;
+      // Try data-leader first, fall back to positional for legacy markup
+      let card = document.querySelector(`.leader-card[data-leader="${key}"]`);
+      if (!card) {
+        const keys = ['minister', 'ministerOfState', 'permSec'];
+        const idx = keys.indexOf(key);
+        const cards = document.querySelectorAll('.leadership-grid .leader-card');
+        card = cards[idx] || null;
+      }
+      if (!card) return;
 
       const photo = card.querySelector('.leader-card-photo img');
       if (photo && leader.photo) {
         photo.setAttribute('src', leader.photo);
         photo.setAttribute('alt', `${leader.name} — ${leader.title}`);
       }
-
       const roleLine = card.querySelector('.role-line');
       if (roleLine && leader.title) roleLine.textContent = leader.title;
-
       const heading = card.querySelector('h3');
       if (heading && leader.name) heading.textContent = leader.name;
-
       const paragraph = card.querySelector('p');
       if (paragraph && leader.bio) paragraph.textContent = leader.bio;
-
       const link = card.querySelector('.btn-link');
       if (link && leader.profile_link) link.setAttribute('href', leader.profile_link);
     });

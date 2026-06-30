@@ -6,107 +6,306 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Department — Federal Ministry of Defence</title>
   <meta name="description" content="Department of the Federal Ministry of Defence — mandate, leadership and contact." />
+  <link rel="canonical" href="https://defence.gov.ng/department.html" id="canonical-link" />
+  <meta property="og:type" content="website" id="og-type" />
+  <meta property="og:title" content="Department — Federal Ministry of Defence" id="og-title" />
+  <meta property="og:description" content="Department of the Federal Ministry of Defence — mandate, leadership and contact." id="og-description" />
+  <meta property="og:url" content="https://defence.gov.ng/department.html" id="og-url" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" id="og-image" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Leadership card ── */
+    .dept-info-card {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .dept-info-card-accent {
+      height: 4px;
+      background: var(--green);
+      width: 100%;
+    }
+    .dept-info-card-body { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+    .dept-info-row { display: flex; flex-direction: column; gap: 4px; }
+    .dept-info-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .dept-info-value { font-size: .92rem; color: var(--text-1); font-weight: 500; }
+    .dept-info-value a { color: var(--green); }
+    .dept-director-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 28px;
+      background: var(--paper);
+      border-top: 1px solid var(--line);
+    }
+    .dept-director-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .dept-director-name { font-weight: 700; font-size: .95rem; color: var(--text-1); }
+    .dept-director-role { font-size: .8rem; color: var(--text-3); margin-top: 2px; }
+
+    /* ── Related dept cards (reuse departments.html design) ── */
+    .dept-card {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .25s, transform .25s, border-color .25s;
+    }
+    .dept-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.10);
+      border-color: var(--green);
+      color: inherit;
+      text-decoration: none;
+    }
+    .dept-card-accent { height: 4px; background: var(--green); }
+    .dept-card-accent.navy  { background: #1a3a6b; }
+    .dept-card-accent.orange { background: #c45c00; }
+    .dept-card-body { padding: 20px 20px 16px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+    .dept-card-num { font-size: .65rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--green); }
+    .dept-card h3 { font-size: .95rem; font-weight: 700; line-height: 1.3; margin: 0; color: var(--text-1); }
+    .dept-card-footer {
+      border-top: 1px solid var(--line);
+      padding: 10px 20px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--paper-2);
+    }
+    .dept-card-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      font-size: .65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; text-transform: uppercase;
+    }
+    .dept-card-director { font-size: .72rem; color: var(--text-3); }
+    .dept-card-director strong { display: block; color: var(--text-1); font-weight: 600; font-size: .74rem; }
+    .dept-card-arrow { margin-left: auto; color: var(--green); opacity: 0; transition: opacity .2s, transform .2s; font-size: 1.1rem; }
+    .dept-card:hover .dept-card-arrow { opacity: 1; transform: translateX(3px); }
+
+    /* ── 404 state ── */
+    .dept-not-found {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--text-3);
+    }
+    .dept-not-found h2 { color: var(--text-1); margin-bottom: 12px; }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
 
   <main id="main">
-    <section class="page-hero">
+    <section class="page-hero" id="dept-hero">
       <div class="container">
-        <div class="crumbs" id="crumbs"><a href="index.html">Home</a><span>›</span>Components<span>›</span><span id="crumbDept">Department</span></div>
-        <span class="eyebrow" id="deptCategory">Civilian Component</span>
-        <h1 id="deptTitle">Department of the Ministry</h1>
-        <p class="lead" id="deptLead">Mandate, leadership and contact information.</p>
+        <div class="crumbs"><a href="index.html">Home</a><span>›</span><a href="departments.html">Departments</a><span>›</span><span id="crumb-dept">Department</span></div>
+        <span class="eyebrow" id="dept-category">Civilian Component</span>
+        <h1 id="dept-title">Department.</h1>
+        <p class="lead" id="dept-lead">Mandate, leadership and contact information.</p>
       </div>
     </section>
 
-    <section>
-      <div class="container">
-        <div class="two-col">
-          <div>
-            <span class="eyebrow">Mandate</span>
-            <h2 id="mandateTitle">What this department does.</h2>
-            <div id="mandateBody"><p>Loading department information…</p></div>
-          </div>
-          <div>
-            <div class="card">
-              <span class="eyebrow">Leadership</span>
-              <h3 id="leaderTitle" style="margin-top:8px;">Director</h3>
-              <p id="leaderName" style="color:var(--ink-3);">—</p>
-              <h4 style="margin-top:18px;">Reports to</h4>
-              <p style="color:var(--ink-3);">Permanent Secretary, Federal Ministry of Defence</p>
-              <h4 style="margin-top:18px;">Office</h4>
-              <p style="color:var(--ink-3);">Ship House, Area 10, Federal Capital Territory, Abuja</p>
-              <h4 style="margin-top:18px;">Email</h4>
-              <p style="color:var(--ink-3);"><a id="leaderEmail" href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a></p>
+    <!-- Main content (hidden until loaded) -->
+    <div id="dept-content" style="display:none;">
+      <section>
+        <div class="container">
+          <div class="two-col">
+            <div>
+              <span class="eyebrow">Mandate</span>
+              <h2>What this department does.</h2>
+              <div id="dept-body"></div>
+            </div>
+            <div>
+              <div class="dept-info-card">
+                <div class="dept-info-card-accent" id="info-accent"></div>
+                <div class="dept-info-card-body">
+                  <div class="dept-info-row">
+                    <span class="dept-info-label">Category</span>
+                    <span class="dept-info-value" id="info-category">—</span>
+                  </div>
+                  <div class="dept-info-row">
+                    <span class="dept-info-label">Reports to</span>
+                    <span class="dept-info-value">Permanent Secretary, Federal Ministry of Defence</span>
+                  </div>
+                  <div class="dept-info-row">
+                    <span class="dept-info-label">Office</span>
+                    <span class="dept-info-value">Ship House, Area 10, Federal Capital Territory, Abuja</span>
+                  </div>
+                  <div class="dept-info-row">
+                    <span class="dept-info-label">Email</span>
+                    <span class="dept-info-value"><a id="info-email" href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a></span>
+                  </div>
+                </div>
+                <div class="dept-director-row">
+                  <div class="dept-director-avatar" id="info-avatar">—</div>
+                  <div>
+                    <div class="dept-director-name" id="info-director">—</div>
+                    <div class="dept-director-role" id="info-role">—</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="cream">
-      <div class="container">
-        <div class="section-head"><span class="eyebrow">Related</span><h2>Other departments.</h2></div>
-        <div class="grid grid-3">
-          <a href="department.html?d=joint-services" class="card"><div class="index">Civilian</div><h3>Joint Services</h3></a>
-          <a href="department.html?d=human-resources" class="card"><div class="index">Civilian</div><h3>Human Resources</h3></a>
-          <a href="department.html?d=prs" class="card"><div class="index">Civilian</div><h3>Planning, Research & Statistics</h3></a>
-          <a href="department.html?d=army-affairs" class="card"><div class="index">Civilian</div><h3>Army Affairs</h3></a>
-          <a href="department.html?d=navy-affairs" class="card"><div class="index">Civilian</div><h3>Navy Affairs</h3></a>
-          <a href="department.html?d=air-force-affairs" class="card"><div class="index">Civilian</div><h3>Air Force Affairs</h3></a>
-          <a href="department.html?d=finance-accounts" class="card"><div class="index">Civilian</div><h3>Finance & Accounts</h3></a>
-          <a href="department.html?d=procurement-dept" class="card"><div class="index">Civilian</div><h3>Procurement</h3></a>
-          <a href="department.html?d=legal" class="card"><div class="index">Civilian</div><h3>Legal Services</h3></a>
-          <a href="department.html?d=health-services" class="card"><div class="index">Civilian II</div><h3>Health Services</h3></a>
-          <a href="department.html?d=general-services" class="card"><div class="index">Civilian II</div><h3>General Services</h3></a>
-          <a href="department.html?d=public-relations" class="card"><div class="index">Civilian II</div><h3>Information, Press & Public Relations</h3></a>
-          <a href="department.html?d=education-services" class="card"><div class="index">Civilian II</div><h3>Education Services</h3></a>
-          <a href="department.html?d=internal-audit" class="card"><div class="index">Civilian II</div><h3>Internal Audit</h3></a>
-          <a href="department.html?d=reform-coordination" class="card"><div class="index">Civilian II</div><h3>Reform Coordination & Service Improvement</h3></a>
+      <!-- Related departments -->
+      <section class="cream">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Related</span>
+            <h2>Other departments.</h2>
+          </div>
+          <div class="grid grid-3" id="related-grid"></div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
+
+    <!-- 404 state -->
+    <div id="dept-not-found" style="display:none;">
+      <section>
+        <div class="container">
+          <div class="dept-not-found">
+            <h2>Department not found.</h2>
+            <p>The department you're looking for doesn't exist or the link may be incorrect.</p>
+            <a href="departments.html" class="btn" style="margin-top:24px;">View all departments</a>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 
   <div data-include="footer"></div>
   <div data-include="chatbot"></div>
   <div data-include="a11y"></div>
 
+  <!-- departments-data.js MUST load before the inline script -->
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/departments-data.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
-  <script src="assets/js/departments-data.js"></script>
+
   <script>
-    (function () {
-      const params = new URLSearchParams(location.search);
-      const slug = params.get("d") || "joint-services";
-      const dept = (window.MOD_DEPARTMENTS && window.MOD_DEPARTMENTS[slug]) || window.MOD_DEPARTMENTS["joint-services"];
-      document.getElementById("deptTitle").textContent = dept.name + ".";
-      document.getElementById("crumbDept").textContent = dept.name;
-      document.title = dept.name + " — Federal Ministry of Defence";
-      document.getElementById("deptCategory").textContent = dept.category;
-      document.getElementById("deptLead").textContent = dept.lead;
-      document.getElementById("mandateBody").innerHTML = dept.body;
-      document.getElementById("leaderTitle").textContent = dept.role || "Director";
-      document.getElementById("leaderName").textContent = dept.director || "Office of the Director";
-      if (dept.email) {
-        const el = document.getElementById("leaderEmail");
-        el.textContent = dept.email;
-        el.setAttribute("href", "mailto:" + dept.email);
-      }
-    })();
+  (function () {
+    'use strict';
+
+    var ACCENT_CLASS = {
+      'Civilian Component':    '',
+      'Civilian Component II': 'navy',
+      'Office of Direction':   'orange',
+    };
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function initials(name) {
+      return (name || '').split(' ').filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+    }
+
+    // Read slug from ?dept= (new) or ?d= (old) for backward compat
+    var params = new URLSearchParams(location.search);
+    var slug   = params.get('dept') || params.get('d') || '';
+    var data   = window.MOD_DEPARTMENTS || {};
+    var dept   = data[slug];
+
+    if (!dept) {
+      // 404 state
+      document.getElementById('dept-hero').style.display     = 'none';
+      document.getElementById('dept-not-found').style.display = '';
+      document.title = 'Department not found — Federal Ministry of Defence';
+    } else {
+      // ── Update <head> meta ──
+      var pageUrl = 'https://defence.gov.ng/department.html?dept=' + encodeURIComponent(slug);
+      document.title = dept.name + ' — Federal Ministry of Defence';
+      document.getElementById('canonical-link').setAttribute('href', pageUrl);
+      document.getElementById('og-title').setAttribute('content', dept.name + ' — Federal Ministry of Defence');
+      document.getElementById('og-description').setAttribute('content', dept.lead || '');
+      document.getElementById('og-url').setAttribute('content', pageUrl);
+
+      // ── Hero ──
+      document.getElementById('crumb-dept').textContent  = dept.name;
+      document.getElementById('dept-category').textContent = dept.category;
+      document.getElementById('dept-title').textContent  = dept.name + '.';
+      document.getElementById('dept-lead').textContent   = dept.lead;
+
+      // ── Body ──
+      document.getElementById('dept-body').innerHTML = dept.body || '<p>Information coming soon.</p>';
+
+      // ── Info card ──
+      var accentEl = document.getElementById('info-accent');
+      var ac = ACCENT_CLASS[dept.category] || '';
+      if (ac) accentEl.classList.add(ac);
+
+      document.getElementById('info-category').textContent = dept.category;
+
+      var emailEl = document.getElementById('info-email');
+      emailEl.textContent = dept.email || 'contact@defence.gov.ng';
+      emailEl.setAttribute('href', 'mailto:' + (dept.email || 'contact@defence.gov.ng'));
+
+      document.getElementById('info-avatar').textContent   = initials(dept.director);
+      document.getElementById('info-director').textContent = dept.director || '—';
+      document.getElementById('info-role').textContent     = dept.role || 'Director';
+
+      // ── Related departments (exclude current, show up to 6) ──
+      var keys = Object.keys(data).filter(function (k) { return k !== slug; });
+      var related = keys.slice(0, 6);
+      var relGrid = document.getElementById('related-grid');
+
+      relGrid.innerHTML = related.map(function (k, i) {
+        var d  = data[k];
+        var ac = ACCENT_CLASS[d.category] || '';
+        return '<a class="dept-card" href="department.html?dept=' + esc(k) + '">' +
+          '<div class="dept-card-accent ' + ac + '"></div>' +
+          '<div class="dept-card-body">' +
+            '<span class="dept-card-num">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<h3>' + esc(d.name) + '</h3>' +
+          '</div>' +
+          '<div class="dept-card-footer">' +
+            '<div class="dept-card-avatar">' + esc(initials(d.director)) + '</div>' +
+            '<div class="dept-card-director">' +
+              '<strong>' + esc(d.director) + '</strong>' +
+              esc(d.role) +
+            '</div>' +
+            '<span class="dept-card-arrow">›</span>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+
+      document.getElementById('dept-content').style.display = '';
+    }
+  }());
   </script>
 </body>
 </html>
-

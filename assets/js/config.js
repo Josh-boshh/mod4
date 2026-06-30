@@ -2,22 +2,26 @@
  *  FEDERAL MINISTRY OF DEFENCE — site configuration
  * =============================================================================
  *
- *  HOW TO ADD YOUR GOOGLE CLOUD TRANSLATION API KEY
- *  ─────────────────────────────────────────────────
- *  1. Get an API key in Google Cloud Console:
- *       → https://console.cloud.google.com/apis/credentials
- *  2. Enable the "Cloud Translation API" for the project:
- *       → https://console.cloud.google.com/apis/library/translate.googleapis.com
- *  3. (Recommended) Restrict the key by HTTP referrer to: *.defence.gov.ng/*
- *  4. Paste the key between the quotes on the next line.
+ *  HOW TO ADD YOUR MICROSOFT AZURE TRANSLATOR KEY
+ *  ───────────────────────────────────────────────
+ *  Translation is powered by Microsoft Azure Translator (Cognitive Services).
+ *
+ *  1. Create an Azure Cognitive Services resource in the Azure Portal:
+ *       → https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation
+ *  2. Copy the API key from: Resource → Keys and Endpoint → KEY 1
+ *  3. Note the Region (e.g. westeurope, eastus) from the same page.
+ *  4. Paste the key into AZURE_TRANSLATE_KEY below.
+ *  5. Set AZURE_TRANSLATE_REGION to match your resource region.
+ *  6. (Recommended) Restrict the key to *.defence.gov.ng/* in Azure Portal.
  *
  *  The site falls back to English if the key is missing or invalid.
- *  See TRANSLATION_SETUP.md for a full walk-through.
  * ============================================================================= */
 window.MOD_CONFIG = {
 
-  // ── Google Cloud Translation API key ─────────────────────────────────────
-  GOOGLE_TRANSLATE_API_KEY: "",
+  // ── Microsoft Azure Translator API key & region ───────────────────────────
+  // Set these to enable live translation. Leave empty to disable.
+  AZURE_TRANSLATE_KEY:    "",
+  AZURE_TRANSLATE_REGION: "westeurope",
 
   // ── Languages offered in the dropdown (label shown to users) ─────────────
   //   Add more by appending {code: "label"} — everything else is generic.
@@ -28,7 +32,7 @@ window.MOD_CONFIG = {
     "yo":    "Yoruba",
     "fr":    "Français",
     "es":    "Español",
-    "zh-CN": "中文 (简体)",
+    "zh-Hans": "中文 (简体)",
   },
 
   // ── Default language when nothing is saved in localStorage ───────────────
@@ -42,5 +46,5 @@ window.MOD_CONFIG = {
   },
 
   // ── Last content review date — stamped in the footer for BPSR "currency" ─
-  LAST_REVIEWED: "May 2026",
+  LAST_REVIEWED: "June 2026",
 };

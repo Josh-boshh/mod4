@@ -1,10 +1,17 @@
-# Render Blueprint — deploys the web service + PostgreSQL database together.
+# Render Blueprint — deploys the web service.
 # Run: connect this repo in Render dashboard → "New Blueprint Instance"
 #
-# Database note: the free Render PostgreSQL plan was discontinued.
-# Cheapest managed option is Render PostgreSQL Starter ($7/month).
-# Free alternative: create a database on https://neon.tech (free tier)
-#   and set DATABASE_URL manually in the Render environment variables.
+# Database: this project uses MySQL (not PostgreSQL).
+# Options:
+#   1. PlanetScale (free tier): https://planetscale.com — set DATABASE_URL in env vars
+#   2. Railway MySQL: https://railway.app — set DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
+#   3. Any managed MySQL host — set the env vars below accordingly
+#
+# Required env vars:
+#   DB_HOST, DB_PORT (3306), DB_NAME, DB_USER, DB_PASS
+#   SPAM_IP_HASH_KEY (random string, min 32 chars)
+#   AZURE_TRANSLATE_KEY (optional — enables live translation)
+#   AZURE_TRANSLATE_REGION (e.g. westeurope)
 
 services:
   - type: web
@@ -13,14 +20,19 @@ services:
     plan: free
     healthCheckPath: /
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: mod3-db
-          property: connectionString
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
       - key: SPAM_IP_HASH_KEY
-        generateValue: true   # Render generates a random value on first deploy
-
-databases:
-  - name: mod3-db
-    databaseName: mod3
-    plan: starter             # $7/month — remove this block if using Neon
+        generateValue: true
+      - key: AZURE_TRANSLATE_KEY
+        sync: false
+      - key: AZURE_TRANSLATE_REGION
+        value: "westeurope"

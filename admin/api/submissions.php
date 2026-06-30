@@ -3,6 +3,8 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../spam_protection.php';
 runMigrations();
 header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Cache-Control: no-store');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -78,7 +80,7 @@ if (spamRateLimited('submissions', SPAM_SUBMIT_LIMIT, SPAM_SUBMIT_WINDOW)) {
 
 // ── Visible captcha ──────────────────────────────────────────────────────────
 if (!spamVerifyCaptcha($body)) {
-    spamReject('submissions', 'captcha_fail', 'Security check failed. Please answer the maths question and try again.');
+    spamReject('submissions', 'captcha_fail', 'Security check failed. Please complete the slider puzzle and try again.');
 }
 
 // ── Layer 5: Input validation & sanitisation ─────────────────────────────────

@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Our Structure — Federal Ministry of Defence</title>
   <meta name="description" content="The organisational structure of the Federal Ministry of Defence — political leadership, the Permanent Secretary, departments and parastatals." />
+  <link rel="canonical" href="https://defence.gov.ng/structure.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Our Structure — Federal Ministry of Defence" />
+  <meta property="og:description" content="From political leadership through the Permanent Secretary to the operational components and parastatals — how the Federal Ministry of Defence is organised." />
+  <meta property="og:url" content="https://defence.gov.ng/structure.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,6 +25,9 @@
     .org-tier { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-bottom:28px; }
     .org-node { background:#fff; border:1px solid var(--line); border-radius: var(--radius); padding:16px 22px; min-width:200px; text-align:center; box-shadow: var(--shadow-s); }
     .org-node.crown { background: var(--green); color:#fff; border-color: var(--green); }
+    a.org-node { transition: transform .2s, box-shadow .2s, border-color .2s; cursor: pointer; }
+    a.org-node:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.10); border-color: var(--green); color: inherit; }
+    a.org-node.gold:hover { border-color: var(--gold); }
     .org-node.gold { background: var(--gold); color: var(--ink); border-color: var(--gold); }
     .org-node h4 { font-size:.92rem; margin:0; line-height:1.3; }
     .org-node.crown h4, .org-node.gold h4 { color: inherit; }
@@ -44,21 +55,21 @@
             <div class="org-node crown"><h4>President & C-in-C of the Armed Forces</h4><div class="role">Federal Republic of Nigeria</div></div>
           </div>
           <div class="org-tier">
-            <div class="org-node gold"><h4>Honourable Minister of Defence</h4><div class="role">Political Leadership</div></div>
-            <div class="org-node gold"><h4>Honourable Minister of State</h4><div class="role">Political Leadership</div></div>
+            <a href="minister.html" class="org-node gold" style="text-decoration:none;"><h4>Honourable Minister of Defence</h4><div class="role">Political Leadership</div></a>
+            <a href="minister-of-state.html" class="org-node gold" style="text-decoration:none;"><h4>Honourable Minister of State</h4><div class="role">Political Leadership</div></a>
           </div>
           <div class="org-tier">
-            <div class="org-node"><h4>Permanent Secretary</h4><div class="role">Accounting Officer</div></div>
+            <a href="management.html" class="org-node" style="text-decoration:none;"><h4>Permanent Secretary</h4><div class="role">Accounting Officer</div></a>
           </div>
           <div class="org-tier">
-            <div class="org-node"><h4>Defence Headquarters</h4><div class="role">CDS · Joint Command</div></div>
-            <div class="org-node"><h4>Nigerian Army</h4><div class="role">COAS</div></div>
-            <div class="org-node"><h4>Nigerian Navy</h4><div class="role">CNS</div></div>
-            <div class="org-node"><h4>Nigerian Air Force</h4><div class="role">CAS</div></div>
+            <a href="military.html#dhq" class="org-node" style="text-decoration:none;"><h4>Defence Headquarters</h4><div class="role">CDS · Joint Command</div></a>
+            <a href="military.html#army" class="org-node" style="text-decoration:none;"><h4>Nigerian Army</h4><div class="role">COAS</div></a>
+            <a href="military.html#navy" class="org-node" style="text-decoration:none;"><h4>Nigerian Navy</h4><div class="role">CNS</div></a>
+            <a href="military.html#airforce" class="org-node" style="text-decoration:none;"><h4>Nigerian Air Force</h4><div class="role">CAS</div></a>
           </div>
           <div class="org-tier">
-            <div class="org-node"><h4>Departments</h4><div class="role">15 Directorates</div></div>
-            <div class="org-node"><h4>Agencies & Parastatals</h4><div class="role">NDA · NDC · AFCSC · DICON · NAFRC · MPB · DIA</div></div>
+            <a href="departments.html" class="org-node" style="text-decoration:none;"><h4>Departments</h4><div class="role">15 Directorates</div></a>
+            <a href="agencies.html" class="org-node" style="text-decoration:none;"><h4>Agencies &amp; Parastatals</h4><div class="role">NDA · NDC · AFCSC · DICON · NAFRC · MPB · DIA</div></a>
           </div>
         </div>
       </div>
@@ -71,13 +82,13 @@
           <div>
             <h3>Political tier</h3>
             <p>The Honourable Minister and the Minister of State are the political leadership, accountable to the President and the National Assembly. They direct policy, defend the Ministry's budget and represent the Government on defence matters.</p>
-            <h3 style="margin-top:32px;">Administrative tier</h3>
+            <h3 class="mt-8">Administrative tier</h3>
             <p>The Permanent Secretary heads the Civil Service side of the Ministry and is the accounting officer. The PS provides continuity across political cycles, leads departmental directors and chairs the Ministerial Tenders Board.</p>
           </div>
           <div>
             <h3>Operational tier</h3>
             <p>The Defence Headquarters, under the Chief of Defence Staff, exercises joint operational command over the Nigerian Army, Nigerian Navy and Nigerian Air Force — each headed by its own Chief of Service.</p>
-            <h3 style="margin-top:32px;">Parastatal tier</h3>
+            <h3 class="mt-8">Parastatal tier</h3>
             <p>Agencies and parastatals — NDA, NDC, AFCSC, DICON, NAFRC, MPB, DIA — operate under MOD oversight with statutory mandates ranging from training to industrial production to welfare administration.</p>
           </div>
         </div>
@@ -92,8 +103,7 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>

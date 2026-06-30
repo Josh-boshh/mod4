@@ -4,8 +4,16 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Honourable Minister of State for Defence — Dr. Bello M. Matawalle, MON</title>
-  <meta name="description" content="Profile of Dr. Bello Mohammed Matawalle, MON — Honourable Minister of State for Defence." />
+  <title>Honourable Minister of State for Defence — Federal Ministry of Defence</title>
+  <meta name="description" content="Profile of the Honourable Minister of State for Defence — supporting Nigeria's strategic security and welfare portfolios." />
+  <link rel="canonical" href="https://defence.gov.ng/minister-of-state.html" />
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Honourable Minister of State for Defence — Federal Ministry of Defence" />
+  <meta property="og:description" content="Profile of the Honourable Minister of State for Defence — supporting Nigeria's strategic security and welfare portfolios." />
+  <meta property="og:url" content="https://defence.gov.ng/minister-of-state.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/headshots/dr-bello-matawalle.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/headshots/dr-bello-matawalle.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,8 +29,8 @@
       <div class="container">
         <div class="crumbs"><a href="index.html">Home</a><span>›</span><a href="about.html">The Ministry</a><span>›</span>Minister of State</div>
         <span class="eyebrow">The Leadership</span>
-        <h1>Dr. Bello Mohammed Matawalle, MON.</h1>
-        <p class="lead">Honourable Minister of State for Defence, Federal Republic of Nigeria.</p>
+        <h1 id="mos-page-name">Honourable Minister of State for Defence.</h1>
+        <p class="lead" id="mos-page-title">Federal Republic of Nigeria.</p>
       </div>
     </section>
 
@@ -30,13 +38,15 @@
       <div class="container">
         <div class="leader">
           <div class="leader-photo">
-            <img src="assets/images/headshots/dr-bello-matawalle.jpg" alt="Dr. Bello Mohammed Matawalle, MON — Honourable Minister of State for Defence" />
+            <img id="mos-photo"
+                 src="assets/images/headshots/dr-bello-matawalle.jpg"
+                 alt="Honourable Minister of State for Defence" />
             <div class="badge">MON</div>
           </div>
           <div class="leader-text">
-            <div class="role-line">Honourable Minister of State for Defence</div>
-            <h2>Dr. Bello Mohammed Matawalle</h2>
-            <p class="lead">Former Governor of Zamfara State and Member of the Order of the Niger (MON), Dr. Matawalle supports the Honourable Minister on strategic, security-sector and welfare portfolios, with particular focus on community-level peace-building, banditry response and counter-violent-extremism programmes.</p>
+            <div class="role-line" id="mos-role">Honourable Minister of State for Defence</div>
+            <h2 id="mos-name">Dr. Bello Mohammed Matawalle</h2>
+            <p class="lead" id="mos-bio">Former Governor of Zamfara State and Member of the Order of the Niger (MON), Dr. Matawalle supports the Honourable Minister on strategic, security-sector and welfare portfolios, with particular focus on community-level peace-building, banditry response and counter-violent-extremism programmes.</p>
             <p>His extensive experience as a state Chief Executive in one of Nigeria's most security-challenged regions equips the Ministry with on-the-ground perspective and political reach into the North-West and frontier communities.</p>
             <a href="press.html" class="btn-link">Read his recent statements</a>
           </div>
@@ -69,6 +79,19 @@
         </div>
       </div>
     </section>
+
+    <!-- Recent activities — rendered dynamically -->
+    <section>
+      <div class="container">
+        <div class="flex-between">
+          <div><span class="eyebrow">Press Office</span><h2>Recent activities.</h2></div>
+          <a href="press.html" class="btn-link">All press releases</a>
+        </div>
+        <div class="news-grid" id="mos-press-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </section>
   </main>
 
   <div data-include="footer"></div>
@@ -76,12 +99,95 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+      });
+    }
+
+    function renderMoS() {
+      var data = window.MOD_STORE ? window.MOD_STORE.leadership() : null;
+      var m = (data && data.ministerOfState)
+        || (window.MOD_DATA && window.MOD_DATA.LEADERSHIP && window.MOD_DATA.LEADERSHIP.ministerOfState)
+        || {};
+
+      if (m.name) {
+        document.getElementById('mos-page-name').textContent = m.name + '.';
+        document.getElementById('mos-name').textContent = m.name.replace(/, MON.*/, '').replace(/, OFR.*/, '');
+      }
+      if (m.title) {
+        document.getElementById('mos-page-title').textContent = m.title + ', Federal Republic of Nigeria.';
+        document.getElementById('mos-role').textContent = m.title;
+      }
+      if (m.photo) {
+        var img = document.getElementById('mos-photo');
+        img.src = m.photo;
+        img.alt = (m.name || 'Honourable Minister of State') + ' — ' + (m.title || '');
+        var ogImg = document.querySelector('meta[property="og:image"]');
+        if (ogImg) ogImg.setAttribute('content', m.photo);
+      }
+      if (m.bio) {
+        document.getElementById('mos-bio').textContent = m.bio;
+      }
+    }
+
+    function renderRecentPress() {
+      var press = window.MOD_STORE ? window.MOD_STORE.press() : null;
+      if (!press || !press.length) {
+        press = (window.MOD_DATA && window.MOD_DATA.PRESS) || [];
+      }
+
+      var grid = document.getElementById('mos-press-grid');
+      var recent = press.slice(0, 3);
+
+      if (!recent.length) {
+        grid.innerHTML = '<p style="color:var(--text-3);">No press releases yet.</p>';
+        return;
+      }
+
+      grid.innerHTML = recent.map(function (p) {
+        var img = p.img
+          ? '<div class="thumb"><img src="' + esc(p.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" /></div>'
+          : '';
+        var href = p.slug ? 'press.html#' + esc(p.slug) : 'press.html';
+        return '<article class="news-card">' +
+          '<a href="' + href + '" style="color:inherit;text-decoration:none;">' +
+            img +
+            '<div class="body">' +
+              '<div class="date">' + esc(p.date) + '</div>' +
+              '<h4>' + esc(p.title) + '</h4>' +
+            '</div>' +
+          '</a>' +
+        '</article>';
+      }).join('');
+    }
+
+    function render() {
+      renderMoS();
+      renderRecentPress();
+    }
+
+    window.addEventListener('mod-content-updated', render);
+
+    if (window.MOD_STORE) {
+      render();
+    } else {
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(render, 100);
+      });
+    }
+  }());
+  </script>
 </body>
 </html>
-

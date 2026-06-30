@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Privacy Policy — Federal Ministry of Defence</title>
   <meta name="description" content="How the Federal Ministry of Defence collects, uses, stores and protects your personal information when you use our website and services." />
+  <link rel="canonical" href="https://defence.gov.ng/privacy.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Privacy Policy — Federal Ministry of Defence" />
+  <meta property="og:description" content="How the Federal Ministry of Defence collects, uses, stores and protects your personal information." />
+  <meta property="og:url" content="https://defence.gov.ng/privacy.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,6 +45,27 @@
     /* ── Override two-col for sticky sidebar layout ── */
     .privacy-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; }
     @media (max-width: 900px) { .privacy-layout { grid-template-columns: 1fr; } .policy-nav { position: static; } }
+
+    /* ── Retention table ── */
+    .retention-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-top: 12px; }
+    .retention-table thead tr { background: var(--ink); color: #fff; }
+    .retention-table thead th { padding: 10px 14px; text-align: left; }
+    .retention-table tbody tr { border-bottom: 1px solid var(--paper-3); }
+    .retention-table tbody tr:nth-child(even) { background: var(--paper-2); }
+    .retention-table tbody td { padding: 10px 14px; }
+
+    /* ── Sidebar related block ── */
+    .policy-related { margin-top: 20px; background: var(--paper-2); border-radius: var(--radius); padding: 20px; font-size: .86rem; color: var(--ink-2); }
+    .policy-related strong { color: var(--ink); display: block; margin-bottom: 8px; }
+    .policy-related ul { padding-left: 16px; margin: 0; }
+    .policy-related li { margin-bottom: 6px; }
+
+    /* ── Address block ── */
+    .policy-address { font-style: normal; font-size: .92rem; color: var(--ink-2); line-height: 1.8; margin-top: 8px; }
+    .policy-address a { color: var(--green); }
+
+    /* ── Alert margin ── */
+    .mt-9 { margin-top: 36px; }
   </style>
 </head>
 <body>
@@ -115,27 +144,22 @@
             <ul>
               <li><strong>Other government ministries, departments &amp; agencies</strong> — where your request requires their involvement (e.g. referring a complaint to the relevant MDA).</li>
               <li><strong>Law enforcement &amp; security agencies</strong> — if required by law or a valid court order.</li>
-              <li><strong>Technical service providers</strong> — hosting, email delivery and translation services, all subject to data processing agreements consistent with the NDPR.</li>
-              <li><strong>Google Translate</strong> — if you use the translation feature, the page text is transmitted to Google Cloud Translation API. See Google's privacy policy for details.</li>
-              <li><strong>Anti-spam protection</strong> — all public forms (Contact, FOI and SERVICOM) use invisible, privacy-preserving anti-spam measures: a hidden honeypot field that automated bots fill but human visitors never see; a submission-timing check that rejects unrealistically fast completions; and server-side rate limiting that prevents flood attacks. No data is transmitted to any third-party service. No CAPTCHA puzzle is presented to users. Rejected submissions are logged using a one-way hashed IP address — the raw address is never stored.</li>
+              <li><strong>Technical service providers</strong> — hosting and translation services, all subject to data processing agreements consistent with the NDPR.</li>
+              <li><strong>Microsoft Azure Translator</strong> — if you use the translation feature, the page text is transmitted to the Microsoft Azure Translator API. See <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener">Microsoft's privacy statement</a> for details.</li>
+              <li><strong>Anti-spam protection</strong> — all public forms (Contact, FOI and SERVICOM) use privacy-preserving anti-spam measures: a visible slider-puzzle CAPTCHA (drag a piece into a gap) that runs entirely in your browser with no data sent to any third party; a hidden honeypot field that automated bots fill but human visitors never see; a submission-timing check that rejects unrealistically fast completions; and server-side rate limiting that prevents flood attacks. Rejected submissions are logged using a one-way hashed IP address — the raw IP address is never stored.</li>
             </ul>
             <p>We do not transfer personal data outside Nigeria except where a legal gateway under the NDPA 2023 applies (e.g. adequacy decision or standard contractual clauses).</p>
 
             <h2 id="retention">6. How long we keep your data</h2>
-            <table style="width:100%; border-collapse:collapse; font-size:.88rem; margin-top:12px;">
-              <thead>
-                <tr style="background:var(--ink); color:#fff;">
-                  <th style="padding:10px 14px; text-align:left;">Data type</th>
-                  <th style="padding:10px 14px; text-align:left;">Retention period</th>
-                </tr>
-              </thead>
+            <table class="retention-table" aria-label="Data retention periods">
+              <thead><tr><th>Data type</th><th>Retention period</th></tr></thead>
               <tbody>
-                <tr style="border-bottom:1px solid var(--paper-3);"><td style="padding:10px 14px;">General correspondence</td><td style="padding:10px 14px;">3 years</td></tr>
-                <tr style="border-bottom:1px solid var(--paper-3); background:var(--paper-2);"><td style="padding:10px 14px;">FOI requests</td><td style="padding:10px 14px;">7 years (statutory requirement)</td></tr>
-                <tr style="border-bottom:1px solid var(--paper-3);"><td style="padding:10px 14px;">SERVICOM complaints</td><td style="padding:10px 14px;">3 years</td></tr>
-                <tr style="border-bottom:1px solid var(--paper-3); background:var(--paper-2);"><td style="padding:10px 14px;">Job applications (unsuccessful)</td><td style="padding:10px 14px;">12 months</td></tr>
-                <tr style="border-bottom:1px solid var(--paper-3);"><td style="padding:10px 14px;">Newsletter subscriptions</td><td style="padding:10px 14px;">Until you unsubscribe</td></tr>
-                <tr style="background:var(--paper-2);"><td style="padding:10px 14px;">Server / access logs</td><td style="padding:10px 14px;">90 days</td></tr>
+                <tr><td>General correspondence</td><td>3 years</td></tr>
+                <tr><td>FOI requests</td><td>7 years (statutory requirement)</td></tr>
+                <tr><td>SERVICOM complaints</td><td>3 years</td></tr>
+                <tr><td>Job applications (unsuccessful)</td><td>12 months</td></tr>
+                <tr><td>Newsletter subscriptions</td><td>Until you unsubscribe</td></tr>
+                <tr><td>Server / access logs</td><td>90 days</td></tr>
               </tbody>
             </table>
 
@@ -145,7 +169,7 @@
               <li><strong>Session cookie</strong> (<code>mod_session</code>) — stores your current session state (e.g. language choice). Deleted when you close your browser. <em>Strictly necessary.</em></li>
               <li><strong>Accessibility preferences</strong> (<code>mod_a11y</code>) — remembers text-size and contrast settings. 12-month expiry. <em>Strictly necessary / functional.</em></li>
               <li><strong>Language preference</strong> (<code>mod_lang</code>) — remembers your chosen display language. 12-month expiry. <em>Functional.</em></li>
-              <li><strong>Google Translate</strong> — Google sets its own cookies if you use the translation feature. These are third-party cookies governed by Google's own cookie policy.</li>
+              <li><strong>Microsoft Azure Translator</strong> — page text is sent to the Microsoft Azure Translator API when you use the translation dropdown. No cookies are set by Microsoft on this site. Translations are cached in your browser's local storage only.</li>
             </ul>
             <p>You can disable cookies in your browser settings. Disabling functional cookies means your language and accessibility preferences will not be saved between visits.</p>
 
@@ -177,14 +201,14 @@
 
             <h2 id="complaints">13. Complaints &amp; regulatory authority</h2>
             <p>If you are unhappy with how we have handled your personal data, you may lodge a complaint with the <strong>Nigeria Data Protection Commission (NDPC)</strong>:</p>
-            <address style="font-style:normal; font-size:.92rem; color:var(--ink-2); line-height:1.8; margin-top:8px;">
+            <address class="policy-address">
               Nigeria Data Protection Commission<br>
               No. 5 Donau Crescent, off Amazon Street<br>
               Maitama District, Abuja<br>
               <a href="mailto:info@ndpc.gov.ng">info@ndpc.gov.ng</a> · <a href="https://ndpc.gov.ng" target="_blank" rel="noopener">ndpc.gov.ng</a>
             </address>
 
-            <div class="alert gold" style="margin-top:36px;">
+            <div class="alert gold mt-9">
               <strong>Contact our Data Protection Officer.</strong> For any privacy question or to exercise your rights, email <a href="mailto:dpo@defence.gov.ng">dpo@defence.gov.ng</a> or write to the DPO, Federal Ministry of Defence, Ship House, Area 10, Abuja. We aim to respond within <strong>30 calendar days</strong>.
             </div>
 
@@ -211,12 +235,12 @@
               </ol>
             </div>
 
-            <div style="margin-top:20px; background:var(--paper-2); border-radius:var(--radius); padding:20px; font-size:.86rem; color:var(--ink-2);">
-              <strong style="color:var(--ink); display:block; margin-bottom:8px;">Related pages</strong>
-              <ul style="padding-left:16px; margin:0;">
-                <li style="margin-bottom:6px;"><a href="foi.html">Freedom of Information</a></li>
-                <li style="margin-bottom:6px;"><a href="accessibility.html">Accessibility</a></li>
-                <li style="margin-bottom:6px;"><a href="sla.html">Service Level Agreement</a></li>
+            <div class="policy-related">
+              <strong>Related pages</strong>
+              <ul>
+                <li><a href="foi.html">Freedom of Information</a></li>
+                <li><a href="accessibility.html">Accessibility</a></li>
+                <li><a href="sla.html">Service Level Agreement</a></li>
                 <li><a href="contact.html">Contact us</a></li>
               </ul>
             </div>
@@ -234,8 +258,7 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>

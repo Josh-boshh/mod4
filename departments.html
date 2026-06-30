@@ -6,12 +6,194 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Departments — Federal Ministry of Defence</title>
   <meta name="description" content="The civilian departments of the Federal Ministry of Defence — Army Affairs, Navy Affairs, Air Force Affairs, Joint Services, Finance, Procurement and more." />
+  <link rel="canonical" href="https://defence.gov.ng/departments.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Departments — Federal Ministry of Defence" />
+  <meta property="og:description" content="Sixteen departments make up the civilian side of the Federal Ministry of Defence, each led by a Director reporting to the Permanent Secretary." />
+  <meta property="og:url" content="https://defence.gov.ng/departments.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Filter tabs ── */
+    .dept-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .dept-tab {
+      padding: 7px 20px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border, #e0e0d8);
+      background: transparent;
+      color: var(--text-2, #555);
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .18s, color .18s, border-color .18s;
+    }
+    .dept-tab:hover,
+    .dept-tab.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    /* ── Dept grid ── */
+    .dept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* ── Dept card ── */
+    .dept-card {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line, #e8e8e0);
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .25s, transform .25s, border-color .25s;
+      cursor: pointer;
+    }
+    .dept-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.10);
+      border-color: var(--green);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Green accent bar at top */
+    .dept-card-accent {
+      height: 4px;
+      background: var(--green);
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .dept-card-accent.orange { background: #c45c00; }
+    .dept-card-accent.navy  { background: #1a3a6b; }
+
+    .dept-card-body {
+      padding: 24px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    /* Icon circle */
+    .dept-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--green-soft, #e6f4ed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+    .dept-card-icon svg { width: 20px; height: 20px; }
+
+    .dept-card-num {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 2px;
+    }
+
+    .dept-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 0;
+      color: var(--text-1, #111);
+    }
+
+    .dept-card-lead {
+      font-size: .82rem;
+      color: var(--text-3, #777);
+      line-height: 1.55;
+      flex-grow: 1;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Director strip at bottom */
+    .dept-card-footer {
+      border-top: 1px solid var(--line, #e8e8e0);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--paper-2, #fafaf6);
+    }
+    .dept-card-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .dept-card-director {
+      font-size: .75rem;
+      color: var(--text-2, #555);
+      line-height: 1.3;
+    }
+    .dept-card-director strong {
+      display: block;
+      color: var(--text-1, #111);
+      font-weight: 600;
+      font-size: .77rem;
+    }
+
+    /* Arrow caret */
+    .dept-card-arrow {
+      margin-left: auto;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+      font-size: 1.1rem;
+    }
+    .dept-card:hover .dept-card-arrow { opacity: 1; transform: translateX(3px); }
+
+    /* ── Count ── */
+    .dept-count {
+      font-size: .8rem;
+      color: var(--text-3, #777);
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) { .dept-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px) { .dept-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -22,94 +204,17 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>Components<span>›</span>Civilian Departments</div>
         <span class="eyebrow">Components of MOD</span>
         <h1>Civilian departments.</h1>
-        <p class="lead">Sixteen departments make up the civilian side of the Federal Ministry of Defence — each led by a Director reporting to the Permanent Secretary, supporting the political leadership in driving the Ministry's mandate.</p>
+        <p class="lead">Sixteen departments make up the civilian side of the Federal Ministry of Defence — each led by a Director reporting to the Permanent Secretary.</p>
       </div>
     </section>
 
     <section>
       <div class="container">
-        <div class="grid grid-3">
-          <a href="#army-affairs" class="card" id="army-affairs">
-            <div class="index">01</div>
-            <h3>Army Affairs</h3>
-            <p>Coordinates policy, finance and welfare matters between the Ministry and the Nigerian Army. Director: Mr. SM Attah.</p>
-          </a>
-          <a href="#navy-affairs" class="card" id="navy-affairs">
-            <div class="index">02</div>
-            <h3>Navy Affairs</h3>
-            <p>Coordinates policy, finance and welfare matters between the Ministry and the Nigerian Navy. Director: Mr. Joel Adeoye Christopher.</p>
-          </a>
-          <a href="#airforce-affairs" class="card" id="airforce-affairs">
-            <div class="index">03</div>
-            <h3>Air Force Affairs</h3>
-            <p>Coordinates policy, finance and welfare matters between the Ministry and the Nigerian Air Force. Director: Dr. Ahmad Ibrahim Sulaiman.</p>
-          </a>
-          <a href="#joint-services" class="card" id="joint-services">
-            <div class="index">04</div>
-            <h3>Joint Services</h3>
-            <p>Coordinates tri-service operations, joint task forces and combined exercises. Director: Mrs. B.O. Olaniyi.</p>
-          </a>
-          <a href="#hrm" class="card" id="hrm">
-            <div class="index">05</div>
-            <h3>Human Resource Management</h3>
-            <p>Recruitment, promotion, discipline, training, welfare and pensions for Ministry civilian staff. Director: Mal. Idris Shehu Gaya, mni.</p>
-          </a>
-          <a href="#finance" class="card" id="finance">
-            <div class="index">06</div>
-            <h3>Finance and Accounts</h3>
-            <p>Budget preparation, payments, financial reporting and treasury management. Director: Mr. Afolabi Idowu Omoniwa.</p>
-          </a>
-          <a href="#procurement" class="card" id="procurement">
-            <div class="index">07</div>
-            <h3>Procurement</h3>
-            <p>Open, competitive tendering in line with the Public Procurement Act 2007. Director: Mr. Otalike P. Yahaya.</p>
-          </a>
-          <a href="#prs" class="card" id="prs">
-            <div class="index">08</div>
-            <h3>Planning, Research & Statistics</h3>
-            <p>Defence policy research, strategic planning, monitoring and evaluation. Director: Alh. Abdulrahman Suleiman.</p>
-          </a>
-          <a href="#legal" class="card" id="legal">
-            <div class="index">09</div>
-            <h3>Legal Services</h3>
-            <p>Legal advisory, contracts, treaties and dispute resolution. Director: Barr. Adebola Odugbesa.</p>
-          </a>
-          <a href="#health" class="card" id="health">
-            <div class="index">10</div>
-            <h3>Health Services</h3>
-            <p>Military healthcare policy, medical reciprocity and the Ministry's medical interventions. Director: Dr. Jibrin Alhassan.</p>
-          </a>
-          <a href="#general" class="card" id="general">
-            <div class="index">11</div>
-            <h3>General Services</h3>
-            <p>Estate, facilities, transport, security and protocol for the Ministry HQ. Director: Uwaneyi Raymond Erurane.</p>
-          </a>
-          <a href="#info" class="card" id="info">
-            <div class="index">12</div>
-            <h3>Information, Press & Public Relations</h3>
-            <p>Public communications, press releases, media accreditation and citizen engagement. Director: Mr. Henshaw Ogubike.</p>
-          </a>
-          <a href="#education" class="card" id="education">
-            <div class="index">13</div>
-            <h3>Education Services</h3>
-            <p>Liaison with the NDA, AFCSC, NDC and other Defence training institutions. Director: Mr. Kura Markus.</p>
-          </a>
-          <a href="#audit" class="card" id="audit">
-            <div class="index">14</div>
-            <h3>Internal Audit</h3>
-            <p>Independent assurance over financial controls and value for money. Director: Mrs. Gloria Okopi.</p>
-          </a>
-          <a href="#reforms" class="card" id="reforms">
-            <div class="index">15</div>
-            <h3>Reform Coordination & Service Improvement</h3>
-            <p>Implementation of public service reform and SERVICOM commitments. Director: Nneji Nkiru Florence.</p>
-          </a>
-          <a href="#ops" class="card" id="ops">
-            <div class="index">16</div>
-            <h3>Office of the Permanent Secretary</h3>
-            <p>Direct administrative support to the Permanent Secretary; secretariat of the Ministry's senior management.</p>
-          </a>
-        </div>
+        <!-- Category tabs -->
+        <div class="dept-tabs" id="dept-tabs"></div>
+        <p class="dept-count" id="dept-count"></p>
+        <!-- Cards grid -->
+        <div class="dept-grid" id="dept-grid"></div>
       </div>
     </section>
   </main>
@@ -119,12 +224,157 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/departments-data.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var activeTab = 'All';
+
+    // Department icons mapped by slug
+    var ICONS = {
+      'army-affairs':       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      'navy-affairs':       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l1.5-9L12 3l7.5 5L21 17H3z"/><path d="M12 3v14"/></svg>',
+      'air-force-affairs':  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 1 16.5 2.5L13 6 4.8 4.2 3.4 5.6 8 10l-2 2-2.5-.5L2 13l3 2 2 3 1.5-1.5L8 14l2-2 4.5 4.5 1.4-1.4z"/></svg>',
+      'joint-services':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>',
+      'human-resources':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      'finance-accounts':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+      'procurement-dept':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+      'prs':                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      'legal':              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22V2"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><path d="M7 7l-5 5 5 5"/><path d="M17 7l5 5-5 5"/></svg>',
+      'health-services':    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+      'general-services':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>',
+      'public-relations':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      'education-services': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+      'internal-audit':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+      'reform-coordination':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+      'permanent-secretary':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+    };
+
+    // Accent colour per category
+    var ACCENT = {
+      'Civilian Component':    'green',
+      'Civilian Component II': 'navy',
+      'Office of Direction':   'orange',
+    };
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function initials(name) {
+      return (name || '').split(' ').filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+    }
+
+    function buildDepts() {
+      var data = window.MOD_DEPARTMENTS || {};
+      var keys = Object.keys(data);
+      // Permanent Secretary always first
+      keys.sort(function (a, b) {
+        if (a === 'permanent-secretary') return -1;
+        if (b === 'permanent-secretary') return  1;
+        return 0;
+      });
+      return keys.map(function (slug, i) {
+        var d = data[slug];
+        return {
+          slug:     slug,
+          num:      String(i + 1).padStart(2, '0'),
+          name:     d.name,
+          category: d.category,
+          director: d.director,
+          role:     d.role,
+          lead:     d.lead,
+          icon:     ICONS[slug] || ICONS['general-services'],
+          accent:   ACCENT[d.category] || 'green',
+        };
+      });
+    }
+
+    var ALL_DEPTS = [];
+
+    function applyDbOverrides(dbDirectors) {
+      if (dbDirectors && window.MOD_DEPARTMENTS) {
+        Object.keys(dbDirectors).forEach(function (slug) {
+          if (window.MOD_DEPARTMENTS[slug]) {
+            var ov = dbDirectors[slug];
+            if (ov.director)  window.MOD_DEPARTMENTS[slug].director  = ov.director;
+            if (ov.role)      window.MOD_DEPARTMENTS[slug].role      = ov.role;
+            if (ov.photo_url) window.MOD_DEPARTMENTS[slug].photo     = ov.photo_url;
+          }
+        });
+      }
+      ALL_DEPTS = buildDepts();
+      renderTabs();
+      renderGrid();
+    }
+
+    fetch('/api/directors')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { applyDbOverrides(d.directors || {}); })
+      .catch(function () { ALL_DEPTS = buildDepts(); renderTabs(); renderGrid(); });
+
+    function renderTabs() {
+      var cats = ['All'];
+      ALL_DEPTS.forEach(function (d) {
+        if (cats.indexOf(d.category) === -1) cats.push(d.category);
+      });
+      var tabsEl = document.getElementById('dept-tabs');
+      tabsEl.innerHTML = '';
+      cats.forEach(function (cat) {
+        var btn = document.createElement('button');
+        btn.className = 'dept-tab' + (cat === activeTab ? ' active' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', function () {
+          activeTab = cat;
+          renderTabs();
+          renderGrid();
+        });
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function renderGrid() {
+      var filtered = activeTab === 'All'
+        ? ALL_DEPTS
+        : ALL_DEPTS.filter(function (d) { return d.category === activeTab; });
+
+      document.getElementById('dept-count').textContent =
+        filtered.length + ' department' + (filtered.length === 1 ? '' : 's');
+
+      var grid = document.getElementById('dept-grid');
+      grid.innerHTML = filtered.map(function (d) {
+        return '<a class="dept-card" href="department.html?dept=' + esc(d.slug) + '" id="' + esc(d.slug) + '">' +
+          '<div class="dept-card-accent ' + esc(d.accent) + '"></div>' +
+          '<div class="dept-card-body">' +
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">' +
+              '<div class="dept-card-icon">' + (d.icon || '') + '</div>' +
+              '<span class="dept-card-num">' + esc(d.num) + '</span>' +
+            '</div>' +
+            '<h3>' + esc(d.name) + '</h3>' +
+            '<p class="dept-card-lead">' + esc(d.lead) + '</p>' +
+          '</div>' +
+          '<div class="dept-card-footer">' +
+            '<div class="dept-card-avatar">' + esc(initials(d.director)) + '</div>' +
+            '<div class="dept-card-director">' +
+              '<strong>' + esc(d.director) + '</strong>' +
+              esc(d.role) +
+            '</div>' +
+            '<span class="dept-card-arrow">›</span>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+  }());
+  </script>
 </body>
 </html>
-

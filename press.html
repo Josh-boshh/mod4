@@ -5,13 +5,144 @@
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Press Releases — Federal Ministry of Defence</title>
-  <meta name="description" content="Press releases, speeches and communiques issued by the Federal Ministry of Defence." />
+  <meta name="description" content="Press releases, speeches and official statements from the Federal Ministry of Defence." />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Filter bar ── */
+    .press-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+      align-items: center;
+    }
+    .press-filter-btn {
+      padding: 6px 18px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-2);
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s, color .18s, border-color .18s;
+      white-space: nowrap;
+    }
+    .press-filter-btn:hover,
+    .press-filter-btn.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    /* ── Search ── */
+    .press-search-wrap {
+      margin-left: auto;
+    }
+    .press-search {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-family: inherit;
+      font-size: .82rem;
+      color: var(--text-1);
+      outline: none;
+      width: 200px;
+      transition: border-color .18s, width .25s;
+    }
+    .press-search:focus {
+      border-color: var(--green);
+      width: 260px;
+    }
+
+    /* ── Articles ── */
+    .press-list { display: flex; flex-direction: column; gap: 0; }
+
+    .press-article {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .press-article:first-child { padding-top: 0; }
+    .press-article:last-child { border-bottom: none; }
+
+    .press-article .thumb {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--paper-3);
+      flex-shrink: 0;
+    }
+    .press-article .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+    .press-article:hover .thumb img { transform: scale(1.04); }
+    .press-article .press-body { display: flex; flex-direction: column; gap: 8px; }
+    .press-article .press-meta {
+      font-size: .72rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--green);
+      font-weight: 700;
+    }
+    .press-article h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      color: var(--text-1);
+    }
+    .press-article .excerpt {
+      font-size: .88rem;
+      color: var(--text-3);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .press-article .press-actions { display: flex; gap: 12px; margin-top: 4px; }
+
+    /* ── Count label ── */
+    .press-count {
+      font-size: .8rem;
+      color: var(--text-3);
+      margin-bottom: 24px;
+    }
+
+    /* ── Empty / loading ── */
+    .press-empty, .press-loading {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--text-3);
+      font-size: .95rem;
+    }
+    .press-loading-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .press-article { grid-template-columns: 1fr; }
+      .press-article .thumb { max-width: 100%; aspect-ratio: 16/9; }
+      .press-search-wrap { margin-left: 0; width: 100%; }
+      .press-search { width: 100%; }
+      .press-search:focus { width: 100%; }
+    }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -19,92 +150,81 @@
   <main id="main">
     <section class="page-hero">
       <div class="container">
-        <div class="crumbs"><a href="index.html">Home</a><span>›</span>News & Media<span>›</span>Press</div>
-        <span class="eyebrow">News & Media</span>
+        <div class="crumbs"><a href="index.html">Home</a><span>›</span>News &amp; Media<span>›</span>Press</div>
+        <span class="eyebrow">News &amp; Media</span>
         <h1>From the Press Office.</h1>
-        <p class="lead">Press releases, speeches and official statements from the Federal Ministry of Defence. Headlines and excerpts shown here are mirrored from <a href="https://defence.gov.ng" target="_blank" rel="noopener">defence.gov.ng</a> (verified May 2026).</p>
+        <p class="lead">Press releases, speeches and official statements from the Federal Ministry of Defence.</p>
       </div>
     </section>
 
     <section>
       <div class="container">
 
-        <article id="defence-minister-pledges-amce" style="margin-bottom:64px; padding-bottom:48px; border-bottom: 1px solid var(--line);">
-          <div class="news-feature">
-            <div class="thumb"><img src="https://defence.gov.ng/wp-content/uploads/slider/cache/5c91a2fb5a3c3d7d91aa26fb98ea005d/WhatsApp-Image-2026-05-08-at-09.51.56.jpg" alt=""></div>
-            <div class="date">11 May 2026 · Press Office</div>
-            <h3>Defence Minister pledges to boost military healthcare, reduce medical tourism during AMCE visit</h3>
-            <p class="excerpt">The Honourable Minister of Defence, General Christopher Gwabin Musa (rtd), has pledged the Ministry's commitment to strengthening military healthcare and reducing medical tourism, during a working visit to the African Medical Centre of Excellence in Abuja.</p>
-            <a href="https://defence.gov.ng/2026/05/11/defence-minister-pledges-to-boost-military-healthcare-reduce-medical-tourism-during-amce-visit/" target="_blank" rel="noopener" class="btn-link">Read on defence.gov.ng</a>
+        <!-- Filters + search -->
+        <div class="press-filters" id="press-filters">
+          <!-- populated by JS -->
+          <div class="press-search-wrap">
+            <input class="press-search" id="press-search" type="search" placeholder="Search releases…" aria-label="Search press releases" />
           </div>
-        </article>
+        </div>
 
-        <article id="icrc-humanitarian" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">08 May 2026 · Press Office</div>
-          <h3>Defence Minister commends ICRC for humanitarian services in the country</h3>
-          <p style="color:var(--ink-3);">The Honourable Minister has commended the International Committee of the Red Cross (ICRC) for its sustained humanitarian engagement across Nigeria, particularly in conflict-affected communities.</p>
-          <a href="https://defence.gov.ng/2026/05/08/defence-minister-commends-icrc-for-humanitarian-services-in-the-country/" target="_blank" rel="noopener" class="btn-link">Read on defence.gov.ng</a>
-        </article>
+        <!-- Result count -->
+        <p class="press-count" id="press-count"></p>
 
-        <article id="regional-security-meeting" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">06 May 2026 · Regional Security</div>
-          <h3>Defence Minister participates in regional security meeting</h3>
-          <p style="color:var(--ink-3);">Reaffirming Nigeria's commitment to regional cooperation and collective security, the Honourable Minister joined counterparts from the West African sub-region for a high-level consultation on emerging threats.</p>
-          <a href="https://defence.gov.ng/2026/05/06/defence-minister-participates-in-regional-security-meeting/" target="_blank" rel="noopener" class="btn-link">Read on defence.gov.ng</a>
-        </article>
+        <!-- Loading state -->
+        <div class="press-loading" id="press-loading">
+          <div class="press-loading-spinner"></div>
+          Loading press releases…
+        </div>
 
-        <article id="prestigious-fellowship" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">06 May 2026 · Recognition</div>
-          <h3>Defence Minister conferred with prestigious fellowship</h3>
-          <p style="color:var(--ink-3);">The Ministry has welcomed the conferment of an Honorary Fellowship on the Honourable Minister in recognition of his contributions to national security and defence reform.</p>
-          <a href="https://defence.gov.ng/2026/05/06/defence-minister-conferred-with-prestigious-fellowship/" target="_blank" rel="noopener" class="btn-link">Read on defence.gov.ng</a>
-        </article>
+        <!-- Articles list -->
+        <div class="press-list" id="press-list" style="display:none;"></div>
 
-        <article id="musa-students-security" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">05 May 2026 · National Security</div>
-          <h3>Gen. Musa urges Nigerian students to play active role in national security</h3>
-          <p style="color:var(--ink-3);">The Honourable Minister urged Nigerian students and youth to take ownership of the national security conversation through civic responsibility, intelligence sharing and lawful conduct.</p>
-          <a href="https://defence.gov.ng/2026/05/05/gen-musa-urges-nigerian-students-to-play-active-role-in-national-security/" target="_blank" rel="noopener" class="btn-link">Read on defence.gov.ng</a>
-        </article>
-
-        <article id="veritas-university" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">05 May 2026 · Civil–Military</div>
-          <h3>Hon. Minister receives the Veritas University Political Science delegation</h3>
-          <p style="color:var(--ink-3);">The Honourable Minister received a delegation from the Department of Political Science and Diplomacy of Veritas University at Ship House, Abuja, for a courtesy and research engagement.</p>
-        </article>
-
-        <article id="three-committees-inaugurated" style="margin-bottom:48px; padding-bottom:36px; border-bottom: 1px solid var(--line);">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">30 April 2026 · Reform</div>
-          <h3>Hon. Minister inaugurates three committees at Ship House</h3>
-          <p style="color:var(--ink-3);">Three strategic committees were inaugurated at the Ministry's Conference Room, Ship House, Abuja, on Wednesday, 29 April 2026, in furtherance of the Ministry's reform agenda.</p>
-        </article>
-
-        <article id="strategic-committees-security-veterans">
-          <div class="date" style="font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:12px;">30 April 2026 · Veterans</div>
-          <h3>Defence Ministry inaugurates strategic committees to strengthen national security and veterans welfare</h3>
-          <p style="color:var(--ink-3);">Strategic committees aimed at strengthening national security architecture and improving the welfare and resettlement of veterans of the Armed Forces have been inaugurated.</p>
-        </article>
+        <!-- Empty state -->
+        <div class="press-empty" id="press-empty" style="display:none;">
+          No press releases found for this filter.
+        </div>
 
       </div>
     </section>
 
+    <!-- Speeches -->
     <section class="cream" id="speeches">
       <div class="container">
-        <div class="section-head"><span class="eyebrow">Speeches</span><h2>Statements from the Minister.</h2></div>
+        <div class="section-head">
+          <span class="eyebrow">Speeches</span>
+          <h2>Statements from the Minister.</h2>
+        </div>
         <div class="grid grid-3">
-          <div class="card"><div class="index">Assumption of Duty</div><h3>"The protection of Nigeria's territorial integrity is non-negotiable."</h3><p>Address to officials of the Ministry on assumption of duty as Honourable Minister of Defence.</p></div>
-          <div class="card"><div class="index">National Security</div><h3>"Every Nigerian has a role in national security."</h3><p>Remarks to the Veritas University delegation, Ship House, May 2026.</p></div>
-          <div class="card"><div class="index">Regional</div><h3>"Collective security in West Africa is a Nigerian priority."</h3><p>Statement at the West African Defence Ministers' regional security meeting, May 2026.</p></div>
+          <div class="card">
+            <div class="index">Assumption of Duty</div>
+            <h3>"The protection of Nigeria's territorial integrity is non-negotiable."</h3>
+            <p>Address to officials of the Ministry on assumption of duty as Honourable Minister of Defence.</p>
+          </div>
+          <div class="card">
+            <div class="index">National Security</div>
+            <h3>"Every Nigerian has a role in national security."</h3>
+            <p>Remarks to the Veritas University delegation, Ship House, May 2026.</p>
+          </div>
+          <div class="card">
+            <div class="index">Regional</div>
+            <h3>"Collective security in West Africa is a Nigerian priority."</h3>
+            <p>Statement at the West African Defence Ministers' regional security meeting, May 2026.</p>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- Communiques -->
     <section id="communiques">
       <div class="container">
-        <div class="section-head"><span class="eyebrow">Communiques</span><h2>Official communications.</h2></div>
-        <p>Official communiques issued by the Federal Ministry of Defence, after high-level engagements and inter-ministerial meetings, are published here.</p>
+        <div class="section-head">
+          <span class="eyebrow">Communiques</span>
+          <h2>Official communications.</h2>
+        </div>
+        <p>Official communiques issued by the Federal Ministry of Defence after high-level engagements and inter-ministerial meetings are published here.</p>
         <ul style="margin-top:20px;">
-          <li><strong>Communique 01 / 2026:</strong> Strategic Committees on National Security & Veterans Welfare (29 April 2026).</li>
+          <li><strong>Communique 01 / 2026:</strong> Strategic Committees on National Security &amp; Veterans Welfare (29 April 2026).</li>
           <li><strong>Communique 02 / 2026:</strong> Regional security meeting outcomes (06 May 2026).</li>
         </ul>
       </div>
@@ -116,12 +236,164 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var allPress      = [];
+    var activeCategory = 'All';
+    var searchQuery    = '';
+
+    var filtersEl  = document.getElementById('press-filters');
+    var listEl     = document.getElementById('press-list');
+    var loadingEl  = document.getElementById('press-loading');
+    var emptyEl    = document.getElementById('press-empty');
+    var countEl    = document.getElementById('press-count');
+    var searchEl   = document.getElementById('press-search');
+
+    /* ── Helpers ── */
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+      });
+    }
+
+    /* ── Load data from MOD_STORE (DB → localStorage → realdata.js fallback) ── */
+    function load() {
+      if (window.MOD_STORE) {
+        allPress = window.MOD_STORE.press() || [];
+      }
+      if (!allPress.length && window.MOD_DATA && window.MOD_DATA.PRESS) {
+        allPress = window.MOD_DATA.PRESS;
+      }
+      render();
+    }
+
+    /* ── Filter buttons ── */
+    function renderFilters() {
+      // collect unique categories
+      var cats = ['All'];
+      allPress.forEach(function (p) {
+        if (p.category && cats.indexOf(p.category) === -1) cats.push(p.category);
+      });
+
+      // remove old filter buttons (keep the search wrapper)
+      var existing = filtersEl.querySelectorAll('.press-filter-btn');
+      existing.forEach(function (b) { b.parentNode.removeChild(b); });
+
+      // insert filter buttons before the search wrapper
+      var searchWrap = filtersEl.querySelector('.press-search-wrap');
+      cats.forEach(function (cat) {
+        var btn = document.createElement('button');
+        btn.className = 'press-filter-btn' + (cat === activeCategory ? ' active' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', function () {
+          activeCategory = cat;
+          renderFilters();
+          renderList();
+        });
+        filtersEl.insertBefore(btn, searchWrap);
+      });
+    }
+
+    /* ── Article list ── */
+    function renderList() {
+      var q = searchQuery.trim().toLowerCase();
+
+      var filtered = allPress.filter(function (p) {
+        var matchCat = activeCategory === 'All' || p.category === activeCategory;
+        var matchQ   = !q ||
+          (p.title   && p.title.toLowerCase().indexOf(q)   !== -1) ||
+          (p.excerpt && p.excerpt.toLowerCase().indexOf(q) !== -1) ||
+          (p.category && p.category.toLowerCase().indexOf(q) !== -1);
+        return matchCat && matchQ;
+      });
+
+      // count label
+      countEl.textContent = filtered.length
+        ? filtered.length + ' release' + (filtered.length === 1 ? '' : 's')
+        : '';
+
+      if (!filtered.length) {
+        listEl.style.display  = 'none';
+        emptyEl.style.display = '';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      listEl.style.display  = '';
+
+      listEl.innerHTML = filtered.map(function (p) {
+        var imgHtml = p.img
+          ? '<div class="thumb"><img src="' + esc(p.img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" /></div>'
+          : '';
+
+        var articleUrl = 'press-release.html?slug=' + encodeURIComponent(p.slug || '');
+        var readLink = p.slug
+          ? '<a href="' + esc(articleUrl) + '" class="btn-link">Read full release →</a>'
+          : '';
+
+        return '<article id="' + esc(p.slug) + '" class="press-article">' +
+          imgHtml +
+          '<div class="press-body">' +
+            '<div class="press-meta">' + esc(p.date) + (p.category ? ' &middot; ' + esc(p.category) : '') + '</div>' +
+            '<h3>' + esc(p.title) + '</h3>' +
+            (p.excerpt ? '<p class="excerpt">' + esc(p.excerpt) + '</p>' : '') +
+            (readLink ? '<div class="press-actions">' + readLink + '</div>' : '') +
+          '</div>' +
+        '</article>';
+      }).join('');
+
+      /* ── Deep-link: scroll to #slug if hash matches ── */
+      var hash = window.location.hash.replace('#', '');
+      if (hash) {
+        var target = document.getElementById(hash);
+        if (target) {
+          setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);
+        }
+      }
+    }
+
+    function render() {
+      loadingEl.style.display = 'none';
+      renderFilters();
+      renderList();
+    }
+
+    /* ── Search input ── */
+    searchEl.addEventListener('input', function () {
+      searchQuery = searchEl.value;
+      renderList();
+    });
+
+    /* ── Re-render when DB content arrives ── */
+    window.addEventListener('mod-content-updated', function () {
+      if (window.MOD_STORE) {
+        var fresh = window.MOD_STORE.press() || [];
+        if (fresh.length) {
+          allPress = fresh;
+          render();
+        }
+      }
+    });
+
+    /* ── Boot: wait for MOD_STORE to be ready or use what's available ── */
+    if (window.MOD_STORE) {
+      load();
+    } else {
+      // MOD_STORE may not be ready yet — wait for DOMContentLoaded + store init
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(load, 100);
+      });
+    }
+
+  }());
+  </script>
 </body>
 </html>
-

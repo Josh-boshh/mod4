@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Search — Federal Ministry of Defence</title>
   <meta name="description" content="Search the official website of the Federal Ministry of Defence." />
+  <link rel="canonical" href="https://defence.gov.ng/search.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Search — Federal Ministry of Defence" />
+  <meta property="og:description" content="Search the official website of the Federal Ministry of Defence." />
+  <meta property="og:url" content="https://defence.gov.ng/search.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,10 +21,57 @@
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
   <style>
-    .result { padding: 22px 0; border-bottom: 1px solid var(--line); }
-    .result h3 { font-size: 1.1rem; margin-bottom: 4px; }
-    .result .url { font-size:.78rem; color: var(--green); margin-bottom: 6px; }
-    .result p { color: var(--ink-3); font-size:.92rem; margin: 0; }
+    /* ── Search bar on this page ── */
+    .search-page-form {
+      display: flex;
+      gap: 10px;
+      margin: 28px 0 36px;
+    }
+    .search-page-input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-1);
+      background: var(--paper);
+      outline: none;
+      transition: border-color .18s;
+    }
+    .search-page-input:focus { border-color: var(--green); }
+    .search-page-btn {
+      padding: 12px 24px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .search-page-btn:hover { background: var(--green-2); }
+
+    /* ── Result items ── */
+    .search-result {
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .search-result:last-child { border-bottom: none; }
+    .search-result h3 { font-size: 1.05rem; margin: 0 0 4px; }
+    .search-result h3 a { color: var(--text-1); text-decoration: none; }
+    .search-result h3 a:hover { color: var(--green); }
+    .search-result .result-url { font-size: .78rem; color: var(--green); margin-bottom: 6px; }
+    .search-result p { color: var(--text-3); font-size: .9rem; margin: 0; line-height: 1.55; }
+    .search-result mark { background: var(--gold-soft); color: var(--ink); border-radius: 2px; padding: 0 2px; }
+
+    /* ── Meta / status ── */
+    .search-status { color: var(--text-3); font-size: .92rem; margin-bottom: 24px; }
+    .search-empty { text-align: center; padding: 48px 0; color: var(--text-3); }
+    .search-empty svg { width: 48px; height: 48px; margin: 0 auto 16px; display: block; opacity: .35; }
+    .search-placeholder { color: var(--text-3); font-size: .95rem; }
   </style>
 </head>
 <body>
@@ -28,54 +83,35 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>Search</div>
         <span class="eyebrow">Site Search</span>
         <h1>Search the Ministry.</h1>
-        <p class="lead">Use the <strong>search icon ( &#128269; )</strong> in the navigation bar at the top of this page to search across the entire website.</p>
+        <p class="lead" id="search-lead">Find pages, departments, services and publications across the Ministry website.</p>
       </div>
     </section>
 
     <section>
       <div class="container container-narrow">
-        <div id="searchResults"><p style="color:var(--ink-3); font-size:.95rem;">Results will appear here when you search using the bar in the navigation above.</p></div>
+
+        <!-- Standalone search bar (works without nav bar) -->
+        <form class="search-page-form" id="search-page-form" role="search" aria-label="Site search">
+          <input class="search-page-input"
+                 id="search-page-input"
+                 type="search"
+                 name="q"
+                 placeholder="Search for departments, services, publications…"
+                 autocomplete="off"
+                 aria-label="Search query" />
+          <button class="search-page-btn" type="submit">Search</button>
+        </form>
+
+        <!-- Status line -->
+        <p class="search-status" id="search-status"></p>
+
+        <!-- Results -->
+        <div id="search-results">
+          <p class="search-placeholder">Enter a search term above or use the search icon in the navigation bar.</p>
+        </div>
+
       </div>
     </section>
-
-    <script>
-      // Lightweight client-side search across known pages
-      const INDEX = [
-        { title: "Home", url: "index.html", body: "Federal Ministry of Defence Honourable Minister General Christopher Gwabin Musa" },
-        { title: "About the Ministry", url: "about.html", body: "About FMOD mandate mission vision 1958 history" },
-        { title: "Honourable Minister of Defence", url: "minister.html", body: "General Christopher Gwabin Musa rtd OFR profile" },
-        { title: "Honourable Minister of State", url: "minister-of-state.html", body: "Dr Bello Mohammed Matawalle MON" },
-        { title: "Management", url: "management.html", body: "Permanent Secretary Directors Jibrin Alhassan Henshaw Ogubike" },
-        { title: "Our Structure", url: "structure.html", body: "Organisational chart departments parastatals" },
-        { title: "Departments", url: "departments.html", body: "Army Affairs Navy Affairs Air Force Affairs Joint Services HRM Finance Procurement Legal Health" },
-        { title: "Components — Army, Navy, Air Force, DHQ", url: "military.html", body: "Nigerian Army Navy Air Force Defence Headquarters DHQ" },
-        { title: "Agencies — NDA, NDC, AFCSC, DICON, NAFRC, MPB, DIA", url: "agencies.html", body: "NDA NDC AFCSC DICON NAFRC MPB DIA tri-service" },
-        { title: "Joint Operations", url: "operations.html", body: "HADIN KAI FANSAN YAMMA DELTA SAFE SAFE HAVEN MNJTF" },
-        { title: "Press Releases", url: "press.html", body: "Press release speeches communiques news" },
-        { title: "Gallery", url: "gallery.html", body: "photos gallery events" },
-        { title: "Services", url: "services.html", body: "recruitment service charter downloads" },
-        { title: "Veterans", url: "veterans.html", body: "veterans pensions NAFRC MPB welfare" },
-        { title: "Procurement", url: "procurement.html", body: "tender bid procurement award BPP NOCOPO" },
-        { title: "Freedom of Information", url: "foi.html", body: "FOI freedom of information request" },
-        { title: "Contact", url: "contact.html", body: "contact address phone email ship house abuja" },
-        { title: "SERVICOM", url: "servicom.html", body: "SERVICOM service compact complaint" },
-        { title: "Accessibility", url: "accessibility.html", body: "accessibility WCAG screen reader" },
-      ];
-      const params = new URLSearchParams(location.search);
-      const q = (params.get("q") || "").toLowerCase().trim();
-      const out = document.getElementById("searchResults");
-      const input = document.getElementById("searchQuery");
-      if (q) {
-        input.value = params.get("q");
-        const matches = INDEX.filter(p => (p.title + " " + p.body).toLowerCase().includes(q));
-        if (matches.length === 0) {
-          out.innerHTML = `<p style="color:var(--ink-3);">No matches for <strong>${q}</strong>. Try a different keyword, or browse the <a href="sitemap.html">sitemap</a>.</p>`;
-        } else {
-          out.innerHTML = `<p style="color:var(--ink-3); margin-bottom:24px;">${matches.length} result${matches.length>1?'s':''} for <strong>${q}</strong>.</p>` +
-            matches.map(m => `<div class="result"><div class="url">${m.url}</div><h3><a href="${m.url}">${m.title}</a></h3><p>${m.body.slice(0, 140)}…</p></div>`).join("");
-        }
-      }
-    </script>
   </main>
 
   <div data-include="footer"></div>
@@ -85,10 +121,175 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  /* Search page — runs after all scripts and partials are loaded */
+  (function () {
+    'use strict';
+
+    /* ── Full site index — mirrors and extends partials.js SITE_INDEX ── */
+    var INDEX = [
+      { title: 'Home',                                    url: 'index.html',                  keys: 'home federal ministry defence welcome' },
+      { title: 'About the Ministry',                      url: 'about.html',                  keys: 'about fmod mandate mission vision history 1958 establishment' },
+      { title: 'Honourable Minister of Defence',          url: 'minister.html',               keys: 'minister christopher gwabin musa general profile biography rtd ofr' },
+      { title: 'Honourable Minister of State',            url: 'minister-of-state.html',      keys: 'minister state matawalle bello mohammed zamfara mon' },
+      { title: 'Management',                              url: 'management.html',             keys: 'management permanent secretary directors richard pheelangwah senior staff perm sec' },
+      { title: 'Our Structure',                           url: 'structure.html',              keys: 'structure organisational chart hierarchy departments parastatals' },
+      { title: 'Departments',                             url: 'departments.html',            keys: 'departments army navy air force joint services hrm finance procurement legal health education audit reforms' },
+      { title: 'Army Affairs',                            url: 'department.html?dept=army-affairs',       keys: 'army affairs department sm attah director' },
+      { title: 'Navy Affairs',                            url: 'department.html?dept=navy-affairs',       keys: 'navy affairs department joel christopher director' },
+      { title: 'Air Force Affairs',                       url: 'department.html?dept=air-force-affairs',  keys: 'air force affairs department sulaiman director' },
+      { title: 'Finance & Accounts',                      url: 'department.html?dept=finance-accounts',   keys: 'finance accounts budget treasury omoniwa director' },
+      { title: 'Procurement Department',                  url: 'department.html?dept=procurement-dept',   keys: 'procurement department yahaya director tenders bpp' },
+      { title: 'Legal Services',                          url: 'department.html?dept=legal',              keys: 'legal services odugbesa director contracts treaties' },
+      { title: 'Health Services',                         url: 'department.html?dept=health-services',    keys: 'health services alhassan director military hospitals medical' },
+      { title: 'Human Resources',                         url: 'department.html?dept=human-resources',   keys: 'human resources hrm gaya director recruitment staff' },
+      { title: 'Components — Army, Navy, Air Force, DHQ', url: 'military.html',               keys: 'military components nigerian army navy air force defence headquarters dhq cds' },
+      { title: 'Nigerian Army',                           url: 'military.html#army',          keys: 'nigerian army coas soldiers infantry land force' },
+      { title: 'Nigerian Navy',                           url: 'military.html#navy',          keys: 'nigerian navy cns maritime gulf of guinea fleet' },
+      { title: 'Nigerian Air Force',                      url: 'military.html#airforce',      keys: 'nigerian air force cas jets aircraft naf strike' },
+      { title: 'Defence Headquarters',                    url: 'military.html#dhq',           keys: 'defence headquarters dhq cds joint chiefs abuja oluyede' },
+      { title: 'Agencies & Parastatals',                  url: 'agencies.html',               keys: 'agencies parastatals nda ndc afcsc dicon nafrc mpb dia tri-service' },
+      { title: 'NDA — Nigerian Defence Academy',          url: 'agencies.html#nda',           keys: 'nda nigerian defence academy kaduna military university cadet officer' },
+      { title: 'NDC — National Defence College',          url: 'agencies.html#ndc',           keys: 'ndc national defence college abuja strategic studies' },
+      { title: 'AFCSC — Armed Forces Command & Staff College', url: 'agencies.html#afcsc',   keys: 'afcsc armed forces command staff college jaji tri-service' },
+      { title: 'DICON — Defence Industries Corporation',  url: 'agencies.html#dicon',         keys: 'dicon defence industries corporation manufacturing weapons ammunition kaduna' },
+      { title: 'NAFRC — Resettlement Centre',             url: 'agencies.html#nafrc',         keys: 'nafrc nigerian armed forces resettlement centre oshodi skills' },
+      { title: 'MPB — Military Pensions Board',           url: 'agencies.html#mpb',           keys: 'mpb military pensions board gratuity retired welfare' },
+      { title: 'DIA — Defence Intelligence Agency',       url: 'agencies.html#dia',           keys: 'dia defence intelligence agency abuja security assessments' },
+      { title: 'Joint Operations',                        url: 'operations.html',             keys: 'operations hadin kai fansan yamma delta safe safe haven whirl stroke udo ka mnjtf counter insurgency' },
+      { title: 'Press Releases',                          url: 'press.html',                  keys: 'press releases news speeches communiques media minister statements' },
+      { title: 'Gallery',                                 url: 'gallery.html',                keys: 'gallery photos events images ministerial ceremonies' },
+      { title: 'Services',                                url: 'services.html',               keys: 'services recruitment charter downloads citizen' },
+      { title: 'Recruitment & Careers',                   url: 'services.html#recruitment',   keys: 'recruitment careers jobs vacancies apply enlist join army navy air force' },
+      { title: 'Veterans & Welfare',                      url: 'veterans.html',               keys: 'veterans pensions nafrc mpb welfare discharged resettlement housing healthcare retired' },
+      { title: 'Procurement',                             url: 'procurement.html',            keys: 'procurement tender bid contract award bpp nocopo supplier rfq eoi open competitive' },
+      { title: 'Freedom of Information',                  url: 'foi.html',                    keys: 'foi freedom information request public record foia transparency' },
+      { title: 'Contact Us',                              url: 'contact.html',                keys: 'contact address phone email ship house abuja area 10 helpdesk' },
+      { title: 'SERVICOM Complaint',                      url: 'servicom.html',               keys: 'servicom complaint service quality compact citizen nigeria' },
+      { title: 'Annual Reports',                          url: 'annual-reports.html',         keys: 'annual report accounts budget performance procurement download pdf' },
+      { title: 'Service Level Agreement',                 url: 'sla.html',                    keys: 'sla service level agreement response time standards accountability' },
+      { title: 'Privacy Policy',                          url: 'privacy.html',                keys: 'privacy policy data protection ndpa ndpr cookies personal data dpo' },
+      { title: 'Accessibility',                           url: 'accessibility.html',          keys: 'accessibility wcag screen reader font size contrast disability' },
+      { title: 'Sitemap',                                 url: 'sitemap.html',                keys: 'sitemap all pages site map overview' },
+    ];
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function highlight(text, q) {
+      if (!q) return esc(text);
+      var idx = text.toLowerCase().indexOf(q.toLowerCase());
+      if (idx === -1) return esc(text);
+      return esc(text.slice(0, idx)) +
+             '<mark>' + esc(text.slice(idx, idx + q.length)) + '</mark>' +
+             esc(text.slice(idx + q.length));
+    }
+
+    function runSearch(q) {
+      q = q.trim().toLowerCase();
+      if (q.length < 2) return [];
+      return INDEX.filter(function (p) {
+        return (p.title + ' ' + p.keys).toLowerCase().indexOf(q) !== -1;
+      }).sort(function (a, b) {
+        var at = a.title.toLowerCase(), bt = b.title.toLowerCase();
+        if (at === q) return -1;
+        if (bt === q) return 1;
+        if (at.startsWith(q)) return -1;
+        if (bt.startsWith(q)) return 1;
+        return 0;
+      });
+    }
+
+    function render(q) {
+      var statusEl  = document.getElementById('search-status');
+      var resultsEl = document.getElementById('search-results');
+      var leadEl    = document.getElementById('search-lead');
+
+      if (!q || q.trim().length < 2) {
+        statusEl.textContent = '';
+        resultsEl.innerHTML  = '<p class="search-placeholder">Enter a search term above or use the search icon in the navigation bar.</p>';
+        return;
+      }
+
+      if (leadEl) leadEl.textContent = 'Results for "' + q + '"';
+      document.title = 'Search: ' + q + ' — Federal Ministry of Defence';
+
+      var matches = runSearch(q);
+
+      if (!matches.length) {
+        statusEl.textContent = '';
+        resultsEl.innerHTML =
+          '<div class="search-empty">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+            '<p>No results for <strong>' + esc(q) + '</strong>.</p>' +
+            '<p style="margin-top:8px;">Try a different keyword, or browse the <a href="sitemap.html">sitemap</a>.</p>' +
+          '</div>';
+        return;
+      }
+
+      statusEl.textContent = matches.length + ' result' + (matches.length > 1 ? 's' : '') + ' for "' + q + '"';
+
+      resultsEl.innerHTML = matches.map(function (p) {
+        return '<div class="search-result">' +
+          '<div class="result-url">' + esc(p.url) + '</div>' +
+          '<h3><a href="' + esc(p.url) + '">' + highlight(p.title, q) + '</a></h3>' +
+          '<p>' + esc(p.keys.split(' ').slice(0, 12).join(' ')) + '…</p>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* ── Boot: read ?q= from URL and run search ── */
+    function boot() {
+      var params = new URLSearchParams(location.search);
+      var q      = (params.get('q') || '').trim();
+      var input  = document.getElementById('search-page-input');
+
+      if (input && q) input.value = q;
+
+      // Also sync the nav bar input if it loaded
+      var navInput = document.getElementById('searchInput');
+      if (navInput && q) navInput.value = q;
+
+      render(q);
+
+      /* ── Handle form submission on this page ── */
+      var form = document.getElementById('search-page-form');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var val = (document.getElementById('search-page-input').value || '').trim();
+          if (val) {
+            history.replaceState(null, '', '?q=' + encodeURIComponent(val));
+            render(val);
+          }
+        });
+      }
+
+      /* ── Also handle live typing on this page ── */
+      var inp = document.getElementById('search-page-input');
+      if (inp) {
+        inp.addEventListener('input', function () {
+          var val = inp.value.trim();
+          if (val.length >= 2) render(val);
+          else render('');
+        });
+      }
+    }
+
+    /* Wait for partials (header) to be injected before booting */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  }());
+  </script>
 </body>
 </html>
-

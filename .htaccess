@@ -49,16 +49,16 @@
 
     # Content Security Policy
     # Allows: this origin, Google Fonts (CSS + fonts), Google Maps embed,
-    #         Google Translate API, inline styles/scripts used by the site.
+    #         Microsoft Azure Translator API, inline styles/scripts used by the site.
     # Adjust frame-src if you add other embeds.
     Header always set Content-Security-Policy "\
   default-src 'self'; \
-  script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://translate.googleapis.com https://www.gstatic.com; \
+  script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
   font-src 'self' https://fonts.gstatic.com; \
   img-src 'self' data: https:; \
-  frame-src https://www.google.com https://maps.google.com https://translate.googleapis.com; \
-  connect-src 'self' https://translate.googleapis.com; \
+  frame-src https://www.google.com https://maps.google.com; \
+  connect-src 'self' https://api.cognitive.microsofttranslator.com https://defence.gov.ng; \
   object-src 'none'; \
   base-uri 'self'; \
   form-action 'self'; \
@@ -127,6 +127,10 @@
   <FilesMatch "(^\.htaccess|config\.php|schema\.sql|setup\.php|\.env)$">
     Require all denied
   </FilesMatch>
+
+  # Block direct access to uploaded documents directory listing
+  RewriteCond %{REQUEST_URI} ^/assets/documents/?$
+  RewriteRule ^ - [F,L]
 
   # Block access to the admin directory from outside (restrict by IP in production)
   # Uncomment and set your office IP range:

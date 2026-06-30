@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Annual Reports — Federal Ministry of Defence</title>
   <meta name="description" content="Annual reports and performance reviews published by the Federal Ministry of Defence, Federal Republic of Nigeria." />
+  <link rel="canonical" href="https://defence.gov.ng/annual-reports.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Annual Reports — Federal Ministry of Defence" />
+  <meta property="og:description" content="Annual reports and performance reviews published by the Federal Ministry of Defence, Federal Republic of Nigeria." />
+  <meta property="og:url" content="https://defence.gov.ng/annual-reports.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,7 +21,7 @@
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
   <style>
-    /* ── Report listing table ── */
+    /* ── Report table ── */
     .report-table { width: 100%; border-collapse: collapse; margin-top: 28px; }
     .report-table thead tr { background: var(--ink); color: #fff; }
     .report-table thead th { padding: 14px 18px; text-align: left; font-size: .82rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
@@ -25,17 +33,30 @@
     .report-table .actions { text-align: right; white-space: nowrap; }
     .report-table .btn-sm { margin-left: 8px; }
     .report-table .tag { display: inline-flex; font-size: .75rem; padding: 3px 10px; border-radius: 20px; }
+    .tag-latest    { background: var(--gold-soft); color: var(--gold); font-weight: 700; }
+    .tag-published { background: var(--paper-3); color: var(--ink-2); }
+    .tag-pending   { background: var(--green-soft); color: var(--green); }
 
-    /* ── Summary stat strip ── */
+    /* ── Stat strip ── */
     .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 48px 0 12px; }
     .stat-strip .stat-box { background: var(--paper-2); border-radius: var(--radius); padding: 28px 24px; text-align: center; }
     .stat-strip .stat-box .num { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--green); line-height: 1; }
     .stat-strip .stat-box .lbl { font-size: .82rem; color: var(--ink-3); margin-top: 6px; text-transform: uppercase; letter-spacing: .06em; }
-    @media (max-width: 640px) { .stat-strip { grid-template-columns: 1fr; } }
 
-    /* ── Archive note box ── */
+    /* ── Archive note ── */
     .archive-note { background: var(--paper-2); border-left: 4px solid var(--gold); border-radius: var(--radius); padding: 20px 24px; margin-top: 40px; font-size: .92rem; color: var(--ink-2); }
     .archive-note strong { color: var(--ink); }
+
+    /* ── Contact block ── */
+    .contact-address { font-style: normal; line-height: 1.8; color: var(--ink-2); font-size: .92rem; }
+    .contact-address a { color: var(--green); }
+
+    /* ── Loading ── */
+    .reports-loading { text-align: center; padding: 40px 0; color: var(--text-3); }
+    .reports-spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) { .stat-strip { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -56,7 +77,7 @@
 
         <!-- Stat strip -->
         <div class="stat-strip">
-          <div class="stat-box"><div class="num">11</div><div class="lbl">Reports published</div></div>
+          <div class="stat-box"><div class="num" id="stat-count">—</div><div class="lbl">Reports published</div></div>
           <div class="stat-box"><div class="num">100%</div><div class="lbl">Open access — free to download</div></div>
           <div class="stat-box"><div class="num">30</div><div class="lbl">Days after year-end (target)</div></div>
         </div>
@@ -65,9 +86,16 @@
           <div>
             <span class="eyebrow">Reports Library</span>
             <h2>Download a report.</h2>
-            <p>All reports are published in PDF format. Use the table below to download the version you need. Reports from 2014 onwards are available here; earlier editions can be requested via the <a href="foi.html">Freedom of Information</a> process.</p>
+            <p>All reports are published in PDF format. Reports from 2014 onwards are available here; earlier editions can be requested via the <a href="foi.html">Freedom of Information</a> process.</p>
 
-            <table class="report-table" aria-label="Annual reports library">
+            <!-- Loading state -->
+            <div class="reports-loading" id="reports-loading">
+              <div class="reports-spinner"></div>
+              Loading reports…
+            </div>
+
+            <!-- Table rendered by JS -->
+            <table class="report-table" id="report-table" aria-label="Annual reports library" style="display:none;">
               <thead>
                 <tr>
                   <th>Year</th>
@@ -76,99 +104,7 @@
                   <th class="actions">Download</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td class="year">2024</td>
-                  <td>
-                    Annual Report &amp; Accounts 2024
-                    <div class="desc">Defence policy, budget outturn, capital projects and operations review</div>
-                  </td>
-                  <td><span class="tag gold">Latest</span></td>
-                  <td class="actions">
-                    <a href="#" class="btn btn-green btn-sm" onclick="alert('The 2024 Annual Report will be published shortly. Please check back or subscribe for updates.'); return false;">PDF</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="year">2023</td>
-                  <td>
-                    Annual Report &amp; Accounts 2023
-                    <div class="desc">Defence policy, budget outturn, capital projects and operations review</div>
-                  </td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions">
-                    <a href="#" class="btn btn-outline btn-sm" onclick="alert('Full download functionality will be active on site launch. Contact foi@defence.gov.ng to request this report now.'); return false;">PDF</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="year">2022</td>
-                  <td>
-                    Annual Report &amp; Accounts 2022
-                    <div class="desc">Defence policy, budget outturn, capital projects and operations review</div>
-                  </td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions">
-                    <a href="#" class="btn btn-outline btn-sm" onclick="alert('Full download functionality will be active on site launch. Contact foi@defence.gov.ng to request this report now.'); return false;">PDF</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="year">2021</td>
-                  <td>
-                    Annual Report &amp; Accounts 2021
-                    <div class="desc">Defence policy, budget outturn, capital projects and operations review</div>
-                  </td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions">
-                    <a href="#" class="btn btn-outline btn-sm" onclick="alert('Full download functionality will be active on site launch. Contact foi@defence.gov.ng to request this report now.'); return false;">PDF</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="year">2020</td>
-                  <td>
-                    Annual Report &amp; Accounts 2020
-                    <div class="desc">Defence policy, budget outturn, capital projects and operations review</div>
-                  </td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions">
-                    <a href="#" class="btn btn-outline btn-sm" onclick="alert('Full download functionality will be active on site launch. Contact foi@defence.gov.ng to request this report now.'); return false;">PDF</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="year">2019</td>
-                  <td>Annual Report &amp; Accounts 2019<div class="desc">Defence policy, budget outturn, capital projects and operations review</div></td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-                <tr>
-                  <td class="year">2018</td>
-                  <td>Annual Report &amp; Accounts 2018<div class="desc">Defence policy, budget outturn, capital projects and operations review</div></td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-                <tr>
-                  <td class="year">2017</td>
-                  <td>Annual Report &amp; Accounts 2017</td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-                <tr>
-                  <td class="year">2016</td>
-                  <td>Annual Report &amp; Accounts 2016</td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-                <tr>
-                  <td class="year">2015</td>
-                  <td>Annual Report &amp; Accounts 2015</td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-                <tr>
-                  <td class="year">2014</td>
-                  <td>Annual Report &amp; Accounts 2014</td>
-                  <td><span class="tag" style="background:var(--paper-3);color:var(--ink-2);">Published</span></td>
-                  <td class="actions"><a href="#" class="btn btn-outline btn-sm" onclick="alert('Contact foi@defence.gov.ng to request this report.'); return false;">PDF</a></td>
-                </tr>
-              </tbody>
+              <tbody id="report-tbody"></tbody>
             </table>
 
             <div class="archive-note">
@@ -182,8 +118,8 @@
             <ul>
               <li><strong>Policy &amp; strategy</strong> — key defence policy decisions and direction from the Minister and Chief of Defence Staff.</li>
               <li><strong>Budget performance</strong> — approved allocation vs. actual expenditure across all budget lines, including capital and recurrent.</li>
-              <li><strong>Procurement activity</strong> — summary of contracts awarded above the threshold, consistent with the Public Procurement Act, 2007.</li>
-              <li><strong>Operations &amp; achievements</strong> — summary of operational activities by the Nigerian Army, Navy and Air Force, and joint operations.</li>
+              <li><strong>Procurement activity</strong> — summary of contracts awarded above threshold, consistent with the Public Procurement Act, 2007.</li>
+              <li><strong>Operations &amp; achievements</strong> — summary of operational activities by the Army, Navy and Air Force, and joint operations.</li>
               <li><strong>Human resources</strong> — staffing levels, promotions, retirements and training completions across the Ministry and agencies.</li>
               <li><strong>Key performance indicators</strong> — progress against the Ministry's service charter commitments and SERVICOM targets.</li>
               <li><strong>Auditor-General's remarks</strong> — extract of findings and management responses from the Office of the Auditor-General for the Federation.</li>
@@ -198,15 +134,14 @@
               <li><a href="foi.html">FOI Annual Statistics</a></li>
               <li><a href="procurement.html">Procurement Notices</a></li>
               <li><a href="servicom.html">SERVICOM Performance</a></li>
-              <li><a href="services.html#downloads">Other Downloads</a></li>
             </ul>
 
             <h3 style="margin-top:32px;">Hard-copy requests</h3>
             <p>To request a printed copy of any report, write to:</p>
-            <address style="font-style:normal; line-height:1.8; color:var(--ink-2); font-size:.92rem;">
-              Director, Reform Coordination &amp; Service Improvement<br>
-              Federal Ministry of Defence<br>
-              Ship House, Area 10, Abuja<br>
+            <address class="contact-address">
+              Director, Reform Coordination &amp; Service Improvement<br />
+              Federal Ministry of Defence<br />
+              Ship House, Area 10, Abuja<br />
               <a href="mailto:publications@defence.gov.ng">publications@defence.gov.ng</a>
             </address>
           </div>
@@ -223,9 +158,72 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FALLBACK = (function () {
+      var out = [];
+      for (var y = 2024; y >= 2014; y--) {
+        out.push({ year: y, title: 'Annual Report & Accounts ' + y,
+          description: 'Defence policy, budget outturn, capital projects and operations review.',
+          doc_url: '', status: y === 2024 ? 'latest' : 'published' });
+      }
+      return out;
+    }());
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function render(reports) {
+      var loadEl  = document.getElementById('reports-loading');
+      var tableEl = document.getElementById('report-table');
+      var tbodyEl = document.getElementById('report-tbody');
+      var statEl  = document.getElementById('stat-count');
+
+      loadEl.style.display  = 'none';
+      tableEl.style.display = '';
+
+      var published = reports.filter(function (r) { return r.status !== 'pending'; });
+      statEl.textContent = published.length;
+
+      tbodyEl.innerHTML = reports.map(function (r) {
+        var tagClass = r.status === 'latest' ? 'tag-latest' : r.status === 'pending' ? 'tag-pending' : 'tag-published';
+        var tagLabel = r.status === 'latest' ? 'Latest' : r.status === 'pending' ? 'Coming soon' : 'Published';
+
+        var downloadCell;
+        if (r.doc_url) {
+          downloadCell = '<a href="' + esc(r.doc_url) + '" class="btn btn-' + (r.status === 'latest' ? 'green' : 'outline') + ' btn-sm" download target="_blank" rel="noopener">PDF</a>';
+        } else if (r.status === 'pending') {
+          downloadCell = '<span class="btn btn-sm" style="opacity:.4;cursor:default;">Coming soon</span>';
+        } else {
+          downloadCell = '<a href="foi.html" class="btn btn-outline btn-sm">Request via FOI</a>';
+        }
+
+        return '<tr>' +
+          '<td class="year">' + esc(r.year) + '</td>' +
+          '<td>' +
+            esc(r.title) +
+            (r.description ? '<div class="desc">' + esc(r.description) + '</div>' : '') +
+          '</td>' +
+          '<td><span class="tag ' + tagClass + '">' + tagLabel + '</span></td>' +
+          '<td class="actions">' + downloadCell + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    fetch('/api/annual-reports')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { render(d.reports && d.reports.length ? d.reports : FALLBACK); })
+      .catch(function () { render(FALLBACK); });
+  }());
+  </script>
 </body>
 </html>

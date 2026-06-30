@@ -1,6 +1,16 @@
 <?php
 require_once __DIR__ . '/../config.php';
 header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Cache-Control: no-store');
+// Only allow requests from same origin
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowed = ['https://defence.gov.ng', 'http://localhost', 'http://127.0.0.1'];
+if ($origin && !in_array(rtrim($origin, '/'), $allowed, true)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Forbidden.']);
+    exit;
+}
 
 try {
     $slides = getHeroSlides(true);
@@ -10,7 +20,7 @@ try {
         'hero_eyebrow' => getSetting('hero_eyebrow', 'Federal Republic of Nigeria'),
         'hero_headline' => getSetting('hero_headline', 'Defending the sovereignty of Nigeria.'),
         'hero_body' => getSetting('hero_body', 'The Federal Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.'),
-        'last_reviewed' => getSetting('last_reviewed', 'May 2026'),
+        'last_reviewed' => getSetting('last_reviewed', 'June 2026'),
         'ministry_name' => getSetting('ministry_name', 'Federal Ministry of Defence'),
         'country' => getSetting('country', 'Federal Republic of Nigeria'),
     ];
@@ -57,10 +67,11 @@ try {
             return [
                 'title' => $item['title'],
                 'excerpt' => $item['excerpt'],
+                'body' => $item['body'] ?? '',
                 'category' => $item['category'],
                 'date' => $date,
                 'img' => $item['image_url'],
-                'url' => $item['link_url'],
+                'url' => 'press-release.html?slug=' . urlencode($item['slug']),
                 'slug' => $item['slug'],
             ];
         }, $pressItems),
@@ -74,5 +85,6 @@ try {
 
     echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
+    http_response_code(500);
     echo json_encode(['error' => 'Unable to load content.']);
 }

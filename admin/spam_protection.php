@@ -115,9 +115,9 @@ function spamRateLimited(string $endpoint, int $limit, int $windowSeconds): bool
         dbQuery(
             'INSERT INTO mod_rate_limits (ip_hash, endpoint, hits, window_start)
              VALUES (:ip, :ep, 1, NOW())
-             ON CONFLICT (ip_hash, endpoint) DO UPDATE SET
-               hits         = CASE WHEN mod_rate_limits.window_start < :cutoff1 THEN 1 ELSE mod_rate_limits.hits + 1 END,
-               window_start = CASE WHEN mod_rate_limits.window_start < :cutoff2 THEN NOW() ELSE mod_rate_limits.window_start END',
+             ON DUPLICATE KEY UPDATE
+               hits         = CASE WHEN window_start < :cutoff1 THEN 1 ELSE hits + 1 END,
+               window_start = CASE WHEN window_start < :cutoff2 THEN NOW() ELSE window_start END',
             ['ip' => $ipHash, 'ep' => $endpoint, 'cutoff1' => $cutoff, 'cutoff2' => $cutoff]
         );
 
@@ -148,7 +148,7 @@ function spamDuplicate(string $formType, string $email, string $subject): bool
         $row = dbFetch(
             'SELECT id FROM mod_submissions
              WHERE form_type = :ft AND email = :email AND subject = :subject
-               AND submitted_at > NOW() - INTERVAL '1 hour'
+               AND submitted_at > NOW() - INTERVAL 1 HOUR
              LIMIT 1',
             ['ft' => $formType, 'email' => $email, 'subject' => $subject]
         );

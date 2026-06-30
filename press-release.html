@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="theme-color" content="#007D53" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Press Release — Federal Ministry of Defence</title>
+  <meta name="description" content="Official press release from the Federal Ministry of Defence." />
+  <link rel="canonical" href="https://defence.gov.ng/press-release.html" id="canonical-link" />
+  <meta property="og:type" content="article" id="og-type" />
+  <meta property="og:title" content="Press Release — Federal Ministry of Defence" id="og-title" />
+  <meta property="og:description" content="Official press release from the Federal Ministry of Defence." id="og-description" />
+  <meta property="og:url" content="https://defence.gov.ng/press-release.html" id="og-url" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" id="og-image" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
+  <link rel="stylesheet" href="assets/css/style.css?v=19" />
+  <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Article layout ── */
+    .article-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    /* ── Article hero image ── */
+    .article-hero-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+    }
+
+    /* ── Article meta ── */
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .article-meta .category {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-soft);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .article-meta .date {
+      font-size: .85rem;
+      color: var(--text-3);
+    }
+
+    /* ── Article title ── */
+    .article-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      line-height: 1.25;
+      color: var(--text-1);
+      margin-bottom: 20px;
+    }
+
+    /* ── Article excerpt ── */
+    .article-excerpt {
+      font-size: 1.1rem;
+      color: var(--text-2);
+      line-height: 1.65;
+      border-left: 4px solid var(--green);
+      padding-left: 20px;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    /* ── Article body ── */
+    .article-body {
+      font-size: .97rem;
+      line-height: 1.75;
+      color: var(--text-2);
+    }
+    .article-body p { margin-bottom: 20px; }
+    .article-body h2, .article-body h3 { color: var(--text-1); margin: 32px 0 12px; }
+    .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 20px; }
+    .article-body li { margin-bottom: 6px; }
+    .article-body strong { color: var(--text-1); }
+    .article-body blockquote {
+      border-left: 4px solid var(--gold);
+      padding: 12px 20px;
+      background: var(--paper-2);
+      border-radius: 0 4px 4px 0;
+      margin: 24px 0;
+      font-style: italic;
+      color: var(--text-2);
+    }
+    .article-body a { color: var(--green); }
+    .article-body a:hover { text-decoration: underline; }
+
+    /* ── Sidebar ── */
+    .article-sidebar {
+      position: sticky;
+      top: 100px;
+    }
+    .sidebar-card {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .sidebar-card h4 {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 14px;
+    }
+    .sidebar-related a {
+      display: block;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: .85rem;
+      color: var(--text-1);
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .sidebar-related a:last-child { border-bottom: none; }
+    .sidebar-related a:hover { color: var(--green); }
+    .sidebar-related .rel-date { font-size: .75rem; color: var(--text-3); display: block; margin-top: 2px; }
+
+    /* ── Share ── */
+    .article-share {
+      display: flex;
+      gap: 10px;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      align-items: center;
+    }
+    .article-share span { font-size: .82rem; color: var(--text-3); margin-right: 4px; }
+    .share-btn {
+      padding: 7px 16px;
+      border-radius: 4px;
+      font-size: .8rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity .18s;
+    }
+    .share-btn:hover { opacity: .82; }
+    .share-btn.tw  { background: #000; color: #fff; }
+    .share-btn.fb  { background: #1877f2; color: #fff; }
+    .share-btn.wa  { background: #25d366; color: #fff; }
+    .share-btn.copy { background: var(--paper-3); color: var(--text-1); border: 1px solid var(--line); cursor: pointer; }
+
+    /* ── Not found ── */
+    .article-not-found { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .article-not-found h2 { color: var(--text-1); margin-bottom: 12px; }
+
+    /* ── Loading ── */
+    .article-loading { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .article-loading-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .article-sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main">
+    <!-- Loading state -->
+    <section id="article-loading-section">
+      <div class="container">
+        <div class="article-loading">
+          <div class="article-loading-spinner"></div>
+          Loading press release…
+        </div>
+      </div>
+    </section>
+
+    <!-- Article content -->
+    <section id="article-section" style="display:none;">
+      <div class="container">
+        <div class="crumbs">
+          <a href="index.html">Home</a><span>›</span>
+          <a href="press.html">Press Releases</a><span>›</span>
+          <span id="crumb-title">Press Release</span>
+        </div>
+
+        <div class="article-layout">
+          <!-- Main article -->
+          <article>
+            <img id="article-img" src="" alt="" class="article-hero-img" style="display:none;" />
+            <div class="article-meta">
+              <span class="category" id="article-category">Press Office</span>
+              <span class="date" id="article-date"></span>
+            </div>
+            <h1 class="article-title" id="article-title"></h1>
+            <p class="article-excerpt" id="article-excerpt"></p>
+            <div class="article-body" id="article-body"></div>
+
+            <!-- Share buttons -->
+            <div class="article-share">
+              <span>Share:</span>
+              <a class="share-btn tw" id="share-tw" href="#" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h3l-7.5 8.6L22 22h-6l-5-6.6L5 22H2l8-9.2L2 2h6l4.6 6 5.4-6Z"/></svg>
+                X
+              </a>
+              <a class="share-btn fb" id="share-fb" href="#" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-2.9h2.4V9.4c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.5.7-1.5 1.5V12h2.6l-.4 2.9h-2.2v7A10 10 0 0 0 22 12Z"/></svg>
+                Facebook
+              </a>
+              <a class="share-btn wa" id="share-wa" href="#" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1l-.9 1.1c-.1.2-.3.2-.5.1-1.5-.6-2.6-1.6-3.4-3-.1-.2 0-.4.1-.5l.6-.7c.1-.2.2-.4.1-.6l-.9-2.1c-.2-.4-.5-.4-.7-.4H8.5c-.2 0-.5.1-.8.4C7.4 8 6.5 9 6.5 11s1.5 3.9 1.7 4.2c.2.3 2.9 4.5 7.1 6.1.9.4 1.7.6 2.3.7.9.2 1.8.2 2.4.1.7-.1 2.2-.9 2.5-1.8.3-.9.3-1.6.2-1.8-.1-.2-.3-.3-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z"/></svg>
+                WhatsApp
+              </a>
+              <button class="share-btn copy" id="share-copy" onclick="copyLink()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy link
+              </button>
+            </div>
+          </article>
+
+          <!-- Sidebar -->
+          <aside class="article-sidebar">
+            <div class="sidebar-card">
+              <h4>Related releases</h4>
+              <div class="sidebar-related" id="sidebar-related">
+                <!-- populated by JS -->
+              </div>
+            </div>
+            <div class="sidebar-card">
+              <h4>Press Office</h4>
+              <p style="font-size:.85rem;color:var(--text-3);line-height:1.6;margin-bottom:12px;">For media enquiries, accreditation and interview requests:</p>
+              <a href="mailto:press@defence.gov.ng" style="font-size:.85rem;color:var(--green);">press@defence.gov.ng</a><br>
+              <a href="contact.html" class="btn btn-outline btn-sm" style="margin-top:12px;display:inline-block;">Contact page</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Not found state -->
+    <section id="article-not-found" style="display:none;">
+      <div class="container">
+        <div class="article-not-found">
+          <h2>Press release not found.</h2>
+          <p>This press release may have been removed or the link may be incorrect.</p>
+          <a href="press.html" class="btn" style="margin-top:24px;">All press releases</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+  <div data-include="chatbot"></div>
+  <div data-include="a11y"></div>
+
+  <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
+  <script src="assets/js/partials.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/translator.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var ALLOWED_TAGS = /^(p|strong|em|b|i|ul|ol|li|blockquote|h2|h3|h4|br|a|span)$/i;
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    /* Sanitise admin-entered HTML — allow only safe formatting tags */
+    function sanitiseBody(html) {
+      if (!html) return '';
+      /* Replace line breaks with paragraphs if no tags present */
+      if (html.indexOf('<') === -1) {
+        return '<p>' + html.split(/\n\n+/).map(function(p){ return esc(p.trim()); }).join('</p><p>') + '</p>';
+      }
+      /* Strip any tags not in the allowed list */
+      return html.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*>/gi, function (match, tag) {
+        return ALLOWED_TAGS.test(tag) ? match : '';
+      });
+    }
+
+    function setMeta(title, desc, img, url) {
+      document.title = title + ' — Federal Ministry of Defence';
+      document.getElementById('og-title').setAttribute('content', title);
+      document.getElementById('og-description').setAttribute('content', desc);
+      document.getElementById('og-url').setAttribute('content', url);
+      document.getElementById('canonical-link').setAttribute('href', url);
+      if (img) document.getElementById('og-image').setAttribute('content', img);
+    }
+
+    function render(release, allPress) {
+      document.getElementById('article-loading-section').style.display = 'none';
+      document.getElementById('article-section').style.display = '';
+
+      /* Meta */
+      var pageUrl = window.location.href;
+      setMeta(release.title, release.excerpt, release.img, pageUrl);
+
+      /* Breadcrumb */
+      document.getElementById('crumb-title').textContent = release.title;
+
+      /* Hero image */
+      if (release.img) {
+        var img = document.getElementById('article-img');
+        img.src = release.img;
+        img.alt = release.title;
+        img.style.display = '';
+      }
+
+      /* Meta strip */
+      document.getElementById('article-category').textContent = release.category || 'Press Office';
+      document.getElementById('article-date').textContent = release.date || '';
+
+      /* Title */
+      document.getElementById('article-title').textContent = release.title;
+
+      /* Excerpt */
+      document.getElementById('article-excerpt').textContent = release.excerpt || '';
+
+      /* Body */
+      var bodyEl = document.getElementById('article-body');
+      if (release.body && release.body.trim()) {
+        bodyEl.innerHTML = sanitiseBody(release.body);
+      } else {
+        /* No body — show a note and link back */
+        bodyEl.innerHTML = '<p style="color:var(--text-3);">Full article text not yet available. <a href="press.html">View all press releases →</a></p>';
+      }
+
+      /* Share buttons */
+      var title = encodeURIComponent(release.title);
+      var url   = encodeURIComponent(pageUrl);
+      document.getElementById('share-tw').href = 'https://twitter.com/intent/tweet?text=' + title + '&url=' + url;
+      document.getElementById('share-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+      document.getElementById('share-wa').href = 'https://wa.me/?text=' + title + '%20' + url;
+
+      /* Related releases (up to 4, excluding current) */
+      var related = (allPress || []).filter(function (p) { return p.slug !== release.slug; }).slice(0, 4);
+      var relEl = document.getElementById('sidebar-related');
+      if (related.length) {
+        relEl.innerHTML = related.map(function (p) {
+          return '<a href="press-release.html?slug=' + encodeURIComponent(p.slug) + '">' +
+            esc(p.title) +
+            '<span class="rel-date">' + esc(p.date) + '</span>' +
+          '</a>';
+        }).join('');
+      } else {
+        relEl.innerHTML = '<p style="font-size:.82rem;color:var(--text-3);">No other releases yet.</p>';
+      }
+    }
+
+    function notFound() {
+      document.getElementById('article-loading-section').style.display = 'none';
+      document.getElementById('article-not-found').style.display = '';
+      document.title = 'Press release not found — Federal Ministry of Defence';
+    }
+
+    function boot() {
+      var params = new URLSearchParams(location.search);
+      var slug   = params.get('slug') || '';
+
+      if (!slug) { notFound(); return; }
+
+      /* Get all press from store */
+      var all = [];
+      if (window.MOD_STORE) {
+        all = window.MOD_STORE.press() || [];
+      }
+      if (!all.length && window.MOD_DATA && window.MOD_DATA.PRESS) {
+        all = window.MOD_DATA.PRESS;
+      }
+
+      var release = null;
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].slug === slug) { release = all[i]; break; }
+      }
+
+      if (release) {
+        render(release, all);
+      } else {
+        notFound();
+      }
+    }
+
+    /* Re-render when fresh DB data arrives */
+    window.addEventListener('mod-content-updated', function () {
+      var params = new URLSearchParams(location.search);
+      var slug   = params.get('slug') || '';
+      if (!slug) return;
+      var all = window.MOD_STORE ? (window.MOD_STORE.press() || []) : [];
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].slug === slug) { render(all[i], all); return; }
+      }
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  }());
+
+  function copyLink() {
+    navigator.clipboard && navigator.clipboard.writeText(window.location.href).then(function () {
+      var btn = document.getElementById('share-copy');
+      btn.textContent = '✓ Copied!';
+      setTimeout(function () { btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy link'; }, 2000);
+    });
+  }
+  </script>
+</body>
+</html>

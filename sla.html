@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Service Level Agreement — Federal Ministry of Defence</title>
   <meta name="description" content="The Federal Ministry of Defence Service Level Agreement — our published standards for response times, service delivery and complaint resolution." />
+  <link rel="canonical" href="https://defence.gov.ng/sla.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Service Level Agreement — Federal Ministry of Defence" />
+  <meta property="og:description" content="Published standards for response times, service delivery and complaint resolution from the Federal Ministry of Defence." />
+  <meta property="og:url" content="https://defence.gov.ng/sla.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,6 +39,15 @@
     .commitment-card h4 { font-size: 1rem; margin-bottom: 8px; }
     .commitment-card p { font-size: .88rem; color: var(--ink-2); margin: 0; }
     @media (max-width: 640px) { .commitment-grid { grid-template-columns: 1fr; } }
+
+    /* ── Utility helpers ── */
+    .gold-link { color: var(--gold); }
+    .gold-link:hover { color: var(--gold-soft); }
+    .mt-7  { margin-top: 28px; }
+    .mt-8  { margin-top: 32px; }
+    .mt-10 { margin-top: 40px; }
+    .body-sm { font-size: .92rem; }
+    .muted { color: var(--ink-2); }
 
     /* ── Version box ── */
     .version-box { background: var(--ink); color: rgba(255,255,255,.8); border-radius: var(--radius); padding: 20px 24px; font-size: .84rem; display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 40px; }
@@ -59,7 +76,7 @@
           <div><strong>Effective date</strong> 1 January 2025</div>
           <div><strong>Review cycle</strong> Annual</div>
           <div><strong>Owner</strong> Director, Reform Coordination &amp; Service Improvement</div>
-          <div><strong>Contact</strong> <a href="mailto:sla@defence.gov.ng" style="color:var(--gold);">sla@defence.gov.ng</a></div>
+          <div><strong>Contact</strong> <a href="mailto:sla@defence.gov.ng" class="gold-link">sla@defence.gov.ng</a></div>
         </div>
 
         <div class="two-col">
@@ -145,7 +162,7 @@
               </tbody>
             </table>
 
-            <div class="alert gold" style="margin-top:28px;">
+            <div class="alert gold mt-7">
               <strong>National holidays.</strong> Working days exclude Federal public holidays and any days the Ministry is formally closed by Government directive. During periods of declared emergency the Ministry will publish revised timelines on this page and on its social media channels.
             </div>
           </div>
@@ -188,7 +205,7 @@
               </div>
             </div>
 
-            <h3 style="margin-top:40px;">What we ask of you</h3>
+            <h3 class="mt-10">What we ask of you</h3>
             <ul>
               <li>Provide your full name and a valid contact address or email.</li>
               <li>State your request clearly and include all relevant background.</li>
@@ -196,12 +213,12 @@
               <li>Allow sufficient time before chasing — many requests are completed well within the SLA.</li>
             </ul>
 
-            <h3 style="margin-top:32px;">When this SLA does not apply</h3>
-            <p style="font-size:.92rem; color:var(--ink-2);">This SLA covers the Ministry's civilian public-facing services. It does not govern operational military matters, classified communications, or matters under active judicial proceedings. For those, please contact the relevant command or legal authority directly.</p>
+            <h3 class="mt-8">When this SLA does not apply</h3>
+            <p class="body-sm muted">This SLA covers the Ministry's civilian public-facing services. It does not govern operational military matters, classified communications, or matters under active judicial proceedings. For those, please contact the relevant command or legal authority directly.</p>
 
-            <h3 style="margin-top:32px;">Complaints about this SLA</h3>
-            <p style="font-size:.92rem;">If you believe the Ministry has not met these standards, please:</p>
-            <ol style="font-size:.92rem;">
+            <h3 class="mt-8">Complaints about this SLA</h3>
+            <p class="body-sm">If you believe the Ministry has not met these standards, please:</p>
+            <ol class="body-sm">
               <li>Write to <a href="mailto:sla@defence.gov.ng">sla@defence.gov.ng</a> quoting your reference number.</li>
               <li>If unresolved, raise a <a href="servicom.html">SERVICOM complaint</a>.</li>
               <li>As a last resort, contact the National SERVICOM Office, The Presidency, Abuja.</li>
@@ -220,8 +237,7 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>

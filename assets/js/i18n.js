@@ -245,7 +245,7 @@
   // Only activate the paid Cloud Translation API path when:
   //   (a) an API key is configured, AND
   //   (b) the free Google Translate Widget hasn't already been loaded.
-  // Otherwise google-translate.js handles all translation duties.
+  // Otherwise translator.js handles all translation duties.
   function maybeInit() {
     const hasKey = !!(window.MOD_CONFIG && window.MOD_CONFIG.GOOGLE_TRANSLATE_API_KEY);
     const widgetLoaded = !!(window.MOD_TRANSLATE);

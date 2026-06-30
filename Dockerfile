@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# PostgreSQL PDO extension
+# MySQL PDO extension
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libpq-dev \
- && docker-php-ext-install pdo pdo_pgsql \
+ && apt-get install -y --no-install-recommends default-libmysqlclient-dev \
+ && docker-php-ext-install pdo pdo_mysql mysqli \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable mod_rewrite (admin panel routing)

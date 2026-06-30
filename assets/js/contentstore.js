@@ -17,25 +17,7 @@
   };
 
   function apiUrl(path) {
-    // Always resolve relative to the site root so it works from any page depth.
-    // In an admin context:  /admin/api/<path>
-    // On a public page:     /admin/api/<path>  (same — we always POST to admin/api)
-    var loc      = window.location.href;
-    var pathname = window.location.pathname;
-    var origin   = window.location.origin || (loc.split('//')[0] + '//' + loc.split('//')[1].split('/')[0]);
-
-    // If we're already inside /admin/, strip back one level to reach the api/ sibling
-    var adminIdx = pathname.indexOf('/admin/');
-    if (adminIdx !== -1) {
-      return origin + pathname.substring(0, adminIdx) + '/admin/api/' + path;
-    }
-
-    // Public page — find the site root (the path before the last directory or filename)
-    // For pages like /contact.html the root is /
-    // For pages like /subdir/contact.html the root is /subdir/
-    var dir = pathname.replace(/\/[^/]*$/, '') || '/';
-    if (!dir.endsWith('/')) dir += '/';
-    return origin + dir + 'admin/api/' + path;
+    return '/api/' + path;
   }
 
   function dispatchUpdate() {
@@ -63,7 +45,7 @@
         permSec: { ...((D.LEADERSHIP && D.LEADERSHIP.permSec) || {}) },
       },
       settings: {
-        lastReviewed: 'May 2026',
+        lastReviewed: 'June 2026',
         ministryName: 'Federal Ministry of Defence',
         country: 'Federal Republic of Nigeria',
       },
@@ -123,7 +105,7 @@
 
   async function loadBackendContent() {
     try {
-      const res = await fetch(apiUrl('content.php'), { cache: 'no-store' });
+      const res = await fetch(apiUrl('content'), { cache: 'no-store' });
       if (!res.ok) {
         throw new Error('Backend content not available');
       }
@@ -144,7 +126,7 @@
       return;
     }
     try {
-      const res = await fetch(apiUrl('subscribe.php'), { cache: 'no-store' });
+      const res = await fetch(apiUrl('subscribe'), { cache: 'no-store' });
       if (!res.ok) {
         throw new Error('Backend subscribers not available');
       }
@@ -160,12 +142,12 @@
     }
   }
 
+  // saveBackend: kept for compatibility but no longer used — all content
+  // edits now go through the admin panel PHP CRUD forms directly.
   async function saveBackend(blob) {
-    if (!CSRF_TOKEN) {
-      return;
-    }
+    if (!CSRF_TOKEN) return;
     try {
-      await fetch(apiUrl('save.php'), {
+      await fetch(apiUrl('admin/save'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ csrf_token: CSRF_TOKEN, blob }),
@@ -179,7 +161,7 @@
   async function postSubscriber(email, action = 'add', extraFields = {}) {
     try {
       const body = { action, email, ...extraFields };
-      const res = await fetch(apiUrl('subscribe.php'), {
+      const res = await fetch(apiUrl('subscribe'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

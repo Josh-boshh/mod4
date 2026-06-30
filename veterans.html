@@ -6,12 +6,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Veterans — Federal Ministry of Defence</title>
   <meta name="description" content="Services and welfare programmes for veterans of the Armed Forces of the Federal Republic of Nigeria — NAFRC resettlement and Military Pensions Board." />
+  <link rel="canonical" href="https://defence.gov.ng/veterans.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Veterans — Federal Ministry of Defence" />
+  <meta property="og:description" content="Honouring those who have served. Pensions, resettlement, healthcare and welfare programmes for retired personnel of the Nigerian Armed Forces." />
+  <meta property="og:url" content="https://defence.gov.ng/veterans.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Contact strip ── */
+    .contact-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .contact-block {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .contact-block-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contact-block-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-block-icon svg { width: 20px; height: 20px; }
+    .contact-block h4 { font-size: 1rem; margin: 0; color: var(--text-1); }
+    .contact-block-rows { display: flex; flex-direction: column; gap: 8px; }
+    .contact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .85rem;
+      color: var(--text-2);
+    }
+    .contact-row svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--green); }
+    .contact-row a { color: var(--green); text-decoration: none; }
+    .contact-row a:hover { text-decoration: underline; }
+
+    /* ── Press strip ── */
+    .press-strip {
+      background: var(--green-soft);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .press-strip-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .press-strip-icon svg { width: 20px; height: 20px; }
+    .press-strip-body { flex: 1; }
+    .press-strip-body strong { display: block; font-size: .95rem; color: var(--text-1); margin-bottom: 4px; }
+    .press-strip-body p { font-size: .85rem; color: var(--text-2); margin: 0; }
+    .press-strip a.btn { white-space: nowrap; flex-shrink: 0; }
+
+    @media (max-width: 640px) {
+      .contact-strip { grid-template-columns: 1fr; }
+      .press-strip { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -26,12 +107,13 @@
       </div>
     </section>
 
+    <!-- Services cards -->
     <section>
       <div class="container">
         <div class="grid grid-2">
           <div class="card">
             <div class="index">Resettlement</div>
-            <h3>NAFRC — Skills & business training</h3>
+            <h3>NAFRC — Skills &amp; business training</h3>
             <p>The Nigerian Armed Forces Resettlement Centre (NAFRC), Oshodi, retrains retiring and retired personnel in trades, agriculture, business and professional disciplines. Courses run on a rolling intake.</p>
             <a href="agencies.html#nafrc" class="btn-link">About NAFRC</a>
           </div>
@@ -43,22 +125,95 @@
           </div>
           <div class="card">
             <div class="index">Healthcare</div>
-            <h3>Military hospitals & medical reciprocity</h3>
+            <h3>Military hospitals &amp; medical reciprocity</h3>
             <p>Veterans have access to military hospitals nationwide and to civilian referral arrangements under the medical reciprocity framework coordinated by the Department of Health Services.</p>
+            <a href="department.html?dept=health-services" class="btn-link">Health Services department</a>
           </div>
           <div class="card">
             <div class="index">Housing</div>
             <h3>Post-service housing</h3>
             <p>The Ministry works with the Federal Mortgage Bank, the Armed Forces Housing Schemes and the FCDA on dedicated post-service housing for retirees.</p>
+            <a href="contact.html" class="btn-link">Contact the Ministry</a>
+          </div>
+        </div>
+
+        <!-- Contact strip -->
+        <div class="contact-strip">
+          <div class="contact-block">
+            <div class="contact-block-header">
+              <div class="contact-block-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <h4>Nigerian Armed Forces Resettlement Centre</h4>
+            </div>
+            <div class="contact-block-rows">
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                NAFRC, Oshodi, Lagos State, Nigeria
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <a href="tel:+2341234567">+234 (0) 1 234 5678</a>
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <a href="mailto:info@nafrc.mil.ng">info@nafrc.mil.ng</a>
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <a href="https://nafrc.mil.ng" target="_blank" rel="noopener">nafrc.mil.ng</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-block">
+            <div class="contact-block-header">
+              <div class="contact-block-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <h4>Military Pensions Board</h4>
+            </div>
+            <div class="contact-block-rows">
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Plot 1270 Tafawa Balewa Way, Area 11, Abuja, FCT
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <a href="tel:+2349012345678">+234 (0) 90 1234 5678</a>
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <a href="mailto:info@mpb.gov.ng">info@mpb.gov.ng</a>
+              </div>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <a href="https://mpb.gov.ng" target="_blank" rel="noopener">mpb.gov.ng</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Strategic Committee -->
     <section class="cream">
       <div class="container">
-        <div class="section-head center"><span class="eyebrow">Strategic Committee</span><h2>National Security & Veterans Welfare.</h2><p>In April 2026 the Honourable Minister inaugurated dedicated committees to strengthen the welfare and resettlement of veterans of the Armed Forces.</p></div>
-        <div class="alert"><strong>April 2026 — Inauguration:</strong> Three committees were sworn in at Ship House on 29 April 2026, including a dedicated Veterans Welfare Committee tasked with reviewing pensions, healthcare access and resettlement programmes for retired Armed Forces personnel. <a href="press.html#strategic-committees-security-veterans">Read the full announcement →</a></div>
+        <div class="section-head center">
+          <span class="eyebrow">Strategic Committee</span>
+          <h2>National Security &amp; Veterans Welfare.</h2>
+          <p>The Honourable Minister inaugurated dedicated committees to strengthen the welfare and resettlement of veterans of the Armed Forces.</p>
+        </div>
+        <div class="press-strip">
+          <div class="press-strip-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="press-strip-body">
+            <strong>Inauguration of Strategic Committees — Ship House, April 2026</strong>
+            <p>Three committees were sworn in at Ship House on 29 April 2026, including a dedicated Veterans Welfare Committee tasked with reviewing pensions, healthcare access and resettlement programmes for retired Armed Forces personnel.</p>
+          </div>
+          <a href="press.html#strategic-committees-security-veterans" class="btn">Read announcement</a>
+        </div>
       </div>
     </section>
   </main>
@@ -70,10 +225,8 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>
 </html>
-

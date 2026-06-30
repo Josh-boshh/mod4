@@ -28,11 +28,18 @@
   --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
 
   /* Re-usable geometric pattern URIs (data-encoded SVGs).
-     Tuned to match the APC Promise Kept reference — clearly visible. */
+     Green dot grids and concentric ring decorative patterns. */
   --dot-grid: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'><circle cx='3' cy='3' r='2' fill='%23008751' fill-opacity='0.55'/></svg>");
   --dot-grid-gold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'><circle cx='3' cy='3' r='2' fill='%23B8923C' fill-opacity='0.50'/></svg>");
   --concentric-rings: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'><g fill='none' stroke='%23008751' stroke-opacity='0.32' stroke-width='1.5'><circle cx='400' cy='400' r='100'/><circle cx='400' cy='400' r='160'/><circle cx='400' cy='400' r='220'/><circle cx='400' cy='400' r='280'/><circle cx='400' cy='400' r='340'/><circle cx='400' cy='400' r='400'/></g></svg>");
   --concentric-rings-gold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'><g fill='none' stroke='%23B8923C' stroke-opacity='0.28' stroke-width='1.5'><circle cx='400' cy='400' r='100'/><circle cx='400' cy='400' r='160'/><circle cx='400' cy='400' r='220'/><circle cx='400' cy='400' r='280'/><circle cx='400' cy='400' r='340'/><circle cx='400' cy='400' r='400'/></g></svg>");
+
+  /* Alias variables used by dynamic page components */
+  --text-1: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+  --border: var(--line);
+  --green-2: #006B41;
 
   --container: 1240px;
   --container-narrow: 920px;
@@ -1580,6 +1587,12 @@ textarea { min-height: 140px; resize: vertical; }
   letter-spacing: .04em;
 }
 .footer-bottom .legal { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-email { margin-top: 8px; }
+.footer-email a { color: rgba(255,255,255,.85); }
+.footer-email a:hover { color: #fff; }
+.footer-newsletter-head { margin-top: 28px; }
+.footer-newsletter-sub { margin-bottom: 8px; font-size: .82rem; }
+.form-success-msg { padding: 14px 18px; border-radius: 8px; background: var(--green-soft, #e8f4e8); color: var(--green, #1a4f1a); font-weight: 600; margin-top: 12px; }
 
 /* =============================================================================
    CHATBOT — MOD Assistant
@@ -2313,7 +2326,7 @@ section.ink .eyebrow::after { background: var(--gold); }
 
 /* =============================================================================
    GEOMETRIC BACKGROUND DECORATIONS
-   APC-Promise-Kept-inspired light green dot grids + large concentric rings.
+   Light green dot grids and large concentric ring decorative patterns.
    Drop into any section without HTML changes — every <section> automatically
    becomes a positioning context for the decorations.
    ============================================================================= */

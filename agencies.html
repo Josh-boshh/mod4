@@ -4,14 +4,134 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Agencies & Parastatals — Federal Ministry of Defence</title>
+  <title>Agencies &amp; Parastatals — Federal Ministry of Defence</title>
   <meta name="description" content="Agencies under the Federal Ministry of Defence — NDA, NDC, AFCSC, DICON, NAFRC, MPB, DIA — and their statutory mandates." />
+  <link rel="canonical" href="https://defence.gov.ng/agencies.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Agencies &amp; Parastatals — Federal Ministry of Defence" />
+  <meta property="og:description" content="Premier training institutions, defence-industrial production and welfare administration under the Federal Ministry of Defence." />
+  <meta property="og:url" content="https://defence.gov.ng/agencies.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Agency grid ── */
+    .agency-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    /* ── Agency card ── */
+    .agency-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .25s, transform .25s, border-color .25s;
+    }
+    .agency-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,.09);
+      border-color: var(--green);
+    }
+
+    .agency-card-top {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 28px 28px 20px;
+    }
+
+    .agency-logo-wrap {
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .agency-logo-wrap img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
+    }
+
+    .agency-card-info { flex: 1; min-width: 0; }
+
+    .agency-card-meta {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .agency-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 0 0 10px;
+      color: var(--text-1);
+    }
+
+    .agency-card p {
+      font-size: .86rem;
+      color: var(--text-3);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Footer strip */
+    .agency-card-footer {
+      border-top: 1px solid var(--line);
+      padding: 12px 28px;
+      background: var(--paper-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .agency-card-abbr {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+
+    .agency-card-link {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: gap .2s;
+    }
+    .agency-card-link:hover { gap: 8px; color: var(--green-2); }
+    .agency-card-link svg { width: 12px; height: 12px; }
+
+    @media (max-width: 700px) {
+      .agency-grid { grid-template-columns: 1fr; }
+      .agency-card-top { gap: 16px; }
+      .agency-logo-wrap,
+      .agency-logo-wrap img { width: 60px; height: 60px; }
+    }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -28,82 +148,159 @@
 
     <section>
       <div class="container">
-        <div class="grid grid-2">
+        <div class="agency-grid">
 
-          <div class="card" id="nda">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/nda_logo.png" alt="NDA" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Kaduna · Since 1964</div>
+          <!-- NDA -->
+          <div class="agency-card" id="nda">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/nda.png"
+                     alt="Nigerian Defence Academy" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Kaduna · Since 1964</div>
                 <h3>Nigerian Defence Academy (NDA)</h3>
                 <p>Nigeria's premier officer-cadet training institution. NDA offers the Regular Combatant Course and Direct Short Service Commission programmes, producing officers for the three Services.</p>
               </div>
             </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">NDA</span>
+              <a class="agency-card-link" href="https://nda.edu.ng" target="_blank" rel="noopener">
+                nda.edu.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
 
-          <div class="card" id="ndc">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/national_defence_college.png" alt="NDC" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Abuja · Strategic Studies</div>
+          <!-- NDC -->
+          <div class="agency-card" id="ndc">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/ndc.png"
+                     alt="National Defence College" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Abuja · Strategic Studies</div>
                 <h3>National Defence College (NDC)</h3>
                 <p>Nigeria's apex strategic-studies institution. NDC prepares senior military officers and civilians for higher national security responsibilities.</p>
               </div>
             </div>
-          </div>
-
-          <div class="card" id="afcsc">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/afcsc.jpg" alt="AFCSC" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Jaji · Tri-Service</div>
-                <h3>Armed Forces Command & Staff College (AFCSC)</h3>
-                <p>The mid-career staff college for Nigerian military officers, training Squadron Leader/Major equivalent officers from all three Services and partner nations.</p>
-              </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">NDC</span>
+              <a class="agency-card-link" href="https://ndc.gov.ng" target="_blank" rel="noopener">
+                ndc.gov.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
             </div>
           </div>
 
-          <div class="card" id="dicon">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/dicon.png" alt="DICON" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Kaduna · Industrial</div>
+          <!-- AFCSC -->
+          <div class="agency-card" id="afcsc">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/afcsc.jpg"
+                     alt="Armed Forces Command and Staff College" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Jaji · Tri-Service</div>
+                <h3>Armed Forces Command &amp; Staff College (AFCSC)</h3>
+                <p>The mid-career staff college for Nigerian military officers, training Squadron Leader/Major equivalent officers from all three Services and partner nations.</p>
+              </div>
+            </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">AFCSC</span>
+              <a class="agency-card-link" href="https://afcsc.mil.ng" target="_blank" rel="noopener">
+                afcsc.mil.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- DICON -->
+          <div class="agency-card" id="dicon">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/dicon.png"
+                     alt="Defence Industries Corporation of Nigeria" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Kaduna · Industrial</div>
                 <h3>Defence Industries Corporation of Nigeria (DICON)</h3>
                 <p>Established by the DICON Act, manufactures small arms, light weapons, ammunition and military equipment for the Nigerian Armed Forces and authorised partners.</p>
               </div>
             </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">DICON</span>
+              <a class="agency-card-link" href="https://dicon.gov.ng" target="_blank" rel="noopener">
+                dicon.gov.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
 
-          <div class="card" id="nafrc">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/nafrc.png" alt="NAFRC" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Oshodi · Resettlement</div>
+          <!-- NAFRC -->
+          <div class="agency-card" id="nafrc">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/nafrc.png"
+                     alt="Nigerian Armed Forces Resettlement Centre" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Oshodi · Resettlement</div>
                 <h3>Nigerian Armed Forces Resettlement Centre (NAFRC)</h3>
                 <p>The skills-resettlement institution that retrains retiring and retired military personnel in trades, business and professional disciplines for civilian life.</p>
               </div>
             </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">NAFRC</span>
+              <a class="agency-card-link" href="https://nafrc.mil.ng" target="_blank" rel="noopener">
+                nafrc.mil.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
 
-          <div class="card" id="mpb">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/11/mpb.png" alt="MPB" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Abuja · Pensions</div>
+          <!-- MPB -->
+          <div class="agency-card" id="mpb">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/mpb.png"
+                     alt="Military Pensions Board" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Abuja · Pensions</div>
                 <h3>Military Pensions Board (MPB)</h3>
                 <p>The administrator of pensions and gratuities for retired Nigerian Armed Forces personnel and their dependants, in line with the Pensions Reform Act and applicable defence rules.</p>
               </div>
             </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">MPB</span>
+              <a class="agency-card-link" href="https://mpb.gov.ng" target="_blank" rel="noopener">
+                mpb.gov.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
 
-          <div class="card" id="dia">
-            <div style="display:flex; gap:20px; align-items:flex-start;">
-              <div style="width:88px; height:88px; flex-shrink:0;"><img src="https://defence.gov.ng/wp-content/uploads/2020/12/dia-logo.png" alt="DIA" style="width:100%;height:100%;object-fit:contain;"></div>
-              <div>
-                <div class="index">Abuja · Intelligence</div>
+          <!-- DIA -->
+          <div class="agency-card" id="dia">
+            <div class="agency-card-top">
+              <div class="agency-logo-wrap">
+                <img src="assets/images/logos/agencies/dia.png"
+                     alt="Defence Intelligence Agency" />
+              </div>
+              <div class="agency-card-info">
+                <div class="agency-card-meta">Abuja · Intelligence</div>
                 <h3>Defence Intelligence Agency (DIA)</h3>
                 <p>The coordinating military intelligence service, providing joint-service intelligence assessments to the Honourable Minister, the CDS and the National Security Council.</p>
               </div>
+            </div>
+            <div class="agency-card-footer">
+              <span class="agency-card-abbr">DIA</span>
+              <a class="agency-card-link" href="https://dia.gov.ng" target="_blank" rel="noopener">
+                dia.gov.ng
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
             </div>
           </div>
 
@@ -119,10 +316,8 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>
 </html>
-

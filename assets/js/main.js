@@ -29,11 +29,20 @@
     }).observe(document.body, { childList: true, subtree: true });
   }
 
+  // Images that should never be lazy-loaded (above the fold)
+  var EAGER_SELECTORS = ['.brand-logo img', '#heroSlider img', '.chatbot-avatar-sm img', '.coat-of-arms'];
+
+  function isEager(img) {
+    return EAGER_SELECTORS.some(function (sel) { return img.matches && img.matches(sel); }) ||
+           img.classList.contains('eager') ||
+           img.getAttribute('loading') === 'eager';
+  }
+
   function applyHarden(img) {
     if (img.__hardened) return;
     img.__hardened = true;
     if (!img.hasAttribute("referrerpolicy")) img.setAttribute("referrerpolicy", "no-referrer");
-    if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
+    if (!img.hasAttribute("loading")) img.setAttribute("loading", isEager(img) ? "eager" : "lazy");
     if (!img.hasAttribute("decoding")) img.setAttribute("decoding", "async");
     img.addEventListener("error", function onErr() {
       img.removeEventListener("error", onErr);
@@ -208,6 +217,8 @@
     document.querySelector("[data-slider-next]")?.addEventListener("click", next);
     slider.addEventListener("mouseenter", () => clearInterval(timer));
     slider.addEventListener("mouseleave", restart);
+    slider.addEventListener("focusin",  () => clearInterval(timer));
+    slider.addEventListener("focusout", restart);
     update(); restart();
   }
 
@@ -229,7 +240,7 @@
 
   function stampDates() {
     document.querySelectorAll("[data-last-updated]").forEach((el) => {
-      el.textContent = (window.MOD_CONFIG && window.MOD_CONFIG.LAST_REVIEWED) || "May 2026";
+      el.textContent = (window.MOD_CONFIG && window.MOD_CONFIG.LAST_REVIEWED) || "June 2026";
     });
   }
 })();
@@ -239,18 +250,7 @@
   'use strict';
 
   // Compute the API base once for all handlers in this IIFE
-  var apiBase = (function () {
-    var proto    = window.location.protocol + '//';
-    var host     = window.location.host;
-    var pathname = window.location.pathname;
-    var adminIdx = pathname.indexOf('/admin/');
-    if (adminIdx !== -1) {
-      return proto + host + pathname.substring(0, adminIdx) + '/admin/api/';
-    }
-    var dir = pathname.replace(/\/[^/]*$/, '') || '/';
-    if (!dir.endsWith('/')) dir += '/';
-    return proto + host + dir + 'admin/api/';
-  }());
+  var apiBase = '/api/';
 
   // Stamp all load-time fields so the server can verify submission timing
   function stampLoadTimes() {
@@ -542,8 +542,6 @@
         feedback.textContent = message;
         feedback.classList.toggle('success', Boolean(success));
         feedback.classList.toggle('error', !Boolean(success));
-      } else {
-        alert(message);
       }
     };
 
@@ -579,7 +577,7 @@
       payload[el.name] = el.value;
     }
 
-    if (window.MOD_STORE && typeof window.MOD_STORE.syncSubscriber === 'function') {
+    if (window.MOD_STORE && typeof window.MOD_STORE.syncSubscriberFull === 'function') {
       window.MOD_STORE.syncSubscriberFull(payload).then(function (res) {
         if (res && res.success) {
           showMessage('Thank you! You have been subscribed successfully.', true);
@@ -595,7 +593,7 @@
     }
 
     // Fallback: post directly if MOD_STORE not available
-    fetch(apiBase + 'subscribe.php', {
+    fetch(apiBase + 'subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -644,7 +642,7 @@
     // Captcha check
     var captchaInput = form.querySelector('.mod-captcha-response');
     if (captchaInput && !captchaInput.value.trim()) {
-      showError('Please answer the security question to continue.');
+      showError('Please complete the slider puzzle to continue.');
       return false;
     }
 
@@ -680,7 +678,7 @@
 
     var successMessage = form.dataset.successMessage || 'Thank you. Your submission has been received.';
 
-    fetch(apiBase + 'submissions.php', {
+    fetch(apiBase + 'submissions', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload)
@@ -689,8 +687,7 @@
     .then(function (data) {
       if (data && data.success) {
         var successEl = document.createElement('div');
-        successEl.className = 'alert green';
-        successEl.style.cssText = 'padding:14px 18px; border-radius:8px; background:var(--green-soft,#e8f4e8); color:var(--green,#1a4f1a); font-weight:600; margin-top:12px;';
+        successEl.className = 'alert green form-success-msg';
         successEl.textContent = successMessage;
         form.parentNode.insertBefore(successEl, form);
         form.style.display = 'none';

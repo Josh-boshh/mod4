@@ -6,12 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>SERVICOM — Federal Ministry of Defence</title>
   <meta name="description" content="The Service Compact with All Nigerians (SERVICOM) — the Ministry's commitment to service standards and the right of citizens to complain." />
+  <link rel="canonical" href="https://defence.gov.ng/servicom.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SERVICOM — Federal Ministry of Defence" />
+  <meta property="og:description" content="The Service Compact with All Nigerians — the Ministry's public promise on service standards, and the right of every citizen to complain if those standards are not met." />
+  <meta property="og:url" content="https://defence.gov.ng/servicom.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    .servicom-follow-up {
+      margin-top: 14px;
+      font-size: .85rem;
+      color: var(--text-3);
+    }
+    .servicom-follow-up a { color: var(--green); }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -29,20 +45,46 @@
     <section>
       <div class="container">
         <div class="two-col">
+
+          <!-- Left: what SERVICOM means -->
           <div>
             <h2>What SERVICOM means.</h2>
             <p>SERVICOM is a Government-wide initiative requiring every Ministry, Department and Agency to publish a Service Charter and to deal with citizens with courtesy, efficiency and accountability.</p>
             <p>In the Federal Ministry of Defence, SERVICOM is championed by the Department of Reform Coordination and Service Improvement. Our SERVICOM Unit receives, investigates and resolves complaints about the quality of service the Ministry provides.</p>
             <a href="services.html#charter" class="btn-link">Read our Service Charter</a>
           </div>
+
+          <!-- Right: complaint form -->
           <div>
             <h2>Make a complaint.</h2>
-            <form class="form-grid" data-form-type="servicom" data-success-message="Thank you. Your SERVICOM complaint has been received. You will receive a reference number by email within 24 hours." onsubmit="return window.modFormSubmit(this, event);" style="margin-top:14px;">
-              <div><label for="s-name">Name</label><input id="s-name" name="name" type="text" required /></div>
-              <div><label for="s-email">Email</label><input id="s-email" name="email" type="email" required /></div>
-              <div class="full"><label for="s-where">Where the service was received</label><input id="s-where" name="where" type="text" required placeholder="e.g. Procurement Department, Ship House" /></div>
-              <div class="full"><label for="s-when">When (date)</label><input id="s-when" name="when" type="date" required /></div>
-              <div class="full"><label for="s-details">What happened</label><textarea id="s-details" name="details" required></textarea></div>
+            <form class="form-grid"
+                  data-form-type="servicom"
+                  data-success-message="Your SERVICOM complaint has been received and logged. The SERVICOM Unit will review it and respond to the email address you provided within 7 working days."
+                  onsubmit="return window.modFormSubmit(this, event);">
+              <div>
+                <label for="s-name">Name</label>
+                <input id="s-name" name="name" type="text" required />
+              </div>
+              <div>
+                <label for="s-email">Email</label>
+                <input id="s-email" name="email" type="email" required />
+              </div>
+              <div class="full">
+                <label for="s-subject">Subject</label>
+                <input id="s-subject" name="subject" type="text" required placeholder="Brief description of your complaint" />
+              </div>
+              <div class="full">
+                <label for="s-where">Where the service was received</label>
+                <input id="s-where" name="where" type="text" required placeholder="e.g. Procurement Department, Ship House" />
+              </div>
+              <div class="full">
+                <label for="s-when">When (date)</label>
+                <input id="s-when" name="when" type="date" required />
+              </div>
+              <div class="full">
+                <label for="s-details">What happened</label>
+                <textarea id="s-details" name="details" required placeholder="Describe what happened and how the Ministry's service standards were not met."></textarea>
+              </div>
               <div class="full">
                 <div class="form-error" role="alert" aria-live="assertive" style="display:none; align-items:center; gap:8px; margin-top:8px; font-size:.83rem; color:var(--red);">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -53,13 +95,18 @@
                 <div class="mod-captcha-widget"></div>
                 <input type="hidden" name="captcha_response" class="mod-captcha-response" value="" />
               </div>
-              <!-- Honeypot: hidden from users, filled only by bots -->
+              <!-- Honeypot -->
               <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" />
               <input type="hidden" name="form_loaded_at" class="mod-form-ts" value="" />
-              <div class="full"><button class="btn btn-green" type="submit">Submit complaint</button></div>
+              <div class="full">
+                <button class="btn btn-green" type="submit">Submit complaint</button>
+              </div>
             </form>
-            <p style="margin-top:14px; font-size:.85rem; color:var(--ink-3);">SERVICOM complaints are resolved within <strong>7 working days</strong>. Email <a href="mailto:servicom@defence.gov.ng">servicom@defence.gov.ng</a> to follow up.</p>
+            <p class="servicom-follow-up">
+              SERVICOM complaints are resolved within <strong>7 working days</strong>. Email <a href="mailto:servicom@defence.gov.ng">servicom@defence.gov.ng</a> to follow up.
+            </p>
           </div>
+
         </div>
       </div>
     </section>
@@ -72,10 +119,8 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>
 </html>
-

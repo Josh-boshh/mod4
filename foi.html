@@ -6,12 +6,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Freedom of Information — Federal Ministry of Defence</title>
   <meta name="description" content="Submit Freedom of Information requests to the Federal Ministry of Defence under the FOI Act, 2011." />
+  <link rel="canonical" href="https://defence.gov.ng/foi.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Freedom of Information — Federal Ministry of Defence" />
+  <meta property="og:description" content="Submit Freedom of Information requests to the Federal Ministry of Defence under the FOI Act, 2011." />
+  <meta property="og:url" content="https://defence.gov.ng/foi.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Styled steps list ── */
+    .steps-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .steps-list li {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-body { flex: 1; }
+    .step-body strong { display: block; font-size: .92rem; color: var(--text-1); margin-bottom: 3px; }
+    .step-body span { font-size: .85rem; color: var(--text-3); line-height: 1.5; }
+
+    /* ── FOI desk contact block ── */
+    .foi-desk {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .foi-desk-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .foi-desk-name { font-weight: 700; font-size: .95rem; color: var(--text-1); }
+    .foi-desk-details { font-size: .85rem; color: var(--text-2); line-height: 1.7; }
+    .foi-desk-details a { color: var(--green); }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -29,11 +92,17 @@
     <section>
       <div class="container">
         <div class="two-col">
+
+          <!-- Left: form -->
           <div>
             <span class="eyebrow">Submit a request</span>
             <h2>FOI request form.</h2>
-            <p>Complete the form below to submit your request. The Ministry will respond within <strong>7 working days</strong> as required by the FOI Act.</p>
-            <form class="form-grid" data-form-type="foi" data-success-message="Thank you. Your FOI request has been logged. You will receive a reference number by email within 24 hours." onsubmit="return window.modFormSubmit(this, event);" style="margin-top:24px;">
+            <p>Complete the form to submit your request. The Ministry will respond within <strong>7 working days</strong> as required by the FOI Act.</p>
+            <form class="form-grid"
+                  data-form-type="foi"
+                  data-success-message="Your FOI request has been received and logged. The FOI Desk Officer will review it and respond to the email address you provided within 7 working days."
+                  onsubmit="return window.modFormSubmit(this, event);"
+                  style="margin-top:24px;">
               <div>
                 <label for="foi-name">Full name</label>
                 <input id="foi-name" name="name" type="text" required />
@@ -69,7 +138,7 @@
                 <div class="mod-captcha-widget"></div>
                 <input type="hidden" name="captcha_response" class="mod-captcha-response" value="" />
               </div>
-              <!-- Honeypot: hidden from users, filled only by bots -->
+              <!-- Honeypot -->
               <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" />
               <input type="hidden" name="form_loaded_at" class="mod-form-ts" value="" />
               <div class="full">
@@ -77,25 +146,61 @@
               </div>
             </form>
           </div>
+
+          <!-- Right: how it works -->
           <div>
             <span class="eyebrow">Information</span>
             <h2>How it works.</h2>
-            <ol style="margin-top:14px;">
-              <li><strong>Submit:</strong> use the form (left) or send a letter to the FOI Desk Officer at Ship House.</li>
-              <li><strong>Acknowledgement:</strong> we acknowledge in writing within 3 working days with a reference number.</li>
-              <li><strong>Response:</strong> records or a written reasoned reply within 7 working days of receipt.</li>
-              <li><strong>Appeal:</strong> if you disagree with the response you may appeal to the Federal High Court under §20 of the FOI Act.</li>
+
+            <ol class="steps-list">
+              <li>
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <strong>Submit</strong>
+                  <span>Use the form (left) or send a letter to the FOI Desk Officer at Ship House, Area 10, Abuja.</span>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <strong>Acknowledgement</strong>
+                  <span>We acknowledge in writing within 3 working days with a reference number.</span>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <strong>Response</strong>
+                  <span>Records or a written reasoned reply within 7 working days of receipt.</span>
+                </div>
+              </li>
+              <li>
+                <div class="step-num">4</div>
+                <div class="step-body">
+                  <strong>Appeal</strong>
+                  <span>If you disagree with the response you may appeal to the Federal High Court under §20 of the FOI Act.</span>
+                </div>
+              </li>
             </ol>
-            <div class="alert gold" style="margin-top:24px;"><strong>Exemptions.</strong> The Ministry can withhold a record only if its disclosure would damage national defence, foreign relations, an ongoing investigation, or fall within another narrow statutory exemption (FOI Act §11–17). Where exemptions apply we will tell you so and cite the section.</div>
+
+            <div class="alert gold" style="margin-top:28px;">
+              <strong>Exemptions.</strong> The Ministry can withhold a record only if its disclosure would damage national defence, foreign relations, an ongoing investigation, or fall within another narrow statutory exemption (FOI Act §11–17). Where exemptions apply we will tell you and cite the section.
+            </div>
+
             <h3 style="margin-top:32px;">Annual FOI report</h3>
-            <p>Each year the Ministry publishes the number of FOI requests received, granted, partially granted and refused. The latest report is available on request.</p>
-            <h3 style="margin-top:24px;">FOI Desk Officer</h3>
-            <p>Director, Reform Coordination & Service Improvement<br>
-              Federal Ministry of Defence<br>
-              Ship House, Area 10, Abuja<br>
-              <a href="mailto:foi@defence.gov.ng">foi@defence.gov.ng</a>
-            </p>
+            <p>Each year the Ministry publishes the number of FOI requests received, granted, partially granted and refused. The latest report is available on request from the FOI Desk Officer.</p>
+
+            <div class="foi-desk">
+              <div class="foi-desk-label">FOI Desk Officer</div>
+              <div class="foi-desk-name">Director, Reform Coordination &amp; Service Improvement</div>
+              <div class="foi-desk-details">
+                Federal Ministry of Defence<br />
+                Ship House, Area 10, Abuja, FCT<br />
+                <a href="mailto:foi@defence.gov.ng">foi@defence.gov.ng</a>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -108,10 +213,8 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
 </body>
 </html>
-

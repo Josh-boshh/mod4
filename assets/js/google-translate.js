@@ -6,11 +6,12 @@
 (function (window, document) {
   "use strict";
 
-  const AZURE_KEY    = ''; // API key removed for security; set this from a secure environment variable or build process
-  const AZURE_REGION = 'westeurope';       // ← paste Location e.g. westeurope
+  // Read key and region from MOD_CONFIG (set in config.js)
+  const AZURE_KEY    = (window.MOD_CONFIG && window.MOD_CONFIG.AZURE_TRANSLATE_KEY)    || '';
+  const AZURE_REGION = (window.MOD_CONFIG && window.MOD_CONFIG.AZURE_TRANSLATE_REGION) || 'westeurope';
   const STORAGE_KEY  = 'mod-lang';
   const ENDPOINT     = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
-  const SUPPORTED    = ['en', 'ha', 'ig', 'yo', 'fr', 'zh-Hans'];
+  const SUPPORTED    = ['en', 'ha', 'ig', 'yo', 'fr', 'es', 'zh-CN'];
 
   let originalNodes  = [];
   let isTranslated   = false;

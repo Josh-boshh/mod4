@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
 
         if (empty($errors)) {
             dbQuery('CREATE TABLE IF NOT EXISTS mod_admin_users (
-                id            SERIAL       PRIMARY KEY,
+                id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 email         VARCHAR(191) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
                 created_at    TIMESTAMP    NOT NULL DEFAULT NOW()
@@ -43,17 +43,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
             )');
 
             dbQuery('CREATE TABLE IF NOT EXISTS mod_hero_slides (
-                id           SERIAL       PRIMARY KEY,
+                id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 image_url    VARCHAR(255) NOT NULL,
                 alt_text     VARCHAR(255) NOT NULL,
                 role_text    VARCHAR(255) NOT NULL,
                 caption_text TEXT         NOT NULL,
                 sort_order   INT          NOT NULL DEFAULT 0,
-                active       SMALLINT     NOT NULL DEFAULT 1
+                active       TINYINT     NOT NULL DEFAULT 1
             )');
 
             dbQuery('CREATE TABLE IF NOT EXISTS mod_leaders (
-                id           SERIAL       PRIMARY KEY,
+                id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 position_key VARCHAR(64)  NOT NULL,
                 title        VARCHAR(255) NOT NULL,
                 name         VARCHAR(255) NOT NULL,
@@ -61,11 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
                 photo_url    VARCHAR(255) NOT NULL,
                 profile_link VARCHAR(255) NOT NULL,
                 sort_order   INT          NOT NULL DEFAULT 0,
-                active       SMALLINT     NOT NULL DEFAULT 1
+                active       TINYINT     NOT NULL DEFAULT 1
             )');
 
             dbQuery('CREATE TABLE IF NOT EXISTS mod_press_items (
-                id           SERIAL       PRIMARY KEY,
+                id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 title        VARCHAR(255) NOT NULL,
                 excerpt      TEXT         NOT NULL,
                 category     VARCHAR(127) NOT NULL,
@@ -74,26 +74,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
                 link_url     VARCHAR(255) NOT NULL,
                 slug         VARCHAR(255) NOT NULL,
                 sort_order   INT          NOT NULL DEFAULT 0,
-                active       SMALLINT     NOT NULL DEFAULT 1
+                active       TINYINT     NOT NULL DEFAULT 1
             )');
 
             dbQuery('CREATE TABLE IF NOT EXISTS mod_subscribers (
-                id            SERIAL       PRIMARY KEY,
+                id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 email         VARCHAR(191) NOT NULL UNIQUE,
                 subscribed_at TIMESTAMP    NOT NULL DEFAULT NOW()
             )');
 
             dbQuery('CREATE TABLE IF NOT EXISTS mod_submissions (
-                id           SERIAL       PRIMARY KEY,
+                id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 form_type    VARCHAR(32)  NOT NULL,
                 name         VARCHAR(255) NOT NULL,
                 email        VARCHAR(191) NOT NULL,
                 subject      VARCHAR(255) NOT NULL DEFAULT \'\',
-                meta         JSONB,
+                meta         JSON,
                 submitted_at TIMESTAMP    NOT NULL DEFAULT NOW()
             )');
-            dbQuery('CREATE INDEX IF NOT EXISTS idx_sub_form_type    ON mod_submissions (form_type)');
-            dbQuery('CREATE INDEX IF NOT EXISTS idx_sub_submitted_at ON mod_submissions (submitted_at)');
+            dbQuery('CREATE INDEX idx_sub_form_type    ON mod_submissions (form_type)');
+            dbQuery('CREATE INDEX idx_sub_submitted_at ON mod_submissions (submitted_at)');
 
             dbQuery("INSERT INTO mod_settings (name, value) VALUES
                 ('hero_eyebrow', 'Federal Republic of Nigeria'),

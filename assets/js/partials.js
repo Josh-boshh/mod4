@@ -81,24 +81,24 @@
               <a href="military.html#airforce" data-i18n>Nigerian Air Force</a>
             </li>
             <li class="submenu-group"><span class="group-label">Civilian Components</span>
-              <a href="department.html?d=joint-services" data-i18n>Joint Services</a>
-              <a href="department.html?d=human-resources" data-i18n>Human Resources</a>
-              <a href="department.html?d=prs" data-i18n>Planning, Research & Statistics</a>
-              <a href="department.html?d=army-affairs" data-i18n>Army Affairs</a>
-              <a href="department.html?d=navy-affairs" data-i18n>Navy Affairs</a>
-              <a href="department.html?d=air-force-affairs" data-i18n>Air Force Affairs</a>
-              <a href="department.html?d=finance-accounts" data-i18n>Finance & Accounts</a>
-              <a href="department.html?d=procurement-dept" data-i18n>Procurement</a>
-              <a href="department.html?d=legal" data-i18n>Legal</a>
+              <a href="department.html?dept=joint-services" data-i18n>Joint Services</a>
+              <a href="department.html?dept=human-resources" data-i18n>Human Resources</a>
+              <a href="department.html?dept=prs" data-i18n>Planning, Research & Statistics</a>
+              <a href="department.html?dept=army-affairs" data-i18n>Army Affairs</a>
+              <a href="department.html?dept=navy-affairs" data-i18n>Navy Affairs</a>
+              <a href="department.html?dept=air-force-affairs" data-i18n>Air Force Affairs</a>
+              <a href="department.html?dept=finance-accounts" data-i18n>Finance & Accounts</a>
+              <a href="department.html?dept=procurement-dept" data-i18n>Procurement</a>
+              <a href="department.html?dept=legal" data-i18n>Legal</a>
             </li>
             <li class="submenu-group"><span class="group-label">Civilian Component II</span>
-              <a href="department.html?d=health-services" data-i18n>Health Services</a>
-              <a href="department.html?d=general-services" data-i18n>General Services</a>
-              <a href="department.html?d=public-relations" data-i18n>Info & Public Relations</a>
-              <a href="department.html?d=education-services" data-i18n>Education Services</a>
-              <a href="department.html?d=permanent-secretary" data-i18n>Office of the Permanent Secretary</a>
-              <a href="department.html?d=internal-audit" data-i18n>Internal Audit</a>
-              <a href="department.html?d=reform-coordination" data-i18n>Reform Coordination & Service Improvement</a>
+              <a href="department.html?dept=health-services" data-i18n>Health Services</a>
+              <a href="department.html?dept=general-services" data-i18n>General Services</a>
+              <a href="department.html?dept=public-relations" data-i18n>Info & Public Relations</a>
+              <a href="department.html?dept=education-services" data-i18n>Education Services</a>
+              <a href="department.html?dept=permanent-secretary" data-i18n>Office of the Permanent Secretary</a>
+              <a href="department.html?dept=internal-audit" data-i18n>Internal Audit</a>
+              <a href="department.html?dept=reform-coordination" data-i18n>Reform Coordination & Service Improvement</a>
             </li>
             <li class="submenu-group"><span class="group-label">Others</span>
               <a href="agencies.html#nda" data-i18n>NDA</a>
@@ -171,8 +171,8 @@
             </div>
           </div>
           <p>Ship House, Central Business District, Area 10, Federal Capital Territory, Abuja, Nigeria.</p>
-          <p style="margin-top:8px;">
-            <a href="mailto:contact@defence.gov.ng" style="color:rgba(255,255,255,.85);">contact@defence.gov.ng</a>
+          <p class="footer-email">
+            <a href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>
           </p>
           <div class="footer-social" aria-label="Official social media">
             <a href="${FB}" target="_blank" rel="noopener" aria-label="Facebook">${ICON_FB}</a>
@@ -215,8 +215,8 @@
             <li><a href="https://airforce.mil.ng" target="_blank" rel="noopener">Nigerian Air Force</a></li>
             <li><a href="https://interior.gov.ng" target="_blank" rel="noopener">Ministry of Interior</a></li>
           </ul>
-          <h4 style="margin-top:28px;" data-i18n>Newsletter</h4>
-          <p style="margin-bottom:8px;font-size:.82rem;">Receive press releases &amp; updates.</p>
+          <h4 class="footer-newsletter-head" data-i18n>Newsletter</h4>
+          <p class="footer-newsletter-sub">Receive press releases &amp; updates.</p>
           <form class="newsletter-wrap mod-newsletter-form" onsubmit="return window.modNewsletterSubmit(this, event);">
             <input type="email" placeholder="your.email@example.com" required aria-label="Email address" />
             <button type="submit" data-i18n>Subscribe</button>
@@ -350,6 +350,7 @@
       { title: "Agencies",                              url: "agencies.html",       keys: "agencies nda ndc afcsc dicon nafrc mpb dia tri-service" },
       { title: "Joint Operations",                      url: "operations.html",     keys: "operations hadin kai fansan yamma delta safe haven mnjtf" },
       { title: "Press Releases",                        url: "press.html",          keys: "press releases news speeches communiques media" },
+      { title: "Press Release Article",                url: "press-release.html",  keys: "press release article full story read" },
       { title: "Gallery",                               url: "gallery.html",        keys: "gallery photos events images" },
       { title: "Services",                              url: "services.html",       keys: "services recruitment charter downloads" },
       { title: "Veterans",                              url: "veterans.html",       keys: "veterans pensions nafrc mpb welfare discharged resettlement" },

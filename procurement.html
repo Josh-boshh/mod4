@@ -6,6 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Procurement — Federal Ministry of Defence</title>
   <meta name="description" content="Open tenders, expressions of interest and contract awards published in line with the Public Procurement Act 2007." />
+  <link rel="canonical" href="https://defence.gov.ng/procurement.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Procurement — Federal Ministry of Defence" />
+  <meta property="og:description" content="Open tenders, expressions of interest and contract awards published in line with the Public Procurement Act 2007." />
+  <meta property="og:url" content="https://defence.gov.ng/procurement.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,9 +21,43 @@
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
   <style>
-    .tender-row { display:grid; grid-template-columns: 1fr 160px 160px 110px; gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); align-items: center; }
-    .tender-row .meta { font-size:.78rem; color: var(--ink-3); letter-spacing:.04em; }
-    @media (max-width: 880px) { .tender-row { grid-template-columns: 1fr; gap: 8px; } }
+    /* ── Tender row ── */
+    .tender-list { display: flex; flex-direction: column; }
+    .tender-row {
+      display: grid;
+      grid-template-columns: 1fr 160px 160px 130px;
+      gap: 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+    .tender-row:last-child { border-bottom: none; }
+    .tender-title { font-weight: 600; font-size: .95rem; color: var(--text-1); margin-bottom: 4px; }
+    .tender-meta  { font-size: .78rem; color: var(--text-3); letter-spacing: .04em; }
+    .tender-ref   { font-size: .8rem; color: var(--text-2); font-family: monospace; }
+    .tender-date  { font-size: .82rem; color: var(--text-2); }
+    .tender-date.closing-soon { color: #c45c00; font-weight: 600; }
+    .tender-actions { display: flex; gap: 8px; }
+
+    /* ── Loading / empty ── */
+    .proc-loading, .proc-empty {
+      text-align: center; padding: 48px 0; color: var(--text-3);
+    }
+    .proc-spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--green);
+      border-radius: 50%; animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Award cards ── */
+    .award-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+
+    @media (max-width: 880px) {
+      .tender-row { grid-template-columns: 1fr; gap: 8px; }
+      .award-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -31,68 +73,56 @@
       </div>
     </section>
 
+    <!-- Active tenders -->
     <section>
       <div class="container">
-        <div class="flex-between"><div><span class="eyebrow">Active Tenders</span><h2>Current opportunities.</h2></div><span class="tag">Updated <span data-last-updated>May 2026</span></span></div>
-
-        <div>
-          <div class="tender-row">
-            <div>
-              <h4 style="margin-bottom:6px;">Supply of office IT infrastructure — HQ Ship House</h4>
-              <div class="meta">Open tender · National Competitive Bidding</div>
-            </div>
-            <div class="meta">Ref: FMOD/2026/IT/01</div>
-            <div class="meta">Closes 12 Jun 2026</div>
-            <div><a class="btn btn-sm" href="#">Download</a></div>
-          </div>
-          <div class="tender-row">
-            <div>
-              <h4 style="margin-bottom:6px;">Renovation of Ship House conference rooms</h4>
-              <div class="meta">Open tender · Works</div>
-            </div>
-            <div class="meta">Ref: FMOD/2026/WK/04</div>
-            <div class="meta">Closes 28 Jun 2026</div>
-            <div><a class="btn btn-sm" href="#">Download</a></div>
-          </div>
-          <div class="tender-row">
-            <div>
-              <h4 style="margin-bottom:6px;">Vehicle fleet maintenance services (3-year framework)</h4>
-              <div class="meta">EOI · Services</div>
-            </div>
-            <div class="meta">Ref: FMOD/2026/SV/07</div>
-            <div class="meta">Closes 05 Jul 2026</div>
-            <div><a class="btn btn-sm" href="#">Download</a></div>
-          </div>
-          <div class="tender-row">
-            <div>
-              <h4 style="margin-bottom:6px;">Defence-industrial advisory & feasibility study</h4>
-              <div class="meta">Restricted · Consultancy</div>
-            </div>
-            <div class="meta">Ref: FMOD/2026/CN/02</div>
-            <div class="meta">Closes 19 Jul 2026</div>
-            <div><a class="btn btn-sm" href="#">Download</a></div>
-          </div>
+        <div class="flex-between">
+          <div><span class="eyebrow">Active Tenders</span><h2>Current opportunities.</h2></div>
+          <span class="tag" id="last-updated"></span>
         </div>
+
+        <div id="tenders-loading" class="proc-loading">
+          <div class="proc-spinner"></div>
+          Loading tenders…
+        </div>
+        <div class="tender-list" id="tenders-list" style="display:none;"></div>
+        <div class="proc-empty" id="tenders-empty" style="display:none;">No active tenders at this time. Check back soon.</div>
       </div>
     </section>
 
+    <!-- Contract awards -->
     <section class="cream">
       <div class="container">
         <div class="section-head"><span class="eyebrow">Contract Awards</span><h2>Recent awards.</h2></div>
-        <div class="grid grid-2">
-          <div class="card"><div class="index">2026 · Award</div><h3>Medical equipment for military hospitals</h3><p>National Competitive Bidding · Awarded after evaluation by the Ministerial Tenders Board.</p></div>
-          <div class="card"><div class="index">2026 · Award</div><h3>NAFRC training equipment, batch 2026A</h3><p>Open tender · Awarded for delivery to the Resettlement Centre, Oshodi.</p></div>
+        <div id="awards-loading" class="proc-loading">
+          <div class="proc-spinner"></div>
+          Loading awards…
         </div>
+        <div class="award-grid" id="awards-grid" style="display:none;"></div>
+        <div class="proc-empty" id="awards-empty" style="display:none;">No contract awards published yet.</div>
       </div>
     </section>
 
+    <!-- Bidder guide -->
     <section>
       <div class="container">
         <div class="section-head center"><span class="eyebrow">How to Bid</span><h2>Bidder guide.</h2></div>
         <div class="grid grid-3">
-          <div class="card"><div class="index">Step 01</div><h3>Register on NOCOPO</h3><p>Register with the Nigerian Open Contracting Portal (NOCOPO) and on the BPP database of contractors.</p></div>
-          <div class="card"><div class="index">Step 02</div><h3>Obtain bidding documents</h3><p>Download standard bidding documents from this page or collect printed copies at the Department of Procurement, Ship House.</p></div>
-          <div class="card"><div class="index">Step 03</div><h3>Submit before deadline</h3><p>Submit sealed bids before the closing date stated on the notice. Late submissions are rejected.</p></div>
+          <div class="card">
+            <div class="index">Step 01</div>
+            <h3>Register on NOCOPO</h3>
+            <p>Register with the Nigerian Open Contracting Portal (NOCOPO) and on the BPP database of contractors.</p>
+          </div>
+          <div class="card">
+            <div class="index">Step 02</div>
+            <h3>Obtain bidding documents</h3>
+            <p>Download standard bidding documents from this page or collect printed copies at the Department of Procurement, Ship House.</p>
+          </div>
+          <div class="card">
+            <div class="index">Step 03</div>
+            <h3>Submit before deadline</h3>
+            <p>Submit sealed bids before the closing date stated on the notice. Late submissions are rejected without exception.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -105,10 +135,102 @@
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var FALLBACK_TENDERS = [
+      { title: 'Supply of office IT infrastructure — HQ Ship House',     ref_number: 'FMOD/2026/IT/01', category: 'Supplies',    method: 'Open Tender · National Competitive Bidding', closes_at: '12 Jun 2026', doc_url: '', description: '' },
+      { title: 'Renovation of Ship House conference rooms',               ref_number: 'FMOD/2026/WK/04', category: 'Works',       method: 'Open Tender · Works',                        closes_at: '28 Jun 2026', doc_url: '', description: '' },
+      { title: 'Vehicle fleet maintenance services (3-year framework)',   ref_number: 'FMOD/2026/SV/07', category: 'Services',    method: 'EOI · Services',                             closes_at: '5 Jul 2026',  doc_url: '', description: '' },
+      { title: 'Defence-industrial advisory & feasibility study',         ref_number: 'FMOD/2026/CN/02', category: 'Consultancy', method: 'Restricted · Consultancy',                   closes_at: '19 Jul 2026', doc_url: '', description: '' },
+    ];
+    var FALLBACK_AWARDS = [
+      { title: 'Medical equipment for military hospitals',  ref_number: 'FMOD/2026/AW/01', method: 'National Competitive Bidding', description: 'Awarded after evaluation by the Ministerial Tenders Board.', doc_url: '' },
+      { title: 'NAFRC training equipment, batch 2026A',    ref_number: 'FMOD/2026/AW/02', method: 'Open Tender',                  description: 'Awarded for delivery to the Resettlement Centre, Oshodi.',    doc_url: '' },
+    ];
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function renderTenders(items) {
+      var loadingEl = document.getElementById('tenders-loading');
+      var listEl    = document.getElementById('tenders-list');
+      var emptyEl   = document.getElementById('tenders-empty');
+      var luEl      = document.getElementById('last-updated');
+
+      loadingEl.style.display = 'none';
+
+      if (!items || !items.length) {
+        emptyEl.style.display = '';
+        return;
+      }
+
+      luEl.textContent = 'Updated ' + new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      listEl.style.display = '';
+      listEl.innerHTML = items.map(function (t) {
+        var downloadBtn = t.doc_url
+          ? '<a class="btn btn-sm btn-green" href="' + esc(t.doc_url) + '" download target="_blank" rel="noopener">Download</a>'
+          : '<span class="btn btn-sm" style="opacity:.4;cursor:default;">No file</span>';
+
+        return '<div class="tender-row">' +
+          '<div>' +
+            '<div class="tender-title">' + esc(t.title) + '</div>' +
+            '<div class="tender-meta">' + esc(t.method) + (t.category ? ' · ' + esc(t.category) : '') + '</div>' +
+            (t.description ? '<div class="tender-meta" style="margin-top:3px;">' + esc(t.description) + '</div>' : '') +
+          '</div>' +
+          '<div class="tender-ref">' + esc(t.ref_number) + '</div>' +
+          '<div class="tender-date">' + (t.closes_at ? 'Closes ' + esc(t.closes_at) : '—') + '</div>' +
+          '<div class="tender-actions">' + downloadBtn + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderAwards(items) {
+      var loadingEl = document.getElementById('awards-loading');
+      var gridEl    = document.getElementById('awards-grid');
+      var emptyEl   = document.getElementById('awards-empty');
+
+      loadingEl.style.display = 'none';
+
+      if (!items || !items.length) {
+        emptyEl.style.display = '';
+        return;
+      }
+
+      gridEl.style.display = '';
+      gridEl.innerHTML = items.map(function (a) {
+        var downloadBtn = a.doc_url
+          ? '<a class="btn-link" href="' + esc(a.doc_url) + '" download target="_blank" rel="noopener">Download award notice</a>'
+          : '';
+        return '<div class="card">' +
+          '<div class="index">Award · ' + esc(a.method) + '</div>' +
+          '<h3>' + esc(a.title) + '</h3>' +
+          (a.description ? '<p>' + esc(a.description) + '</p>' : '') +
+          (a.ref_number ? '<div style="font-size:.78rem;color:var(--text-3);font-family:monospace;margin-top:4px;">' + esc(a.ref_number) + '</div>' : '') +
+          (downloadBtn ? '<div style="margin-top:12px;">' + downloadBtn + '</div>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    fetch('/api/procurement')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        renderTenders(d.tenders && d.tenders.length ? d.tenders : FALLBACK_TENDERS);
+        renderAwards(d.awards && d.awards.length ? d.awards : FALLBACK_AWARDS);
+      })
+      .catch(function () {
+        renderTenders(FALLBACK_TENDERS);
+        renderAwards(FALLBACK_AWARDS);
+      });
+  }());
+  </script>
 </body>
 </html>
-

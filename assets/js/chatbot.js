@@ -127,7 +127,7 @@
       keywords: ['minister','musa','christopher','honourable','hon','minister of defence',
                  'who is in charge','head of','leadership','defence minister'],
       responses: [
-        'The <strong>Honourable Minister of Defence</strong> is <strong>General Christopher Gwabin Musa (rtd), OFR</strong>. 🎖\n\nGeneral Musa is a highly decorated military officer and former Chief of Defence Staff. He was appointed Honourable Minister of Defence in 2023.\n\n→ <a href="minister.html">Read the Minister\'s full profile</a>',
+        'The <strong>Honourable Minister of Defence</strong> is <strong>General Christopher Gwabin Musa (rtd), OFR</strong>. 🎖\n\nGeneral Musa is a highly decorated military officer and former Chief of Defence Staff. He was appointed Honourable Minister of Defence on 4 December 2025.\n\n→ <a href="minister.html">Read the Minister\'s full profile</a>',
         '🇳🇬 <strong>General Christopher Gwabin Musa (rtd), OFR</strong> serves as the Honourable Minister of Defence.\n\nThe <strong>Minister of State</strong> is <strong>Dr. Bello Mohammed Matawalle, MON</strong>.\n\n→ <a href="minister.html">Minister\'s profile</a> | <a href="minister-of-state.html">Minister of State\'s profile</a>'
       ],
       chips: ['Management team','Departments','Press Office']

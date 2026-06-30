@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../spam_protection.php';
 header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Cache-Control: no-store');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -65,7 +67,7 @@ if (spamRateLimited('subscribe', SPAM_SUB_LIMIT, SPAM_SUB_WINDOW)) {
 
 // ── Visible captcha ──────────────────────────────────────────────────────────
 if (!spamVerifyCaptcha($body)) {
-    spamReject('subscribe', 'captcha_fail', 'Security check failed. Please answer the maths question and try again.');
+    spamReject('subscribe', 'captcha_fail', 'Security check failed. Please complete the slider puzzle and try again.');
 }
 
 // ── Layer 5: Input validation ─────────────────────────────────────────────────
@@ -86,7 +88,7 @@ if ($action === 'add') {
     }
 
     dbQuery(
-        'INSERT INTO mod_subscribers (email, subscribed_at) VALUES (:email, NOW()) ON CONFLICT DO NOTHING',
+        'INSERT INTO mod_subscribers (email, subscribed_at) VALUES (:email, NOW()) ON DUPLICATE KEY UPDATE email = email',
         ['email' => $email]
     );
     echo json_encode(['success' => true]);

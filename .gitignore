@@ -1,0 +1,35 @@
+# Environment and secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+
+# Database credentials
+docker/secrets/
+
+# Uploaded user content — commit placeholder dirs only
+assets/images/hero/*.jpg
+assets/images/hero/*.jpeg
+assets/images/hero/*.png
+assets/images/hero/*.webp
+assets/images/press/
+assets/images/gallery/
+assets/images/headshots/*.jpg
+assets/images/headshots/*.jpeg
+assets/images/headshots/*.png
+!assets/images/headshots/permanent-secretary.jpeg
+assets/documents/tenders/
+assets/documents/reports/
+
+# PHP logs
+*.log
+php_errors.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+*.swo
+
+# Node (if ever added)
+node_modules/

@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!checkAdminCredentials($email, $password)) {
         $error = 'Unable to sign in. Check your credentials and try again.';
     } else {
+        session_regenerate_id(true); // prevent session fixation attacks
         $_SESSION['admin_email'] = $email;
         header('Location: index.php');
         exit;
@@ -34,7 +35,7 @@ $csrf = csrfToken();
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Admin Login — FMOD Website</title>
   <link rel="icon" href="../assets/images/favicon.png" />
-  <link rel="stylesheet" href="../assets/css/style.css?v=8" />
+  <link rel="stylesheet" href="../assets/css/style.css?v=19" />
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body class="admin-body">

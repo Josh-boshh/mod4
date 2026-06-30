@@ -1,11 +1,17 @@
 <?php
+// ── Secure session configuration ─────────────────────────────────────────────
+ini_set('session.cookie_httponly', '1');   // prevent JS access to session cookie
+ini_set('session.cookie_secure', '1');     // HTTPS only
+ini_set('session.cookie_samesite', 'Strict'); // CSRF protection
+ini_set('session.use_strict_mode', '1');   // reject unrecognised session IDs
+ini_set('session.cookie_lifetime', '0');   // expire on browser close
+ini_set('session.gc_maxlifetime', '7200'); // 2 hour server-side expiry
 session_start();
 require_once __DIR__ . '/default-data.php';
 
-// ── Database (PostgreSQL) ─────────────────────────────────────────────────────
-// On Render: DATABASE_URL is injected automatically from the linked database.
-// Locally: set DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASS env vars,
-//          or install PostgreSQL and use the defaults below.
+// ── Database (MySQL) ─────────────────────────────────────────────────────────
+// Set DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASS env vars,
+// or update the defaults below.
 define('SPAM_IP_HASH_KEY', getenv('SPAM_IP_HASH_KEY') ?: 'a3f8c2e1d94b7056af3219084ecbd5f76a018392cf54de2b71093840ebf62c51');
 define('ADMIN_BASE_URL', '/admin/');
 
@@ -17,18 +23,18 @@ function modDbConfig(): array
     if ($url) {
         $p   = parse_url($url);
         $cfg = [
-            'dsn'  => sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
-                              $p['host'], $p['port'] ?? 5432, ltrim($p['path'] ?? '/', '/')),
+            'dsn'  => sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
+                              $p['host'], $p['port'] ?? 3306, ltrim($p['path'] ?? '/', '/')),
             'user' => rawurldecode($p['user'] ?? ''),
             'pass' => rawurldecode($p['pass'] ?? ''),
         ];
     } else {
         $cfg = [
-            'dsn'  => sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=prefer',
+            'dsn'  => sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
                               getenv('DB_HOST') ?: '127.0.0.1',
-                              getenv('DB_PORT') ?: '5432',
+                              getenv('DB_PORT') ?: '3306',
                               getenv('DB_NAME') ?: 'mod3'),
-            'user' => getenv('DB_USER') ?: 'postgres',
+            'user' => getenv('DB_USER') ?: 'root',
             'pass' => getenv('DB_PASS') ?: '',
         ];
     }
@@ -141,38 +147,60 @@ function runMigrations(): void
     $migrations = [
         // Core submissions table
         "CREATE TABLE IF NOT EXISTS mod_submissions (
-            id           SERIAL       PRIMARY KEY,
+            id           INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
             form_type    VARCHAR(32)  NOT NULL,
             name         VARCHAR(255) NOT NULL,
             email        VARCHAR(191) NOT NULL,
             subject      VARCHAR(255) NOT NULL DEFAULT '',
-            meta         JSONB,
+            meta         JSON,
             submitted_at TIMESTAMP    NOT NULL DEFAULT NOW()
-        )",
-        "CREATE INDEX IF NOT EXISTS idx_sub_form_type    ON mod_submissions (form_type)",
-        "CREATE INDEX IF NOT EXISTS idx_sub_submitted_at ON mod_submissions (submitted_at)",
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_sub_form_type    ON mod_submissions (form_type)",
+        "CREATE INDEX idx_sub_submitted_at ON mod_submissions (submitted_at)",
 
         // Rate-limit counters (fixed-window per hashed IP + endpoint)
         "CREATE TABLE IF NOT EXISTS mod_rate_limits (
-            id           SERIAL      PRIMARY KEY,
+            id           INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
             ip_hash      VARCHAR(64) NOT NULL,
             endpoint     VARCHAR(32) NOT NULL,
             hits         INT         NOT NULL DEFAULT 1,
             window_start TIMESTAMP   NOT NULL DEFAULT NOW(),
-            UNIQUE (ip_hash, endpoint)
-        )",
-        "CREATE INDEX IF NOT EXISTS idx_rate_window ON mod_rate_limits (window_start)",
+            UNIQUE KEY uq_rate (ip_hash, endpoint)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_rate_window ON mod_rate_limits (window_start)",
 
         // Spam / rejected-submission log
         "CREATE TABLE IF NOT EXISTS mod_spam_log (
-            id         SERIAL      PRIMARY KEY,
+            id         INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
             ip_hash    VARCHAR(64) NOT NULL,
             endpoint   VARCHAR(32) NOT NULL,
             reason     VARCHAR(64) NOT NULL,
             created_at TIMESTAMP   NOT NULL DEFAULT NOW()
-        )",
-        "CREATE INDEX IF NOT EXISTS idx_spam_ip ON mod_spam_log (ip_hash)",
-        "CREATE INDEX IF NOT EXISTS idx_spam_at ON mod_spam_log (created_at)",
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_spam_ip ON mod_spam_log (ip_hash)",
+        "CREATE INDEX idx_spam_at ON mod_spam_log (created_at)",
+
+        // Gallery images table
+        "CREATE TABLE IF NOT EXISTS mod_gallery_images (\n            id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,\n            image_url   VARCHAR(255) NOT NULL,\n            alt_text    VARCHAR(255) NOT NULL DEFAULT \'\',\n            caption     TEXT         NOT NULL DEFAULT \'\',\n            event_date  DATE,\n            category    VARCHAR(127) NOT NULL DEFAULT \'General\',\n            sort_order  INT          NOT NULL DEFAULT 0,\n            active      TINYINT      NOT NULL DEFAULT 1,\n            created_at  TIMESTAMP    NOT NULL DEFAULT NOW()\n        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_gallery_sort ON mod_gallery_images (sort_order ASC, id ASC)",
+
+        // Add body column to press items if not exists
+        "ALTER TABLE mod_press_items ADD COLUMN IF NOT EXISTS body LONGTEXT NOT NULL DEFAULT ''",
+
+        // Active joint operations table
+        "CREATE TABLE IF NOT EXISTS mod_operations (\n            id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,\n            region      VARCHAR(127) NOT NULL DEFAULT \'\',\n            name        VARCHAR(255) NOT NULL,\n            description TEXT         NOT NULL DEFAULT \'\',\n            sort_order  INT          NOT NULL DEFAULT 0,\n            active      TINYINT      NOT NULL DEFAULT 1,\n            created_at  TIMESTAMP    NOT NULL DEFAULT NOW()\n        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_ops_sort ON mod_operations (sort_order ASC, id ASC)",
+
+        // Procurement tenders & contract awards
+        "CREATE TABLE IF NOT EXISTS mod_tenders (\n            id           INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,\n            type         ENUM(\'tender\',\'award\') NOT NULL DEFAULT \'tender\',\n            title        VARCHAR(255) NOT NULL,\n            ref_number   VARCHAR(127) NOT NULL DEFAULT \'\',\n            category     VARCHAR(127) NOT NULL DEFAULT \'\',\n            method       VARCHAR(127) NOT NULL DEFAULT \'\',\n            closes_at    DATE,\n            doc_url      VARCHAR(255) NOT NULL DEFAULT \'\',\n            description  TEXT         NOT NULL DEFAULT \'\',\n            sort_order   INT          NOT NULL DEFAULT 0,\n            active       TINYINT      NOT NULL DEFAULT 1,\n            created_at   TIMESTAMP    NOT NULL DEFAULT NOW()\n        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE INDEX idx_tenders_sort ON mod_tenders (type ASC, sort_order ASC, id ASC)",
+
+        // Directors table — overrides departments-data.js values when set
+        "CREATE TABLE IF NOT EXISTS mod_directors (\n            id           INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,\n            dept_slug    VARCHAR(127) NOT NULL UNIQUE,\n            director     VARCHAR(255) NOT NULL,\n            role         VARCHAR(255) NOT NULL DEFAULT \'\',\n            photo_url    VARCHAR(255) NOT NULL DEFAULT \'\',\n            updated_at   TIMESTAMP    NOT NULL DEFAULT NOW() ON UPDATE NOW()\n        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+        // Annual reports
+        "CREATE TABLE IF NOT EXISTS mod_annual_reports (\n            id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,\n            year        SMALLINT     NOT NULL,\n            title       VARCHAR(255) NOT NULL,\n            description TEXT         NOT NULL DEFAULT \'\',\n            doc_url     VARCHAR(255) NOT NULL DEFAULT \'\',\n            status      VARCHAR(32)  NOT NULL DEFAULT \'published\',\n            sort_order  INT          NOT NULL DEFAULT 0,\n            active      TINYINT      NOT NULL DEFAULT 1,\n            created_at  TIMESTAMP    NOT NULL DEFAULT NOW()\n        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE UNIQUE INDEX idx_reports_year ON mod_annual_reports (year)",
     ];
 
     foreach ($migrations as $sql) {
@@ -367,8 +395,32 @@ function createAdminUser(string $email, string $password): void
 
 function checkAdminCredentials(string $email, string $password): bool
 {
+    // Rate limit: max 10 login attempts per IP per 15 minutes
+    $ipHash = hash_hmac('sha256', ($_SERVER['REMOTE_ADDR'] ?? ''), defined('SPAM_IP_HASH_KEY') ? SPAM_IP_HASH_KEY : 'login-fallback');
+    $cutoff = date('Y-m-d H:i:s', time() - 900);
+    try {
+        dbQuery(
+            'INSERT INTO mod_rate_limits (ip_hash, endpoint, hits, window_start) VALUES (:ip, :ep, 1, NOW())
+             ON DUPLICATE KEY UPDATE
+               hits         = CASE WHEN window_start < :cutoff1 THEN 1 ELSE hits + 1 END,
+               window_start = CASE WHEN window_start < :cutoff2 THEN NOW() ELSE window_start END',
+            ['ip' => $ipHash, 'ep' => 'login', 'cutoff1' => $cutoff, 'cutoff2' => $cutoff]
+        );
+        $row = dbFetch('SELECT hits FROM mod_rate_limits WHERE ip_hash = :ip AND endpoint = :ep', ['ip' => $ipHash, 'ep' => 'login']);
+        if ($row && (int)$row['hits'] > 10) {
+            error_log('[MOD login] rate-limited IP ' . substr($ipHash, 0, 8));
+            return false;
+        }
+    } catch (Throwable $e) { /* fail open on DB error */ }
+
     $row = dbFetch('SELECT password_hash FROM mod_admin_users WHERE email = ? LIMIT 1', [$email]);
-    return $row && password_verify($password, $row['password_hash']);
+    $valid = $row && password_verify($password, $row['password_hash']);
+
+    // Constant-time comparison to prevent timing attacks
+    if (!$row) {
+        password_verify($password, '$2y$12$invalidhashpaddingtopreventimingtattacks00000000000000000');
+    }
+    return $valid;
 }
 
 function saveContentBlob(array $blob): void
@@ -439,4 +491,178 @@ function saveContentBlob(array $blob): void
     }
 
     pdo()->commit();
+}
+
+function getGalleryImages(bool $activeOnly = true): array
+{
+    $sql = 'SELECT * FROM mod_gallery_images' . ($activeOnly ? ' WHERE active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+    return safeDbFetchAll($sql);
+}
+
+function defaultGalleryImages(): array
+{
+    return [
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/5c91a2fb5a3c3d7d91aa26fb98ea005d/WhatsApp-Image-2026-05-08-at-09.51.56.jpg',
+            'alt_text' => 'Honourable Minister at the AMCE, Abuja',
+            'caption' => 'Honourable Minister at the AMCE, Abuja — 8 May 2026',
+            'event_date' => '2026-05-08',
+            'category' => 'Ministerial',
+            'sort_order' => 0,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/7ed124706b9db62fa4aae0e8bdc44f70/WhatsApp-Image-2026-05-06-at-09.44.49.jpg',
+            'alt_text' => 'Regional security meeting',
+            'caption' => 'Regional security meeting — 6 May 2026',
+            'event_date' => '2026-05-06',
+            'category' => 'Security',
+            'sort_order' => 1,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/f2ac3e9cb69b47524dec83e6268b40b1/WhatsApp-Image-2026-05-05-at-16.06.33.jpg',
+            'alt_text' => 'Veritas University delegation visit to Ship House',
+            'caption' => 'Veritas University delegation, Ship House — 5 May 2026',
+            'event_date' => '2026-05-05',
+            'category' => 'Engagements',
+            'sort_order' => 2,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/b64dada37ea1a198b4a6e0382f45f0c0/WhatsApp-Image-2026-05-05-at-04.41.488-1.jpg',
+            'alt_text' => 'Engagement on national security',
+            'caption' => 'Engagement on national security — 5 May 2026',
+            'event_date' => '2026-05-05',
+            'category' => 'Security',
+            'sort_order' => 3,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/7d5dab6eb3370ef45d22dfbeceb170b0/WhatsApp-Image-2026-05-05-at-04.41.4644.jpg',
+            'alt_text' => 'Address to Nigerian students',
+            'caption' => 'Address to Nigerian students — 5 May 2026',
+            'event_date' => '2026-05-05',
+            'category' => 'Engagements',
+            'sort_order' => 4,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/de24e192a317d951778e07962e82686d/WhatsApp-Image-2026-04-29-at-21.34.414.jpg',
+            'alt_text' => 'Inauguration of strategic committees',
+            'caption' => 'Inauguration of strategic committees — 29 April 2026',
+            'event_date' => '2026-04-29',
+            'category' => 'Ceremonies',
+            'sort_order' => 5,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'https://defence.gov.ng/wp-content/uploads/slider/cache/39e7bd9f42f86e2e15e02a7a8e72b6bb/WhatsApp-Image-2026-04-29-at-21.34.426.jpg',
+            'alt_text' => 'Strategic committee session at Ship House',
+            'caption' => 'Strategic committee session, Ship House',
+            'event_date' => '2026-04-29',
+            'category' => 'Ceremonies',
+            'sort_order' => 6,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'assets/images/headshots/general-christopher-musa.jpeg',
+            'alt_text' => 'Honourable Minister of Defence',
+            'caption' => 'Honourable Minister of Defence',
+            'event_date' => null,
+            'category' => 'Leadership',
+            'sort_order' => 7,
+            'active' => 1,
+        ],
+        [
+            'id' => 0,
+            'image_url' => 'assets/images/headshots/dr-bello-matawalle.jpg',
+            'alt_text' => 'Hon. Minister of State, Dr. Bello M. Matawalle',
+            'caption' => 'Honourable Minister of State, Dr. Bello M. Matawalle',
+            'event_date' => null,
+            'category' => 'Leadership',
+            'sort_order' => 8,
+            'active' => 1,
+        ],
+    ];
+}
+
+function getOperations(bool $activeOnly = true): array
+{
+    $sql = 'SELECT * FROM mod_operations' . ($activeOnly ? ' WHERE active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+    return safeDbFetchAll($sql);
+}
+
+function defaultOperations(): array
+{
+    return [
+        ['id'=>0,'region'=>'North-East','name'=>'Operation HADIN KAI','description'=>'The principal counter-insurgency operation against Boko Haram and ISWAP, headquartered in Maiduguri, Borno State. Conducts ground manoeuvre, air strikes, special operations and stabilisation across Borno, Yobe and Adamawa States.','sort_order'=>0,'active'=>1],
+        ['id'=>0,'region'=>'North-West','name'=>'Operation FANSAN YAMMA','description'=>'The counter-banditry operation across Zamfara, Sokoto, Katsina and Kebbi States, integrating Army and Air Force assets with Police, NSCDC and DSS in protection-of-civilians missions.','sort_order'=>1,'active'=>1],
+        ['id'=>0,'region'=>'North-Central','name'=>'Operation WHIRL STROKE','description'=>'Joint operation in the Middle Belt addressing farmer-herder conflict and rural insecurity in Benue, Taraba and Nasarawa States.','sort_order'=>2,'active'=>1],
+        ['id'=>0,'region'=>'North-Central / Plateau','name'=>'Operation SAFE HAVEN','description'=>'Stability operation in Plateau and southern Kaduna States, focused on community policing and rapid response.','sort_order'=>3,'active'=>1],
+        ['id'=>0,'region'=>'South-South','name'=>'Operation DELTA SAFE','description'=>'Tri-service operation in the Niger Delta, focused on counter-oil-theft, counter-piracy and protection of critical national infrastructure.','sort_order'=>4,'active'=>1],
+        ['id'=>0,'region'=>'South-East','name'=>'Operation UDO KA','description'=>'Internal security operation in the South-East addressing organised criminality and unlawful armed groups.','sort_order'=>5,'active'=>1],
+        ['id'=>0,'region'=>'Lake Chad','name'=>'Multi-National Joint Task Force','description'=>'Nigeria contributes the largest contingent to the MNJTF — alongside Cameroon, Chad and Niger — countering Boko Haram and ISWAP across the Lake Chad basin.','sort_order'=>6,'active'=>1],
+        ['id'=>0,'region'=>'International','name'=>'UN & ECOWAS deployments','description'=>'Nigeria has contributed to more than 40 peacekeeping missions since 1960, including ECOMOG, ONUC, UNAMSIL, MINUSMA and partner missions across Africa.','sort_order'=>7,'active'=>1],
+    ];
+}
+
+function getTenders(string $type = '', bool $activeOnly = true): array
+{
+    $where = $activeOnly ? 'WHERE active = 1' : 'WHERE 1';
+    if ($type) $where .= " AND type = " . pdo()->quote($type);
+    return safeDbFetchAll("SELECT * FROM mod_tenders $where ORDER BY sort_order ASC, id ASC");
+}
+
+function defaultTenders(): array
+{
+    return [
+        ['id'=>0,'type'=>'tender','title'=>'Supply of office IT infrastructure — HQ Ship House','ref_number'=>'FMOD/2026/IT/01','category'=>'Supplies','method'=>'Open Tender · National Competitive Bidding','closes_at'=>'2026-06-12','doc_url'=>'','description'=>'','sort_order'=>0,'active'=>1],
+        ['id'=>0,'type'=>'tender','title'=>'Renovation of Ship House conference rooms','ref_number'=>'FMOD/2026/WK/04','category'=>'Works','method'=>'Open Tender · Works','closes_at'=>'2026-06-28','doc_url'=>'','description'=>'','sort_order'=>1,'active'=>1],
+        ['id'=>0,'type'=>'tender','title'=>'Vehicle fleet maintenance services (3-year framework)','ref_number'=>'FMOD/2026/SV/07','category'=>'Services','method'=>'EOI · Services','closes_at'=>'2026-07-05','doc_url'=>'','description'=>'','sort_order'=>2,'active'=>1],
+        ['id'=>0,'type'=>'tender','title'=>'Defence-industrial advisory & feasibility study','ref_number'=>'FMOD/2026/CN/02','category'=>'Consultancy','method'=>'Restricted · Consultancy','closes_at'=>'2026-07-19','doc_url'=>'','description'=>'','sort_order'=>3,'active'=>1],
+        ['id'=>0,'type'=>'award','title'=>'Medical equipment for military hospitals','ref_number'=>'FMOD/2026/AW/01','category'=>'Supplies','method'=>'National Competitive Bidding','closes_at'=>null,'doc_url'=>'','description'=>'Awarded after evaluation by the Ministerial Tenders Board.','sort_order'=>0,'active'=>1],
+        ['id'=>0,'type'=>'award','title'=>'NAFRC training equipment, batch 2026A','ref_number'=>'FMOD/2026/AW/02','category'=>'Supplies','method'=>'Open Tender','closes_at'=>null,'doc_url'=>'','description'=>'Awarded for delivery to the Resettlement Centre, Oshodi.','sort_order'=>1,'active'=>1],
+    ];
+}
+
+function getAnnualReports(bool $activeOnly = true): array
+{
+    $where = $activeOnly ? 'WHERE active = 1' : 'WHERE 1';
+    return safeDbFetchAll("SELECT * FROM mod_annual_reports $where ORDER BY year DESC");
+}
+
+function defaultAnnualReports(): array
+{
+    $reports = [];
+    $years = range(2024, 2014);
+    foreach ($years as $i => $year) {
+        $reports[] = [
+            'id' => 0, 'year' => $year,
+            'title' => 'Annual Report & Accounts ' . $year,
+            'description' => 'Defence policy, budget outturn, capital projects and operations review.',
+            'doc_url' => '',
+            'status' => $year === 2024 ? 'latest' : 'published',
+            'sort_order' => $i, 'active' => 1,
+        ];
+    }
+    return $reports;
+}
+
+function getDirectors(): array
+{
+    return safeDbFetchAll('SELECT * FROM mod_directors ORDER BY dept_slug ASC');
+}
+
+function getDirectorBySlug(string $slug): array
+{
+    return dbFetch('SELECT * FROM mod_directors WHERE dept_slug = ? LIMIT 1', [$slug]) ?: [];
 }

@@ -6,12 +6,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Management — Federal Ministry of Defence</title>
   <meta name="description" content="The Permanent Secretary and Directors of the Federal Ministry of Defence — leading the Ministry's day-to-day administration." />
+  <link rel="canonical" href="https://defence.gov.ng/management.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Management — Federal Ministry of Defence" />
+  <meta property="og:description" content="The Permanent Secretary and Directors leading each department of the Federal Ministry of Defence." />
+  <meta property="og:url" content="https://defence.gov.ng/management.html" />
+  <meta property="og:image" content="https://defence.gov.ng/assets/images/headshots/permanent-secretary.jpeg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://defence.gov.ng/assets/images/headshots/permanent-secretary.jpeg" />
   <link rel="icon" type="image/png" href="assets/images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
   <link rel="stylesheet" href="assets/css/style.css?v=19" />
   <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    /* ── Director grid ── */
+    .director-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    /* ── Director card ── */
+    .director-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .25s, transform .25s, border-color .25s;
+    }
+    .director-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 48px rgba(0,0,0,.13);
+      border-color: var(--green);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Photo area — full-width portrait, no circle */
+    .director-card-photo {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background: #e8ede9;
+      position: relative;
+    }
+    .director-card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .director-card:hover .director-card-photo img {
+      transform: scale(1.04);
+    }
+
+    /* Fallback initials block (no photo) */
+    .director-avatar {
+      width: 100%;
+      height: 100%;
+      background: var(--green);
+      color: #fff;
+      font-size: 3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    /* Green accent bar */
+    .director-card-accent {
+      height: 4px;
+      background: var(--green);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    /* Text section */
+    .director-card-body {
+      padding: 20px 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-grow: 1;
+    }
+
+    .director-card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-1);
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .director-card-dept {
+      font-size: .78rem;
+      color: var(--green);
+      font-weight: 600;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    /* Arrow footer */
+    .director-card-footer {
+      padding: 12px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--paper-2);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .director-card-arrow {
+      color: var(--green);
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+    }
+    .director-card:hover .director-card-arrow {
+      opacity: 1;
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 900px) { .director-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .director-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
   <div data-include="header"></div>
@@ -26,45 +153,41 @@
       </div>
     </section>
 
+    <!-- Permanent Secretary -->
     <section>
       <div class="container">
         <div class="section-head"><span class="eyebrow">Office of the Permanent Secretary</span><h2>Chief administrative and accounting officer.</h2></div>
         <div class="leader">
           <div class="leader-photo">
-            <img src="assets/images/headshots/permanent-secretary.jpeg" alt="Permanent Secretary, Federal Ministry of Defence" />
+            <img id="permsec-photo"
+                 src="assets/images/headshots/permanent-secretary.jpeg"
+                 alt="Permanent Secretary, Federal Ministry of Defence" />
             <div class="badge">PS · FMOD</div>
           </div>
           <div class="leader-text">
-            <div class="role-line">Permanent Secretary</div>
-            <h2>Office of the Permanent Secretary</h2>
-            <p class="lead">The Permanent Secretary is the chief administrative and accounting officer of the Ministry, coordinating the work of all departments and units, providing institutional continuity, and serving as the principal interface between the political leadership and the Civil Service.</p>
+            <div class="role-line" id="permsec-role">Permanent Secretary</div>
+            <h2 id="permsec-name">Office of the Permanent Secretary</h2>
+            <p class="lead" id="permsec-bio">The Permanent Secretary is the chief administrative and accounting officer of the Ministry, coordinating the work of all departments and units, providing institutional continuity, and serving as the principal interface between the political leadership and the Civil Service.</p>
             <p>The PS chairs the Ministerial Tenders Board, the Ministerial Steering Committee on Reforms and represents the Ministry on the Federal Executive Council's Permanent Secretaries' Forum.</p>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Directors -->
     <section class="cream">
       <div class="container">
-        <div class="section-head"><span class="eyebrow">Directorate</span><h2>Directors of the Ministry.</h2><p>Each department is headed by a Director, who reports to the Permanent Secretary. Names listed below are current as of May 2026.</p></div>
-        <div class="team-grid">
-          <div class="team-card"><div class="photo"><div class="placeholder">JA</div></div><div class="body"><h4>Dr. Jibrin Alhassan</h4><div class="title">Director, Health Services</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">GO</div></div><div class="body"><h4>Mrs. Gloria Okopi</h4><div class="title">Director, Internal Audit</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">HO</div></div><div class="body"><h4>Mr. Henshaw Ogubike</h4><div class="title">Director, Press & Public Relations</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">AO</div></div><div class="body"><h4>Mr. Afolabi Idowu Omoniwa</h4><div class="title">Director, Finance and Accounts</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">OY</div></div><div class="body"><h4>Mr. Otalike P. Yahaya</h4><div class="title">Director, Procurement</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">BO</div></div><div class="body"><h4>Mrs. B.O. Olaniyi</h4><div class="title">Director, Joint Services</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">AS</div></div><div class="body"><h4>Dr. Ahmad Ibrahim Sulaiman</h4><div class="title">Director, Air Force Affairs</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">IG</div></div><div class="body"><h4>Mal. Idris Shehu Gaya, mni</h4><div class="title">Director, Human Resource Management</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">JC</div></div><div class="body"><h4>Mr. Joel Adeoye Christopher</h4><div class="title">Director, Navy Affairs</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">AS</div></div><div class="body"><h4>Alh. Abdulrahman Suleiman</h4><div class="title">Director, Planning, Research & Statistics</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">AO</div></div><div class="body"><h4>Barr. Adebola Odugbesa</h4><div class="title">Director, Legal Services</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">NF</div></div><div class="body"><h4>Nneji Nkiru Florence</h4><div class="title">Director, Reforms Coordination & Service Improvement</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">KM</div></div><div class="body"><h4>Mr. Kura Markus</h4><div class="title">Director, Education Services</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">UR</div></div><div class="body"><h4>Uwaneyi Raymond Erurane</h4><div class="title">Director, General Services</div></div></div>
-          <div class="team-card"><div class="photo"><div class="placeholder">SA</div></div><div class="body"><h4>Mr. SM Attah</h4><div class="title">Director, Army Affairs</div></div></div>
+        <div class="section-head">
+          <span class="eyebrow">Directorate</span>
+          <h2>Directors of the Ministry.</h2>
+          <p>Each department is headed by a Director who reports to the Permanent Secretary.</p>
         </div>
-        <div class="text-center mt-6"><a href="departments.html" class="btn">Department mandates & contacts</a></div>
+        <div class="director-grid" id="director-grid">
+          <!-- populated by JS -->
+        </div>
+        <div class="text-center mt-6">
+          <a href="departments.html" class="btn">Department mandates &amp; contacts</a>
+        </div>
       </div>
     </section>
   </main>
@@ -74,12 +197,109 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
+  <script src="assets/js/departments-data.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/google-translate.js"></script>
+  <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function initials(name) {
+      return (name || '')
+        .replace(/^(Mr\.|Mrs\.|Dr\.|Mal\.|Barr\.|Alh\.)\s*/i, '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(function (w) { return w[0]; })
+        .join('')
+        .toUpperCase();
+    }
+
+    /* ── Permanent Secretary ── */
+    function renderPermSec() {
+      var data = window.MOD_STORE ? window.MOD_STORE.leadership() : null;
+      var ps   = (data && data.permSec)
+              || (window.MOD_DATA && window.MOD_DATA.LEADERSHIP && window.MOD_DATA.LEADERSHIP.permSec)
+              || {};
+
+      if (ps.name) {
+        document.getElementById('permsec-name').textContent = ps.name;
+      }
+      if (ps.title) {
+        document.getElementById('permsec-role').textContent = ps.title;
+      }
+      if (ps.photo) {
+        var img = document.getElementById('permsec-photo');
+        img.src = ps.photo;
+        img.alt = (ps.name || 'Permanent Secretary') + ' — Federal Ministry of Defence';
+        var ogImg = document.querySelector('meta[property="og:image"]');
+        if (ogImg) ogImg.setAttribute('content', ps.photo);
+      }
+      if (ps.bio) {
+        document.getElementById('permsec-bio').textContent = ps.bio;
+      }
+    }
+
+    /* ── Directors grid from MOD_DEPARTMENTS ── */
+    function renderDirectors() {
+      var depts = window.MOD_DEPARTMENTS || {};
+      var slugs = Object.keys(depts).filter(function (k) { return k !== 'permanent-secretary'; });
+      var grid  = document.getElementById('director-grid');
+
+      grid.innerHTML = slugs.map(function (slug) {
+        var d = depts[slug];
+        var photoHtml = d.photo
+          ? '<div class="director-card-photo"><img src="' + esc(d.photo) + '" alt="' + esc(d.director) + '" loading="lazy"' + (slug === 'navy-affairs' ? ' style="object-position:center 20%;"' : '') + ' /></div>'
+          : '<div class="director-card-photo"><div class="director-avatar">' + esc(initials(d.director)) + '</div></div>';
+        return '<a class="director-card" href="department.html?dept=' + esc(slug) + '">' +
+          photoHtml +
+          '<div class="director-card-accent"></div>' +
+          '<div class="director-card-body">' +
+            '<p class="director-card-name">' + esc(d.director) + '</p>' +
+            '<p class="director-card-dept">' + esc(d.name) + '</p>' +
+          '</div>' +
+          '<div class="director-card-footer">' +
+            '<span class="director-card-arrow">›</span>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+    function render(dbDirectors) {
+      // Merge DB overrides into MOD_DEPARTMENTS
+      if (dbDirectors && window.MOD_DEPARTMENTS) {
+        Object.keys(dbDirectors).forEach(function (slug) {
+          if (window.MOD_DEPARTMENTS[slug]) {
+            var override = dbDirectors[slug];
+            if (override.director)  window.MOD_DEPARTMENTS[slug].director  = override.director;
+            if (override.role)      window.MOD_DEPARTMENTS[slug].role      = override.role;
+            if (override.photo_url) window.MOD_DEPARTMENTS[slug].photo     = override.photo_url;
+          }
+        });
+      }
+      renderPermSec();
+      renderDirectors();
+    }
+
+    window.addEventListener('mod-content-updated', function() { render(null); });
+
+    // Fetch DB director overrides then render
+    fetch('/api/directors')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { render(d.directors || {}); })
+      .catch(function () { render(null); });
+  }());
+  </script>
 </body>
 </html>
-
