@@ -374,6 +374,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirectTo('settings');
             break;
 
+        case 'save_social':
+            saveSocialLinks([
+                'facebook'  => $_POST['social_facebook'] ?? '',
+                'twitter'   => $_POST['social_twitter'] ?? '',
+                'instagram' => $_POST['social_instagram'] ?? '',
+                'youtube'   => $_POST['social_youtube'] ?? '',
+                'linkedin'  => $_POST['social_linkedin'] ?? '',
+            ]);
+            setFlash('success', 'Social media links have been saved.');
+            redirectTo('settings');
+            break;
+
         case 'save_gallery_image':
             $galleryId  = (int)($_POST['gallery_id'] ?? 0);
             $imageUrl   = trim($_POST['gallery_image_url'] ?? '');
@@ -618,6 +630,14 @@ $settings = [
     'ministry_name' => getSetting('ministry_name', 'Federal Ministry of Defence'),
     'country' => getSetting('country', 'Federal Republic of Nigeria'),
 ];
+$socialLinks = getSocialLinks();
+$scheduledPressCount = 0;
+foreach ($pressItems as $__press) {
+    if (pressItemStatus($__press) === 'scheduled') {
+        $scheduledPressCount++;
+    }
+}
+unset($__press);
 $csrf = csrfToken();
 ?><!doctype html>
 <html lang="en">
@@ -832,6 +852,13 @@ $csrf = csrfToken();
           </div>
           <div class="stat-num"><?= count($operations) ?></div>
           <div class="stat-label">Active operations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-num"><?= $scheduledPressCount ?></div>
+          <div class="stat-label">Scheduled press releases</div>
         </div>
       </div>
 
@@ -1108,6 +1135,7 @@ $csrf = csrfToken();
               </thead>
               <tbody>
                 <?php foreach ($pressItems as $press): ?>
+                  <?php $pStatus = pressItemStatus($press); ?>
                   <tr>
                     <td>
                       <strong><?= escapeHtml($press['title']) ?></strong>
@@ -1117,7 +1145,15 @@ $csrf = csrfToken();
                     </td>
                     <td><?= escapeHtml($press['category']) ?></td>
                     <td><?= escapeHtml($press['published_at']) ?></td>
-                    <td><span class="badge badge-<?= $press['active'] ? 'active' : 'disabled' ?>"><?= $press['active'] ? 'Active' : 'Disabled' ?></span></td>
+                    <td>
+                      <?php if ($pStatus === 'scheduled'): ?>
+                        <span class="badge badge-warn" title="Hidden from the public site until the published date.">Scheduled</span>
+                      <?php elseif ($pStatus === 'published'): ?>
+                        <span class="badge badge-active">Published</span>
+                      <?php else: ?>
+                        <span class="badge badge-disabled">Disabled</span>
+                      <?php endif; ?>
+                    </td>
                     <td>
                       <div class="row-actions">
                         <a class="btn btn-sm btn-outline" href="?edit_press=<?= escapeHtml($press['id']) ?>#press">Edit</a>
@@ -1165,6 +1201,7 @@ $csrf = csrfToken();
             <label>
               Published date
               <input type="date" name="press_published_at" value="<?= escapeHtml($editPress['published_at'] ?? date('Y-m-d')) ?>" required />
+              <span class="field-hint">Pick a future date to schedule this — it stays hidden from the public site and shows as "Scheduled" here until that date arrives.</span>
             </label>
             <label>
               Sort order
@@ -2270,6 +2307,47 @@ $csrf = csrfToken();
               </label>
             </div>
             <button type="submit" class="btn btn-green btn-sm">Save hero copy</button>
+          </form>
+        </div>
+
+        <!-- Social media handles -->
+        <div class="settings-card">
+          <h4>Social media</h4>
+          <p class="card-desc">Links used in the site footer, contact page and share buttons. Leave a field blank to hide that platform.</p>
+          <form method="post">
+            <input type="hidden" name="csrf" value="<?= escapeHtml($csrf) ?>" />
+            <input type="hidden" name="action" value="save_social" />
+            <div style="margin-bottom:14px;">
+              <label>
+                Facebook
+                <input type="text" name="social_facebook" value="<?= escapeHtml($socialLinks['facebook']) ?>" placeholder="https://www.facebook.com/yourpage" />
+              </label>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label>
+                X (Twitter)
+                <input type="text" name="social_twitter" value="<?= escapeHtml($socialLinks['twitter']) ?>" placeholder="https://twitter.com/yourhandle" />
+              </label>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label>
+                Instagram
+                <input type="text" name="social_instagram" value="<?= escapeHtml($socialLinks['instagram']) ?>" placeholder="https://instagram.com/yourhandle" />
+              </label>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label>
+                YouTube
+                <input type="text" name="social_youtube" value="<?= escapeHtml($socialLinks['youtube']) ?>" placeholder="https://youtube.com/@yourchannel" />
+              </label>
+            </div>
+            <div style="margin-bottom:20px;">
+              <label>
+                LinkedIn
+                <input type="text" name="social_linkedin" value="<?= escapeHtml($socialLinks['linkedin']) ?>" placeholder="https://linkedin.com/company/yourpage" />
+              </label>
+            </div>
+            <button type="submit" class="btn btn-green btn-sm">Save social links</button>
           </form>
         </div>
       </div>

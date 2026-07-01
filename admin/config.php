@@ -308,6 +308,35 @@ function saveSetting(string $name, string $value): void
     dbQuery('INSERT INTO mod_settings (name, value) VALUES (:name, :value)', ['name' => $name, 'value' => $value]);
 }
 
+// Social media handles — stored as ordinary mod_settings rows (social_facebook,
+// social_twitter, social_instagram, social_youtube, social_linkedin). Add a new
+// key here (and a matching field in the admin Settings > Social media card) to
+// support another platform.
+function socialPlatforms(): array
+{
+    return ['facebook', 'twitter', 'instagram', 'youtube', 'linkedin'];
+}
+
+function getSocialLinks(): array
+{
+    $links = [];
+    foreach (socialPlatforms() as $platform) {
+        $links[$platform] = getSetting('social_' . $platform, '');
+    }
+    return $links;
+}
+
+function saveSocialLinks(array $values): void
+{
+    foreach (socialPlatforms() as $platform) {
+        $url = trim($values[$platform] ?? '');
+        if ($url !== '' && !preg_match('#^https?://#i', $url)) {
+            $url = 'https://' . ltrim($url, '/');
+        }
+        saveSetting('social_' . $platform, $url);
+    }
+}
+
 function getHeroSlides(bool $activeOnly = true): array
 {
     $sql = 'SELECT * FROM mod_hero_slides' . ($activeOnly ? ' WHERE active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
@@ -335,7 +364,16 @@ function getLeadershipByKey(string $key): array
 
 function getPressItems(bool $activeOnly = true, int $limit = 0): array
 {
-    $sql = 'SELECT * FROM mod_press_items' . ($activeOnly ? ' WHERE active = 1' : '') . ' ORDER BY sort_order ASC, id ASC';
+    // activeOnly = true is what the *public* site uses (homepage, press listing,
+    // press-release detail page — all via /api/content -> MOD_STORE.press()).
+    // A press item with active=1 but a future published_at is "scheduled": it
+    // stays hidden from the public until that date, but remains fully visible
+    // and editable in the admin (activeOnly=false).
+    $sql = 'SELECT * FROM mod_press_items';
+    if ($activeOnly) {
+        $sql .= ' WHERE active = 1 AND published_at <= CURDATE()';
+    }
+    $sql .= ' ORDER BY sort_order ASC, id ASC';
     if ($limit > 0) {
         $sql .= ' LIMIT ' . (int)$limit;
     }
@@ -344,6 +382,24 @@ function getPressItems(bool $activeOnly = true, int $limit = 0): array
         return $rows;
     }
     return defaultPressItems();
+}
+
+// Status shown in the admin press list: 'disabled' (active=0), 'scheduled'
+// (active=1, published_at is in the future — hidden from the public site
+// until then), or 'published' (active=1, published_at is today or earlier).
+function pressItemStatus(array $item): string
+{
+    if (empty($item['active'])) {
+        return 'disabled';
+    }
+    $publishedAt = $item['published_at'] ?? '';
+    if ($publishedAt) {
+        $ts = strtotime($publishedAt);
+        if ($ts !== false && $ts > strtotime('today')) {
+            return 'scheduled';
+        }
+    }
+    return 'published';
 }
 
 function getSubscribers(): array

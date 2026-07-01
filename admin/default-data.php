@@ -7,6 +7,11 @@ return [
         'last_reviewed' => 'June 2026',
         'ministry_name' => 'Federal Ministry of Defence',
         'country' => 'Federal Republic of Nigeria',
+        'social_facebook' => 'https://www.facebook.com/modinfonigeria',
+        'social_twitter' => 'https://twitter.com/MODInfoNg',
+        'social_instagram' => 'https://instagram.com/mod_nigeria',
+        'social_youtube' => '',
+        'social_linkedin' => '',
     ],
     'slides' => [
         [

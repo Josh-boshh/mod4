@@ -13,6 +13,7 @@
     initHeroSlider();
     initTabs();
     stampDates();
+    initSocialLinks();
   });
 
   // Make every image referrer-friendly and add a graceful fallback so a broken
@@ -242,6 +243,36 @@
     document.querySelectorAll("[data-last-updated]").forEach((el) => {
       el.textContent = (window.MOD_CONFIG && window.MOD_CONFIG.LAST_REVIEWED) || "June 2026";
     });
+  }
+
+  // Populate any element marked data-social="facebook|twitter|instagram|youtube|linkedin"
+  // with the admin-managed URL from /api/content. If the API is unreachable, the
+  // static href already present in the HTML (if any) is left untouched.
+  function initSocialLinks() {
+    var els = document.querySelectorAll("[data-social]");
+    if (!els.length) return;
+    fetch("/api/content", { cache: "no-store" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("API error " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var social = (data && data.social) || {};
+        els.forEach(function (el) {
+          var platform = el.getAttribute("data-social");
+          var url = social[platform];
+          var wrapper = el.closest("[data-social-item]") || el;
+          if (url) {
+            el.setAttribute("href", url);
+            wrapper.style.display = "";
+          } else {
+            wrapper.style.display = "none";
+          }
+        });
+      })
+      .catch(function () {
+        // PHP API not reachable (static preview) — keep existing markup as-is.
+      });
   }
 })();
 

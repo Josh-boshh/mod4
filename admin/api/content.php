@@ -24,6 +24,7 @@ try {
         'ministry_name' => getSetting('ministry_name', 'Federal Ministry of Defence'),
         'country' => getSetting('country', 'Federal Republic of Nigeria'),
     ];
+    $social = getSocialLinks();
 
     $leadershipMap = [
         'minister' => [],
@@ -81,6 +82,7 @@ try {
             'permSec' => $leadershipMap['permSec'],
         ],
         'settings' => $settings,
+        'social' => $social,
     ];
 
     echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
