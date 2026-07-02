@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import type { FieldConfig } from './fields';
+import { ImageUploadField } from './ImageUploadField';
 
 const inputClass =
   'w-full rounded border border-brand-line px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green';
@@ -93,27 +94,25 @@ export function AdminModalForm({
                   </select>
                 )}
 
-                {(field.type === 'text' || field.type === 'number' || field.type === 'date') && (
-                  <input
-                    type={field.type}
-                    required={field.required}
-                    value={(value as string | number) ?? ''}
-                    onChange={(e) =>
-                      update(field.key, field.type === 'number' ? Number(e.target.value) : e.target.value)
-                    }
-                    className={inputClass}
+                {field.type === 'text' && field.imagePreview && (
+                  <ImageUploadField
+                    value={(value as string) ?? ''}
+                    onChange={(url) => update(field.key, url)}
                   />
                 )}
 
-                {field.imagePreview && Boolean(value) && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={value as string}
-                    alt=""
-                    className="mt-2 h-24 w-40 rounded border border-brand-line object-cover"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                )}
+                {(field.type === 'text' || field.type === 'number' || field.type === 'date') &&
+                  !field.imagePreview && (
+                    <input
+                      type={field.type}
+                      required={field.required}
+                      value={(value as string | number) ?? ''}
+                      onChange={(e) =>
+                        update(field.key, field.type === 'number' ? Number(e.target.value) : e.target.value)
+                      }
+                      className={inputClass}
+                    />
+                  )}
               </div>
             );
           })}

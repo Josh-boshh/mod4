@@ -36,7 +36,7 @@ const fields: FieldConfig[] = [
   { key: 'title', label: 'Title', type: 'text', required: true },
   { key: 'name', label: 'Name', type: 'text', required: true },
   { key: 'bio', label: 'Bio', type: 'textarea' },
-  { key: 'photo_url', label: 'Photo URL', type: 'text', imagePreview: true },
+  { key: 'photo_url', label: 'Photo', type: 'text', imagePreview: true },
   { key: 'profile_link', label: 'Profile Link', type: 'text' },
   { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'active', label: 'Active', type: 'checkbox' },

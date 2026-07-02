@@ -35,7 +35,7 @@ const fields: FieldConfig[] = [
   { key: 'dept_slug', label: 'Department Slug', type: 'text', required: true },
   { key: 'director', label: 'Director Name', type: 'text', required: true },
   { key: 'role', label: 'Role', type: 'text' },
-  { key: 'photo_url', label: 'Photo URL', type: 'text', imagePreview: true },
+  { key: 'photo_url', label: 'Photo', type: 'text', imagePreview: true },
 ];
 
 const emptyDraft = {

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { PressItemDraft } from './types';
+import { ImageUploadField } from '@/lib/admin/ImageUploadField';
 
 function slugify(value: string) {
   return value
@@ -112,21 +113,8 @@ export function PressItemForm({
             </Field>
           </div>
 
-          <Field label="Image URL">
-            <input
-              value={draft.image_url}
-              onChange={(e) => update('image_url', e.target.value)}
-              className={inputClass}
-            />
-            {draft.image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={draft.image_url}
-                alt=""
-                className="mt-2 h-24 w-40 rounded border border-brand-line object-cover"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            )}
+          <Field label="Image">
+            <ImageUploadField value={draft.image_url} onChange={(url) => update('image_url', url)} />
           </Field>
 
           <Field label="Link URL">

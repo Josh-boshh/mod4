@@ -30,7 +30,7 @@ const columns: ColumnConfig<HeroSlide>[] = [
 ];
 
 const fields: FieldConfig[] = [
-  { key: 'image_url', label: 'Image URL', type: 'text', required: true, imagePreview: true },
+  { key: 'image_url', label: 'Image', type: 'text', required: true, imagePreview: true },
   { key: 'alt_text', label: 'Alt Text', type: 'text', required: true },
   { key: 'role_text', label: 'Role Text', type: 'text', required: true },
   { key: 'caption_text', label: 'Caption', type: 'textarea', required: true },
