@@ -6,6 +6,8 @@
     "api/subscribe.js": { "maxDuration": 15 }
   },
   "rewrites": [
+    { "source": "/admin", "destination": "/api/admin/index" },
+    { "source": "/admin/", "destination": "/api/admin/index" },
     { "source": "/admin/api/content.php", "destination": "/api/content" },
     { "source": "/admin/api/directors.php", "destination": "/api/directors" },
     { "source": "/admin/api/gallery.php", "destination": "/api/gallery" },

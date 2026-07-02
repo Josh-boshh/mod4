@@ -241,7 +241,7 @@
           <a href="servicom.html">SERVICOM</a>
           <a href="sitemap.html" data-i18n>Sitemap</a>
           <a href="contact.html" data-i18n>Contact</a>
-          <a href="admin/index.php" title="Staff content management">Admin</a>
+          <a href="/admin" title="Staff content management">Admin</a>
         </div>
       </div>
     </div>
