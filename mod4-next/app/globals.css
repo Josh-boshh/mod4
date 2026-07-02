@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Brand palette lifted from the public site (assets/css/style.css :root) so
+   the admin panel reads as the same product rather than a generic dashboard. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-montserrat);
+  --font-heading: var(--font-playfair);
+
+  --color-brand-ink: #0e1a14;
+  --color-brand-ink-2: #2a332e;
+  --color-brand-ink-3: #5c6862;
+  --color-brand-ink-4: #98a29d;
+  --color-brand-line: #e5e7e2;
+  --color-brand-paper: #ffffff;
+  --color-brand-paper-2: #fafaf6;
+  --color-brand-paper-3: #f4f4ee;
+  --color-brand-green: #007d53;
+  --color-brand-green-2: #006b41;
+  --color-brand-green-soft: #e6f4ed;
+  --color-brand-gold: #b8923c;
+  --color-brand-red: #c8242e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
+}
