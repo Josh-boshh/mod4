@@ -61,6 +61,8 @@ export default function AnnualReportsPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['title']}
     />
   );
 }

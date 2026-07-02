@@ -63,6 +63,8 @@ export default function GalleryImagesPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['caption', 'category']}
     />
   );
 }

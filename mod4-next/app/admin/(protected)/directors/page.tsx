@@ -57,6 +57,8 @@ export default function DirectorsPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       sortable={false}
+      softDelete
+      searchKeys={['director', 'role', 'dept_slug']}
     />
   );
 }

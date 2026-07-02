@@ -65,6 +65,8 @@ export default function LeadersPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['name', 'title']}
     />
   );
 }

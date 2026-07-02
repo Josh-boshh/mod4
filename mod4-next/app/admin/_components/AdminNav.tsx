@@ -14,8 +14,9 @@ const NAV_ITEMS = [
   { label: 'Tenders', href: '/admin/tenders' },
   { label: 'Annual Reports', href: '/admin/annual-reports' },
   { label: 'Settings', href: '/admin/settings' },
+  { label: 'Trash', href: '/admin/trash' },
   { label: 'Subscribers (read-only)', href: '/admin/subscribers' },
-  { label: 'Submissions (read-only)', href: '/admin/submissions' },
+  { label: 'Submissions', href: '/admin/submissions' },
 ];
 
 export function AdminNav() {

@@ -59,6 +59,8 @@ export default function HeroSlidesPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['role_text', 'caption_text']}
     />
   );
 }

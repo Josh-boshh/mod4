@@ -131,10 +131,20 @@
   // Mirrors the shape api/content.js produces for `press`, so nothing
   // downstream (press.html, press-release.html, render-home.js) needs to
   // know or care which backend the data came from.
+  //
+  // Ordered by published_at (not sort_order) and filtered to published_at
+  // in the past, so the admin's date field alone controls both scheduling
+  // (a future date stays hidden until it arrives) and backdating (a past
+  // date slots the item into correct chronological position) — no manual
+  // reordering or cron job needed.
   async function loadSupabasePress() {
     try {
+      const today = new Date().toISOString().slice(0, 10);
       const res = await fetch(
-        SUPABASE_URL + '/rest/v1/mod_press_items?select=*&active=eq.true&order=sort_order.asc',
+        SUPABASE_URL +
+          '/rest/v1/mod_press_items?select=*&active=eq.true&deleted_at=is.null&published_at=lte.' +
+          today +
+          '&order=published_at.desc',
         {
           headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
           cache: 'no-store',
@@ -154,6 +164,40 @@
       }));
     } catch (e) {
       console.warn('[MOD_STORE] Supabase press load failed:', e);
+      return null;
+    }
+  }
+
+  // Used by press-release.html's admin preview link (?preview=1): fetches a
+  // single item by slug without the active-date/deleted_at cutoff so a
+  // scheduled (future-dated) item can be reviewed before it goes live.
+  // Row-level security still hides items where active=false, so previewing
+  // a draft that hasn't been activated yet isn't possible from here.
+  async function loadSupabasePressPreview(slug) {
+    try {
+      const res = await fetch(
+        SUPABASE_URL + '/rest/v1/mod_press_items?select=*&slug=eq.' + encodeURIComponent(slug) + '&deleted_at=is.null&limit=1',
+        {
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
+          cache: 'no-store',
+        }
+      );
+      if (!res.ok) return null;
+      const rows = await res.json();
+      if (!rows.length) return null;
+      const item = rows[0];
+      return {
+        title: item.title,
+        excerpt: item.excerpt,
+        body: item.body || '',
+        category: item.category,
+        date: formatPressDate(item.published_at),
+        img: item.image_url,
+        url: 'press-release.html?slug=' + encodeURIComponent(item.slug),
+        slug: item.slug,
+      };
+    } catch (e) {
+      console.warn('[MOD_STORE] Supabase press preview load failed:', e);
       return null;
     }
   }
@@ -190,10 +234,10 @@
   async function loadSupabaseExtras() {
     try {
       const [opsRows, tenderRows, reportRows, galleryRows] = await Promise.all([
-        loadSupabaseRest('/rest/v1/mod_operations?select=*&active=eq.true&order=sort_order.asc'),
-        loadSupabaseRest('/rest/v1/mod_tenders?select=*&active=eq.true&order=sort_order.asc'),
-        loadSupabaseRest('/rest/v1/mod_annual_reports?select=*&active=eq.true&order=sort_order.asc'),
-        loadSupabaseRest('/rest/v1/mod_gallery_images?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_operations?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_tenders?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_annual_reports?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_gallery_images?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
       ]);
 
       return {
@@ -236,9 +280,9 @@
     try {
       const [settingsRows, slideRows, leaderRows, directorRows] = await Promise.all([
         loadSupabaseRest('/rest/v1/mod_settings?select=name,value'),
-        loadSupabaseRest('/rest/v1/mod_hero_slides?select=*&active=eq.true&order=sort_order.asc'),
-        loadSupabaseRest('/rest/v1/mod_leaders?select=*&active=eq.true&order=sort_order.asc'),
-        loadSupabaseRest('/rest/v1/mod_directors?select=*'),
+        loadSupabaseRest('/rest/v1/mod_hero_slides?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_leaders?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_directors?select=*&deleted_at=is.null'),
       ]);
 
       const settings = {};
@@ -402,6 +446,7 @@
     get() { return loadContent(); },
     slides() { return loadContent().slides; },
     press() { return loadContent().press; },
+    previewPress: loadSupabasePressPreview,
     leadership() { return loadContent().leadership; },
     directors() { return loadContent().directors; },
     operations() { return loadContent().operations; },

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { logActivity } from './activityLog';
 
 function withoutId(draft: Record<string, unknown>) {
   const rest = { ...draft };
@@ -13,10 +14,16 @@ function withoutId(draft: Record<string, unknown>) {
 // the same fetch/insert/update/delete/reorder shape, calling supabase-js
 // directly per the no-custom-backend architecture. List rendering stays
 // per-page since columns and behaviors differ per table.
+//
+// softDelete: true routes remove() through a deleted_at timestamp instead of
+// an actual DELETE, and excludes trashed rows from the normal list query —
+// only pass this for tables that have a deleted_at column (see the Trash
+// page for restore/purge).
 export function useAdminTable<T extends { id: number }>(
   table: string,
   orderBy: keyof T & string,
-  ascending = true
+  ascending = true,
+  softDelete = false
 ) {
   const supabase = createClient();
   const [items, setItems] = useState<T[]>([]);
@@ -25,10 +32,9 @@ export function useAdminTable<T extends { id: number }>(
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from(table)
-      .select('*')
-      .order(orderBy, { ascending });
+    let query = supabase.from(table).select('*').order(orderBy, { ascending });
+    if (softDelete) query = query.is('deleted_at', null);
+    const { data, error } = await query;
 
     if (error) setError(error.message);
     else {
@@ -37,7 +43,7 @@ export function useAdminTable<T extends { id: number }>(
     }
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table, orderBy, ascending]);
+  }, [table, orderBy, ascending, softDelete]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -57,24 +63,42 @@ export function useAdminTable<T extends { id: number }>(
   // there too for consistency, even though drafts for new rows don't have
   // an id to begin with.
   async function insert(draft: Partial<T>) {
-    const { error } = await supabase.from(table).insert(withoutId(draft) as never);
+    const clean = withoutId(draft as Record<string, unknown>);
+    const { data, error } = await supabase.from(table).insert(clean as never).select('id').single();
     if (error) return error.message;
+    logActivity('insert', table, (data as { id: number } | null)?.id, clean);
     await reload();
     return null;
   }
 
   async function update(id: number, draft: Partial<T>) {
-    const { error } = await supabase.from(table).update(withoutId(draft) as never).eq('id', id);
+    const clean = withoutId(draft as Record<string, unknown>);
+    const { error } = await supabase.from(table).update(clean as never).eq('id', id);
     if (error) return error.message;
+    logActivity('update', table, id, clean);
     await reload();
     return null;
   }
 
   async function remove(id: number) {
-    const { error } = await supabase.from(table).delete().eq('id', id);
-    if (error) {
-      setError(error.message);
-      return false;
+    const target = items.find((i) => i.id === id) as Record<string, unknown> | undefined;
+    if (softDelete) {
+      const { error } = await supabase
+        .from(table)
+        .update({ deleted_at: new Date().toISOString() } as never)
+        .eq('id', id);
+      if (error) {
+        setError(error.message);
+        return false;
+      }
+      logActivity('trash', table, id, target);
+    } else {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) {
+        setError(error.message);
+        return false;
+      }
+      logActivity('delete', table, id, target);
     }
     await reload();
     return true;

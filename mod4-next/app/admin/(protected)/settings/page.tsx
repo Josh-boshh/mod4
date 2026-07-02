@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { logActivity } from '@/lib/admin/activityLog';
+import { useUnsavedChangesGuard } from '@/lib/admin/useUnsavedChangesGuard';
 
 type Setting = { name: string; value: string };
 
@@ -15,16 +17,22 @@ function labelFor(name: string) {
 export default function SettingsPage() {
   const supabase = createClient();
   const [settings, setSettings] = useState<Setting[]>([]);
+  const [initialSettings, setInitialSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [pending, setPending] = useState(false);
+  const isDirty = JSON.stringify(settings) !== JSON.stringify(initialSettings);
+  useUnsavedChangesGuard(isDirty);
 
   useEffect(() => {
     async function load() {
       const { data, error } = await supabase.from('mod_settings').select('*').order('name');
       if (error) setError(error.message);
-      else setSettings((data as Setting[]) ?? []);
+      else {
+        setSettings((data as Setting[]) ?? []);
+        setInitialSettings((data as Setting[]) ?? []);
+      }
       setLoading(false);
     }
     load();
@@ -45,6 +53,9 @@ export default function SettingsPage() {
       setError(error.message);
       return;
     }
+    const changed = settings.filter((s, i) => s.value !== initialSettings[i]?.value);
+    logActivity('update', 'mod_settings', null, { name: changed.map((s) => labelFor(s.name)).join(', ') });
+    setInitialSettings(settings);
     setSavedAt(Date.now());
   }
 

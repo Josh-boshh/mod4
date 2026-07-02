@@ -16,6 +16,9 @@ export function AdminList<T extends { id: number }>({
   onToggleActive,
   onEdit,
   onDelete,
+  onPreview,
+  deleteLabel = 'Delete',
+  emptyMessage = 'No items yet.',
 }: {
   items: T[];
   columns: ColumnConfig<T>[];
@@ -25,9 +28,12 @@ export function AdminList<T extends { id: number }>({
   onToggleActive?: (item: T) => void;
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
+  onPreview?: (item: T) => void;
+  deleteLabel?: string;
+  emptyMessage?: string;
 }) {
   if (items.length === 0) {
-    return <p className="text-sm text-brand-ink-3">No items yet.</p>;
+    return <p className="text-sm text-brand-ink-3">{emptyMessage}</p>;
   }
 
   return (
@@ -90,7 +96,15 @@ export function AdminList<T extends { id: number }>({
                   </button>
                 </td>
               )}
-              <td className="px-4 py-3 text-right">
+              <td className="px-4 py-3 text-right whitespace-nowrap">
+                {onPreview && (
+                  <button
+                    onClick={() => onPreview(item)}
+                    className="mr-3 text-sm font-medium text-brand-ink-2 hover:text-brand-green-2 hover:underline"
+                  >
+                    Preview
+                  </button>
+                )}
                 <button
                   onClick={() => onEdit(item)}
                   className="mr-3 text-sm font-medium text-brand-ink-2 hover:text-brand-green-2 hover:underline"
@@ -101,7 +115,7 @@ export function AdminList<T extends { id: number }>({
                   onClick={() => onDelete(item)}
                   className="text-sm font-medium text-brand-red hover:underline"
                 >
-                  Delete
+                  {deleteLabel}
                 </button>
               </td>
             </tr>

@@ -49,6 +49,8 @@ export default function OperationsPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['name', 'region', 'description']}
     />
   );
 }

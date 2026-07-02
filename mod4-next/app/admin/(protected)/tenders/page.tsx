@@ -69,6 +69,8 @@ export default function TendersPage() {
       fields={fields}
       emptyDraft={emptyDraft}
       activeKey="active"
+      softDelete
+      searchKeys={['title', 'ref_number', 'category']}
     />
   );
 }
