@@ -64,13 +64,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 });
   }
 
-  const original = Buffer.from(await file.arrayBuffer());
-  const { buffer, ext, mime } = await compressImage(original, file.type);
+  try {
+    const original = Buffer.from(await file.arrayBuffer());
+    const { buffer, ext, mime } = await compressImage(original, file.type);
 
-  const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, buffer, {
-    access: 'public',
-    contentType: mime,
-  });
+    const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, buffer, {
+      access: 'public',
+      contentType: mime,
+    });
 
-  return NextResponse.json({ url: blob.url });
+    return NextResponse.json({ url: blob.url });
+  } catch (e) {
+    console.error('[upload] failed:', e);
+    return NextResponse.json({ error: 'Upload failed. Please try again.' }, { status: 500 });
+  }
 }

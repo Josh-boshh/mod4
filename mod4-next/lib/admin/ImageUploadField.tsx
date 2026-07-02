@@ -28,8 +28,15 @@ export function ImageUploadField({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      const text = await res.text();
+      let data: { url?: string; error?: string } | null = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        // Non-JSON response (platform error page, timeout, etc.) — fall through
+        // to the generic message below instead of surfacing a parse error.
+      }
+      if (!res.ok || !data?.url) throw new Error(data?.error || 'Upload failed. Please try again.');
       onChange(data.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
