@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Departments — Federal Ministry of Defence</title>
-  <meta name="description" content="The civilian departments of the Federal Ministry of Defence — Army Affairs, Navy Affairs, Air Force Affairs, Joint Services, Finance, Procurement and more." />
+  <title>Departments — Ministry of Defence</title>
+  <meta name="description" content="The civilian departments of the Ministry of Defence — Army Affairs, Navy Affairs, Air Force Affairs, Joint Services, Finance, Procurement and more." />
   <link rel="canonical" href="https://defence.gov.ng/departments.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Departments — Federal Ministry of Defence" />
-  <meta property="og:description" content="Sixteen departments make up the civilian side of the Federal Ministry of Defence, each led by a Director reporting to the Permanent Secretary." />
+  <meta property="og:title" content="Departments — Ministry of Defence" />
+  <meta property="og:description" content="Sixteen departments make up the civilian side of the Ministry of Defence, each led by a Director reporting to the Permanent Secretary." />
   <meta property="og:url" content="https://defence.gov.ng/departments.html" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -204,7 +204,7 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>Components<span>›</span>Civilian Departments</div>
         <span class="eyebrow">Components of MOD</span>
         <h1>Civilian departments.</h1>
-        <p class="lead">Sixteen departments make up the civilian side of the Federal Ministry of Defence — each led by a Director reporting to the Permanent Secretary.</p>
+        <p class="lead">Sixteen departments make up the civilian side of the Ministry of Defence — each led by a Director reporting to the Permanent Secretary.</p>
       </div>
     </section>
 
@@ -225,6 +225,7 @@
 
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/departments-data.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -317,10 +318,19 @@
       renderGrid();
     }
 
-    fetch('/api/directors')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { applyDbOverrides(d.directors || {}); })
-      .catch(function () { ALL_DEPTS = buildDepts(); renderTabs(); renderGrid(); });
+    function applyDirectorsFromStore() {
+      var directors = (window.MOD_STORE && window.MOD_STORE.directors()) || {};
+      applyDbOverrides(directors);
+    }
+
+    if (window.MOD_STORE) {
+      applyDirectorsFromStore();
+    } else {
+      ALL_DEPTS = buildDepts();
+      renderTabs();
+      renderGrid();
+    }
+    window.addEventListener('mod-content-updated', applyDirectorsFromStore);
 
     function renderTabs() {
       var cats = ['All'];

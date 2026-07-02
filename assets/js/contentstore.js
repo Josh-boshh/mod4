@@ -50,6 +50,12 @@
         ministerOfState: { ...((D.LEADERSHIP && D.LEADERSHIP.ministerOfState) || {}) },
         permSec: { ...((D.LEADERSHIP && D.LEADERSHIP.permSec) || {}) },
       },
+      directors: {},
+      operations: [],
+      tenders: [],
+      awards: [],
+      annualReports: [],
+      galleryImages: [],
       settings: {
         lastReviewed: 'June 2026',
         ministryName: 'Ministry of Defence',
@@ -93,6 +99,12 @@
         ministerOfState: Object.assign({}, d.leadership.ministerOfState, (stored.leadership && stored.leadership.ministerOfState) || {}),
         permSec: Object.assign({}, d.leadership.permSec, (stored.leadership && stored.leadership.permSec) || {}),
       },
+      directors: Object.assign({}, d.directors, stored.directors || {}),
+      operations: Array.isArray(stored.operations) && stored.operations.length ? stored.operations : d.operations,
+      tenders: Array.isArray(stored.tenders) && stored.tenders.length ? stored.tenders : d.tenders,
+      awards: Array.isArray(stored.awards) && stored.awards.length ? stored.awards : d.awards,
+      annualReports: Array.isArray(stored.annualReports) && stored.annualReports.length ? stored.annualReports : d.annualReports,
+      galleryImages: Array.isArray(stored.galleryImages) && stored.galleryImages.length ? stored.galleryImages : d.galleryImages,
       settings: Object.assign({}, d.settings, stored.settings || {}),
     };
   }
@@ -146,6 +158,69 @@
     }
   }
 
+  function formatShortDate(raw) {
+    if (!raw) return '';
+    const ts = Date.parse(raw);
+    if (Number.isNaN(ts)) return raw;
+    return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function formatLongDate(raw) {
+    if (!raw) return '';
+    const ts = Date.parse(raw);
+    if (Number.isNaN(ts)) return raw;
+    return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function mapTender(t) {
+    return {
+      title: t.title,
+      ref_number: t.ref_number,
+      category: t.category,
+      method: t.method,
+      closes_at: formatShortDate(t.closes_at),
+      doc_url: t.doc_url,
+      description: t.description,
+    };
+  }
+
+  // Operations, tenders/awards, annual reports and gallery images — mirrors
+  // the shapes their respective legacy /api/*.php endpoints produced, so the
+  // public pages' render functions don't need to change.
+  async function loadSupabaseExtras() {
+    try {
+      const [opsRows, tenderRows, reportRows, galleryRows] = await Promise.all([
+        loadSupabaseRest('/rest/v1/mod_operations?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_tenders?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_annual_reports?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_gallery_images?select=*&active=eq.true&order=sort_order.asc'),
+      ]);
+
+      return {
+        operations: opsRows.map((o) => ({ region: o.region, name: o.name, description: o.description })),
+        tenders: tenderRows.filter((t) => t.type === 'tender').map(mapTender),
+        awards: tenderRows.filter((t) => t.type === 'award').map(mapTender),
+        annualReports: reportRows.map((r) => ({
+          year: r.year,
+          title: r.title,
+          description: r.description,
+          doc_url: r.doc_url,
+          status: r.status,
+        })),
+        galleryImages: galleryRows.map((g) => ({
+          image_url: g.image_url,
+          alt_text: g.alt_text,
+          caption: g.caption,
+          event_date: formatLongDate(g.event_date),
+          category: g.category,
+        })),
+      };
+    } catch (e) {
+      console.warn('[MOD_STORE] Supabase extras load failed:', e);
+      return null;
+    }
+  }
+
   async function loadSupabaseRest(path) {
     const res = await fetch(SUPABASE_URL + path, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
@@ -159,10 +234,11 @@
   // produces, sourced from Supabase instead of the legacy MySQL backend.
   async function loadSupabaseSiteContent() {
     try {
-      const [settingsRows, slideRows, leaderRows] = await Promise.all([
+      const [settingsRows, slideRows, leaderRows, directorRows] = await Promise.all([
         loadSupabaseRest('/rest/v1/mod_settings?select=name,value'),
         loadSupabaseRest('/rest/v1/mod_hero_slides?select=*&active=eq.true&order=sort_order.asc'),
         loadSupabaseRest('/rest/v1/mod_leaders?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_directors?select=*'),
       ]);
 
       const settings = {};
@@ -181,6 +257,15 @@
         }
       });
 
+      const directorsMap = {};
+      directorRows.forEach((item) => {
+        directorsMap[item.dept_slug] = {
+          director: item.director,
+          role: item.role,
+          photo_url: item.photo_url,
+        };
+      });
+
       return {
         hero: {
           eyebrow: settings.hero_eyebrow,
@@ -194,6 +279,7 @@
           name: slide.caption_text,
         })),
         leadership: leadershipMap,
+        directors: directorsMap,
         settings,
       };
     } catch (e) {
@@ -219,19 +305,28 @@
       }
     }
 
-    const [supabasePress, supabaseSite] = await Promise.all([
+    const [supabasePress, supabaseSite, supabaseExtras] = await Promise.all([
       loadSupabasePress(),
       loadSupabaseSiteContent(),
+      loadSupabaseExtras(),
     ]);
 
-    if (supabasePress || supabaseSite) {
+    if (supabasePress || supabaseSite || supabaseExtras) {
       const blob = loadContent();
       if (supabasePress) blob.press = supabasePress;
       if (supabaseSite) {
         blob.hero = supabaseSite.hero;
         blob.slides = supabaseSite.slides;
         blob.leadership = supabaseSite.leadership;
+        blob.directors = supabaseSite.directors;
         blob.settings = supabaseSite.settings;
+      }
+      if (supabaseExtras) {
+        blob.operations = supabaseExtras.operations;
+        blob.tenders = supabaseExtras.tenders;
+        blob.awards = supabaseExtras.awards;
+        blob.annualReports = supabaseExtras.annualReports;
+        blob.galleryImages = supabaseExtras.galleryImages;
       }
       setContent(blob);
     }
@@ -308,6 +403,12 @@
     slides() { return loadContent().slides; },
     press() { return loadContent().press; },
     leadership() { return loadContent().leadership; },
+    directors() { return loadContent().directors; },
+    operations() { return loadContent().operations; },
+    tenders() { return loadContent().tenders; },
+    awards() { return loadContent().awards; },
+    annualReports() { return loadContent().annualReports; },
+    galleryImages() { return loadContent().galleryImages; },
     hero() { return loadContent().hero; },
     settings() { return loadContent().settings; },
 

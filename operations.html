@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Joint Operations — Federal Ministry of Defence</title>
+  <title>Joint Operations — Ministry of Defence</title>
   <meta name="description" content="Active joint operations of the Nigerian Armed Forces — HADIN KAI, FANSAN YAMMA, DELTA SAFE, SAFE HAVEN, WHIRL STROKE and partner missions." />
   <link rel="canonical" href="https://defence.gov.ng/operations.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Joint Operations — Federal Ministry of Defence" />
+  <meta property="og:title" content="Joint Operations — Ministry of Defence" />
   <meta property="og:description" content="Active joint operations of the Nigerian Armed Forces — HADIN KAI, FANSAN YAMMA, DELTA SAFE, SAFE HAVEN, WHIRL STROKE and partner missions." />
   <meta property="og:url" content="https://defence.gov.ng/operations.html" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
@@ -76,6 +76,7 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -118,10 +119,13 @@
       }).join('');
     }
 
-    fetch('/api/operations')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { render(d.operations && d.operations.length ? d.operations : FALLBACK); })
-      .catch(function () { render(FALLBACK); });
+    function renderFromStore() {
+      var ops = (window.MOD_STORE && window.MOD_STORE.operations()) || [];
+      render(ops.length ? ops : FALLBACK);
+    }
+
+    renderFromStore();
+    window.addEventListener('mod-content-updated', renderFromStore);
   }());
   </script>
 </body>

@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Gallery — Federal Ministry of Defence</title>
-  <meta name="description" content="Photo gallery of official events, engagements and inspections of the Federal Ministry of Defence." />
+  <title>Gallery — Ministry of Defence</title>
+  <meta name="description" content="Photo gallery of official events, engagements and inspections of the Ministry of Defence." />
   <link rel="canonical" href="https://defence.gov.ng/gallery.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Gallery — Federal Ministry of Defence" />
-  <meta property="og:description" content="Photographs from official engagements, inspections and ceremonies of the Federal Ministry of Defence." />
+  <meta property="og:title" content="Gallery — Ministry of Defence" />
+  <meta property="og:description" content="Photographs from official engagements, inspections and ceremonies of the Ministry of Defence." />
   <meta property="og:url" content="https://defence.gov.ng/gallery.html" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -202,7 +202,7 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>News &amp; Media<span>›</span>Gallery</div>
         <span class="eyebrow">News &amp; Media</span>
         <h1>Gallery.</h1>
-        <p class="lead">Photographs from official engagements, inspections and ceremonies of the Federal Ministry of Defence.</p>
+        <p class="lead">Photographs from official engagements, inspections and ceremonies of the Ministry of Defence.</p>
       </div>
     </section>
 
@@ -246,6 +246,7 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -273,28 +274,11 @@
     var lbIndex   = 0;
     var lbImages  = [];
 
-    /* ── Fetch images from API (falls back to static hardcoded if no API) ── */
+    /* ── Load images from Supabase via MOD_STORE (falls back to static hardcoded) ── */
     function loadGallery() {
-      // Determine API base: admin/api/gallery.php relative to this page
-      var apiUrl = '/api/gallery';
-
-      fetch(apiUrl)
-        .then(function (res) {
-          if (!res.ok) throw new Error('API error ' + res.status);
-          return res.json();
-        })
-        .then(function (data) {
-          allImages = data.images || [];
-          if (allImages.length === 0) {
-            allImages = staticFallback();
-          }
-          render();
-        })
-        .catch(function () {
-          // PHP not running (static preview) — use hardcoded images
-          allImages = staticFallback();
-          render();
-        });
+      var fromStore = (window.MOD_STORE && window.MOD_STORE.galleryImages()) || [];
+      allImages = fromStore.length ? fromStore : staticFallback();
+      render();
     }
 
     /* ── Static fallback (mirrors the existing hardcoded gallery items) ── */
@@ -447,6 +431,7 @@
 
     /* ── Boot ── */
     loadGallery();
+    window.addEventListener('mod-content-updated', loadGallery);
   }());
   </script>
 </body>

@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Department — Federal Ministry of Defence</title>
-  <meta name="description" content="Department of the Federal Ministry of Defence — mandate, leadership and contact." />
+  <title>Department — Ministry of Defence</title>
+  <meta name="description" content="Department of the Ministry of Defence — mandate, leadership and contact." />
   <link rel="canonical" href="https://defence.gov.ng/department.html" id="canonical-link" />
   <meta property="og:type" content="website" id="og-type" />
-  <meta property="og:title" content="Department — Federal Ministry of Defence" id="og-title" />
-  <meta property="og:description" content="Department of the Federal Ministry of Defence — mandate, leadership and contact." id="og-description" />
+  <meta property="og:title" content="Department — Ministry of Defence" id="og-title" />
+  <meta property="og:description" content="Department of the Ministry of Defence — mandate, leadership and contact." id="og-description" />
   <meta property="og:url" content="https://defence.gov.ng/department.html" id="og-url" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" id="og-image" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -151,7 +151,7 @@
                   </div>
                   <div class="dept-info-row">
                     <span class="dept-info-label">Reports to</span>
-                    <span class="dept-info-value">Permanent Secretary, Federal Ministry of Defence</span>
+                    <span class="dept-info-value">Permanent Secretary, Ministry of Defence</span>
                   </div>
                   <div class="dept-info-row">
                     <span class="dept-info-label">Office</span>
@@ -208,6 +208,7 @@
   <!-- departments-data.js MUST load before the inline script -->
   <script src="assets/js/realdata.js"></script>
   <script src="assets/js/departments-data.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -238,19 +239,33 @@
     var params = new URLSearchParams(location.search);
     var slug   = params.get('dept') || params.get('d') || '';
     var data   = window.MOD_DEPARTMENTS || {};
-    var dept   = data[slug];
+
+    function applyDirectorOverrides() {
+      var directors = (window.MOD_STORE && window.MOD_STORE.directors()) || {};
+      Object.keys(directors).forEach(function (s) {
+        if (data[s]) {
+          var ov = directors[s];
+          if (ov.director)  data[s].director = ov.director;
+          if (ov.role)      data[s].role     = ov.role;
+          if (ov.photo_url) data[s].photo    = ov.photo_url;
+        }
+      });
+    }
+
+    function render() {
+    var dept = data[slug];
 
     if (!dept) {
       // 404 state
       document.getElementById('dept-hero').style.display     = 'none';
       document.getElementById('dept-not-found').style.display = '';
-      document.title = 'Department not found — Federal Ministry of Defence';
+      document.title = 'Department not found — Ministry of Defence';
     } else {
       // ── Update <head> meta ──
       var pageUrl = 'https://defence.gov.ng/department.html?dept=' + encodeURIComponent(slug);
-      document.title = dept.name + ' — Federal Ministry of Defence';
+      document.title = dept.name + ' — Ministry of Defence';
       document.getElementById('canonical-link').setAttribute('href', pageUrl);
-      document.getElementById('og-title').setAttribute('content', dept.name + ' — Federal Ministry of Defence');
+      document.getElementById('og-title').setAttribute('content', dept.name + ' — Ministry of Defence');
       document.getElementById('og-description').setAttribute('content', dept.lead || '');
       document.getElementById('og-url').setAttribute('content', pageUrl);
 
@@ -265,6 +280,7 @@
 
       // ── Info card ──
       var accentEl = document.getElementById('info-accent');
+      accentEl.classList.remove('navy', 'orange');
       var ac = ACCENT_CLASS[dept.category] || '';
       if (ac) accentEl.classList.add(ac);
 
@@ -305,6 +321,14 @@
 
       document.getElementById('dept-content').style.display = '';
     }
+    }
+
+    applyDirectorOverrides();
+    render();
+    window.addEventListener('mod-content-updated', function () {
+      applyDirectorOverrides();
+      render();
+    });
   }());
   </script>
 </body>

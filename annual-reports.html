@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Annual Reports — Federal Ministry of Defence</title>
-  <meta name="description" content="Annual reports and performance reviews published by the Federal Ministry of Defence, Federal Republic of Nigeria." />
+  <title>Annual Reports — Ministry of Defence</title>
+  <meta name="description" content="Annual reports and performance reviews published by the Ministry of Defence, Federal Republic of Nigeria." />
   <link rel="canonical" href="https://defence.gov.ng/annual-reports.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Annual Reports — Federal Ministry of Defence" />
-  <meta property="og:description" content="Annual reports and performance reviews published by the Federal Ministry of Defence, Federal Republic of Nigeria." />
+  <meta property="og:title" content="Annual Reports — Ministry of Defence" />
+  <meta property="og:description" content="Annual reports and performance reviews published by the Ministry of Defence, Federal Republic of Nigeria." />
   <meta property="og:url" content="https://defence.gov.ng/annual-reports.html" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -68,7 +68,7 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>Publications<span>›</span>Annual Reports</div>
         <span class="eyebrow">Publications &amp; Accountability</span>
         <h1>Annual Reports.</h1>
-        <p class="lead">In line with the Federal Government's commitment to transparency and public accountability, the Federal Ministry of Defence publishes an Annual Report covering policy implementation, budget performance, procurement activity, and operational achievements for each financial year.</p>
+        <p class="lead">In line with the Federal Government's commitment to transparency and public accountability, the Ministry of Defence publishes an Annual Report covering policy implementation, budget performance, procurement activity, and operational achievements for each financial year.</p>
       </div>
     </section>
 
@@ -140,7 +140,7 @@
             <p>To request a printed copy of any report, write to:</p>
             <address class="contact-address">
               Director, Reform Coordination &amp; Service Improvement<br />
-              Federal Ministry of Defence<br />
+              Ministry of Defence<br />
               Ship House, Area 10, Abuja<br />
               <a href="mailto:publications@defence.gov.ng">publications@defence.gov.ng</a>
             </address>
@@ -156,6 +156,7 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -219,10 +220,13 @@
       }).join('');
     }
 
-    fetch('/api/annual-reports')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { render(d.reports && d.reports.length ? d.reports : FALLBACK); })
-      .catch(function () { render(FALLBACK); });
+    function renderFromStore() {
+      var reports = (window.MOD_STORE && window.MOD_STORE.annualReports()) || [];
+      render(reports.length ? reports : FALLBACK);
+    }
+
+    renderFromStore();
+    window.addEventListener('mod-content-updated', renderFromStore);
   }());
   </script>
 </body>

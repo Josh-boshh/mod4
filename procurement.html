@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="theme-color" content="#007D53" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Procurement — Federal Ministry of Defence</title>
+  <title>Procurement — Ministry of Defence</title>
   <meta name="description" content="Open tenders, expressions of interest and contract awards published in line with the Public Procurement Act 2007." />
   <link rel="canonical" href="https://defence.gov.ng/procurement.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Procurement — Federal Ministry of Defence" />
+  <meta property="og:title" content="Procurement — Ministry of Defence" />
   <meta property="og:description" content="Open tenders, expressions of interest and contract awards published in line with the Public Procurement Act 2007." />
   <meta property="og:url" content="https://defence.gov.ng/procurement.html" />
   <meta property="og:image" content="https://defence.gov.ng/assets/images/hero/slide-1.jpg" />
@@ -69,7 +69,7 @@
         <div class="crumbs"><a href="index.html">Home</a><span>›</span>Services<span>›</span>Procurement</div>
         <span class="eyebrow">Open Government</span>
         <h1>Procurement.</h1>
-        <p class="lead">Open, competitive tendering for the Federal Ministry of Defence, conducted in line with the Public Procurement Act 2007. All notices, expressions of interest and contract awards are published in the public domain.</p>
+        <p class="lead">Open, competitive tendering for the Ministry of Defence, conducted in line with the Public Procurement Act 2007. All notices, expressions of interest and contract awards are published in the public domain.</p>
       </div>
     </section>
 
@@ -133,6 +133,7 @@
   <div data-include="a11y"></div>
 
   <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
   <script src="assets/js/partials.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/translator.js"></script>
@@ -144,14 +145,14 @@
     'use strict';
 
     var FALLBACK_TENDERS = [
-      { title: 'Supply of office IT infrastructure — HQ Ship House',     ref_number: 'FMOD/2026/IT/01', category: 'Supplies',    method: 'Open Tender · National Competitive Bidding', closes_at: '12 Jun 2026', doc_url: '', description: '' },
-      { title: 'Renovation of Ship House conference rooms',               ref_number: 'FMOD/2026/WK/04', category: 'Works',       method: 'Open Tender · Works',                        closes_at: '28 Jun 2026', doc_url: '', description: '' },
-      { title: 'Vehicle fleet maintenance services (3-year framework)',   ref_number: 'FMOD/2026/SV/07', category: 'Services',    method: 'EOI · Services',                             closes_at: '5 Jul 2026',  doc_url: '', description: '' },
-      { title: 'Defence-industrial advisory & feasibility study',         ref_number: 'FMOD/2026/CN/02', category: 'Consultancy', method: 'Restricted · Consultancy',                   closes_at: '19 Jul 2026', doc_url: '', description: '' },
+      { title: 'Supply of office IT infrastructure — HQ Ship House',     ref_number: 'MOD/2026/IT/01', category: 'Supplies',    method: 'Open Tender · National Competitive Bidding', closes_at: '12 Jun 2026', doc_url: '', description: '' },
+      { title: 'Renovation of Ship House conference rooms',               ref_number: 'MOD/2026/WK/04', category: 'Works',       method: 'Open Tender · Works',                        closes_at: '28 Jun 2026', doc_url: '', description: '' },
+      { title: 'Vehicle fleet maintenance services (3-year framework)',   ref_number: 'MOD/2026/SV/07', category: 'Services',    method: 'EOI · Services',                             closes_at: '5 Jul 2026',  doc_url: '', description: '' },
+      { title: 'Defence-industrial advisory & feasibility study',         ref_number: 'MOD/2026/CN/02', category: 'Consultancy', method: 'Restricted · Consultancy',                   closes_at: '19 Jul 2026', doc_url: '', description: '' },
     ];
     var FALLBACK_AWARDS = [
-      { title: 'Medical equipment for military hospitals',  ref_number: 'FMOD/2026/AW/01', method: 'National Competitive Bidding', description: 'Awarded after evaluation by the Ministerial Tenders Board.', doc_url: '' },
-      { title: 'NAFRC training equipment, batch 2026A',    ref_number: 'FMOD/2026/AW/02', method: 'Open Tender',                  description: 'Awarded for delivery to the Resettlement Centre, Oshodi.',    doc_url: '' },
+      { title: 'Medical equipment for military hospitals',  ref_number: 'MOD/2026/AW/01', method: 'National Competitive Bidding', description: 'Awarded after evaluation by the Ministerial Tenders Board.', doc_url: '' },
+      { title: 'NAFRC training equipment, batch 2026A',    ref_number: 'MOD/2026/AW/02', method: 'Open Tender',                  description: 'Awarded for delivery to the Resettlement Centre, Oshodi.',    doc_url: '' },
     ];
 
     function esc(s) {
@@ -220,16 +221,15 @@
       }).join('');
     }
 
-    fetch('/api/procurement')
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        renderTenders(d.tenders && d.tenders.length ? d.tenders : FALLBACK_TENDERS);
-        renderAwards(d.awards && d.awards.length ? d.awards : FALLBACK_AWARDS);
-      })
-      .catch(function () {
-        renderTenders(FALLBACK_TENDERS);
-        renderAwards(FALLBACK_AWARDS);
-      });
+    function renderFromStore() {
+      var tenders = (window.MOD_STORE && window.MOD_STORE.tenders()) || [];
+      var awards  = (window.MOD_STORE && window.MOD_STORE.awards()) || [];
+      renderTenders(tenders.length ? tenders : FALLBACK_TENDERS);
+      renderAwards(awards.length ? awards : FALLBACK_AWARDS);
+    }
+
+    renderFromStore();
+    window.addEventListener('mod-content-updated', renderFromStore);
   }());
   </script>
 </body>
