@@ -15,6 +15,7 @@
     { "source": "/admin/api/annual-reports.php", "destination": "/api/annual-reports" },
     { "source": "/admin/api/submissions.php", "destination": "/api/submissions" },
     { "source": "/admin/api/subscribe.php", "destination": "/api/subscribe" },
+    { "source": "/admin/api/translate.php", "destination": "/api/translate" },
     { "source": "/admin/api/save.php", "destination": "/api/admin/save" },
     { "source": "/admin/login.php", "destination": "/api/admin/login" },
     { "source": "/admin/logout.php", "destination": "/api/admin/logout" },

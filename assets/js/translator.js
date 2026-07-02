@@ -11,7 +11,7 @@
   const AZURE_REGION = (window.MOD_CONFIG && window.MOD_CONFIG.AZURE_TRANSLATE_REGION) || 'westeurope';
   const STORAGE_KEY  = 'mod-lang';
   const ENDPOINT     = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
-  const PROXY_ENDPOINTS = ['/api/translate.php', '/api/translate'];
+  const PROXY_ENDPOINTS = ['/admin/api/translate.php', '/api/translate'];
   const SUPPORTED    = ['en', 'ha', 'ig', 'yo', 'fr', 'es', 'zh-Hans'];
 
   let originalNodes  = [];
