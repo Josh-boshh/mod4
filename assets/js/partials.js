@@ -14,11 +14,13 @@
   const IG = "https://instagram.com/mod_nigeria";
   const TW = "https://twitter.com/MODInfoNg";
   const YT = "https://www.youtube.com/@modnigeria";
+  const LI = "https://www.linkedin.com/in/ministry-of-defence-mod-ng-56004b356/";
 
   const ICON_FB = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H8v-2.9h2.4V9.4c0-2.4 1.4-3.7 3.6-3.7 1 0 2.1.2 2.1.2v2.3h-1.2c-1.2 0-1.5.7-1.5 1.5V12h2.6l-.4 2.9h-2.2v7A10 10 0 0 0 22 12Z"/></svg>`;
   const ICON_X  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h3l-7.5 8.6L22 22h-6l-5-6.6L5 22H2l8-9.2L2 2h6l4.6 6 5.4-6Z"/></svg>`;
   const ICON_IG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.5-2.8a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z"/></svg>`;
   const ICON_YT = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.6 12 3.6 12 3.6s-7.4 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.2 0 12 0 12s0 3.8.5 5.8a3 3 0 0 0 2.1 2.1c2 .5 9.4.5 9.4.5s7.4 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-2 .5-5.8.5-5.8s0-3.8-.5-5.8ZM9.6 15.5V8.5l6.3 3.5-6.3 3.5Z"/></svg>`;
+  const ICON_LI = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2ZM8 19H5V9h3v10ZM6.5 7.7A1.7 1.7 0 1 1 6.5 4.3a1.7 1.7 0 0 1 0 3.4ZM19 19h-3v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V19h-3V9h2.9v1.4h.1c.4-.8 1.4-1.7 3-1.7 3.2 0 3.9 2.1 3.9 4.9V19Z"/></svg>`;
 
   const HEADER_HTML = `
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -43,6 +45,7 @@
           <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram" data-social="instagram">${ICON_IG}</a>
           <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter" data-social="twitter">${ICON_X}</a>
           <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube" data-social="youtube">${ICON_YT}</a>
+          <a href="${LI}" target="_blank" rel="noopener" aria-label="LinkedIn" data-social="linkedin">${ICON_LI}</a>
         </span>
       </div>
     </div>
@@ -179,6 +182,7 @@
             <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram" data-social="instagram">${ICON_IG}</a>
             <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter" data-social="twitter">${ICON_X}</a>
             <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube" data-social="youtube">${ICON_YT}</a>
+            <a href="${LI}" target="_blank" rel="noopener" aria-label="LinkedIn" data-social="linkedin">${ICON_LI}</a>
           </div>
         </div>
         <div>

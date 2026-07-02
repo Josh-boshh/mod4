@@ -258,6 +258,7 @@
       instagram: settings.social_instagram,
       twitter: settings.social_twitter,
       youtube: settings.social_youtube,
+      linkedin: settings.social_linkedin,
     };
     document.querySelectorAll("[data-social]").forEach(function (el) {
       var platform = el.getAttribute("data-social");
