@@ -210,10 +210,13 @@
       }).join('');
     }
 
-    fetch('/api/operations')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { render(d.operations && d.operations.length ? d.operations : FALLBACK); })
-      .catch(function () { render(FALLBACK); });
+    function renderFromStore() {
+      var ops = (window.MOD_STORE && window.MOD_STORE.operations()) || [];
+      render(ops.length ? ops : FALLBACK);
+    }
+
+    renderFromStore();
+    window.addEventListener('mod-content-updated', renderFromStore);
   }());
   </script>
 </body>

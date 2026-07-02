@@ -292,13 +292,13 @@
       renderDirectors();
     }
 
-    window.addEventListener('mod-content-updated', function() { render(null); });
+    function renderFromStore() {
+      var directors = (window.MOD_STORE && window.MOD_STORE.directors()) || null;
+      render(directors);
+    }
 
-    // Fetch DB director overrides then render
-    fetch('/api/directors')
-      .then(function (r) { return r.json(); })
-      .then(function (d) { render(d.directors || {}); })
-      .catch(function () { render(null); });
+    window.addEventListener('mod-content-updated', renderFromStore);
+    renderFromStore();
   }());
   </script>
 </body>
