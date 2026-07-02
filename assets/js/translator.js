@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — Azure Translator integration
+ *  MINISTRY OF DEFENCE — Azure Translator integration
  *  Replaces Google Translate widget. Uses Microsoft Azure Translator API.
  *  Hooks into the existing .lang-select dropdown in the site header.
  * ============================================================================= */
@@ -11,6 +11,7 @@
   const AZURE_REGION = (window.MOD_CONFIG && window.MOD_CONFIG.AZURE_TRANSLATE_REGION) || 'westeurope';
   const STORAGE_KEY  = 'mod-lang';
   const ENDPOINT     = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
+  const PROXY_ENDPOINTS = ['/api/translate.php', '/api/translate'];
   const SUPPORTED    = ['en', 'ha', 'ig', 'yo', 'fr', 'es', 'zh-Hans'];
 
   let originalNodes  = [];
@@ -36,12 +37,6 @@
   // ── 2. Translate the whole page ────────────────────────────────────────────
   async function translatePage(lang) {
     if (!lang || lang === 'en') { restorePage(); return; }
-    // Skip silently if no API key is configured
-    if (!AZURE_KEY) {
-      console.warn('[MOD_TRANSLATE] No Azure API key configured in config.js — translation disabled.');
-      indicateBusy(false);
-      return;
-    }
 
     // If already translated, restore first before re-translating
     if (isTranslated) restorePage();
@@ -60,17 +55,7 @@
     try {
       for (let i = 0; i < texts.length; i += CHUNK) {
         const chunk = texts.slice(i, i + CHUNK);
-        const res = await fetch(`${ENDPOINT}&to=${lang}`, {
-          method: 'POST',
-          headers: {
-            'Ocp-Apim-Subscription-Key': AZURE_KEY,
-            'Ocp-Apim-Subscription-Region': AZURE_REGION,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(chunk)
-        });
-        const data = await res.json();
-        allTranslated.push(...data);
+        allTranslated.push(...await translateChunk(chunk, lang));
       }
 
       allTranslated.forEach((item, i) => {
@@ -94,6 +79,52 @@
     }
 
     indicateBusy(false);
+  }
+
+  async function translateChunk(chunk, lang) {
+    const payload = JSON.stringify(chunk);
+    const proxyErrors = [];
+
+    for (const endpoint of PROXY_ENDPOINTS) {
+      try {
+        const res = await fetch(`${endpoint}?to=${encodeURIComponent(lang)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Invalid translation payload');
+        return data;
+      } catch (err) {
+        proxyErrors.push(err);
+      }
+    }
+
+    if (!AZURE_KEY) {
+      throw proxyErrors[proxyErrors.length - 1] || new Error('Translation backend unavailable.');
+    }
+
+    const res = await fetch(`${ENDPOINT}&to=${encodeURIComponent(lang)}`, {
+      method: 'POST',
+      headers: {
+        'Ocp-Apim-Subscription-Key': AZURE_KEY,
+        'Ocp-Apim-Subscription-Region': AZURE_REGION,
+        'Content-Type': 'application/json'
+      },
+      body: payload
+    });
+
+    if (!res.ok) {
+      const details = await res.text();
+      throw new Error(`Azure HTTP ${res.status}: ${details}`);
+    }
+
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Unexpected Azure response.');
+    }
+    return data;
   }
 
   // ── 3. Restore original English text ──────────────────────────────────────
