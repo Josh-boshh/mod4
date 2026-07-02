@@ -3,6 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
+function withoutId(draft: Record<string, unknown>) {
+  const rest = { ...draft };
+  delete rest.id;
+  return rest;
+}
+
 // Shared data layer for admin CRUD pages: every table management page needs
 // the same fetch/insert/update/delete/reorder shape, calling supabase-js
 // directly per the no-custom-backend architecture. List rendering stays
@@ -41,15 +47,24 @@ export function useAdminTable<T extends { id: number }>(
   // supabase-js infers row types from a generated Database schema, which this
   // demo doesn't have — `table` is a plain string, so its row shape is opaque
   // to the client. Cast at the boundary rather than threading `any` upward.
+  //
+  // `id` is stripped from every payload here: it's a GENERATED ALWAYS AS
+  // IDENTITY column, and edit forms are seeded from the full row (so their
+  // draft state still carries the original `id` even though no field ever
+  // edits it). Postgres rejects an UPDATE that assigns that column any value
+  // at all — even its own unchanged value — with "column can only be
+  // updated to DEFAULT". Insert has the same restriction, so it's dropped
+  // there too for consistency, even though drafts for new rows don't have
+  // an id to begin with.
   async function insert(draft: Partial<T>) {
-    const { error } = await supabase.from(table).insert(draft as never);
+    const { error } = await supabase.from(table).insert(withoutId(draft) as never);
     if (error) return error.message;
     await reload();
     return null;
   }
 
   async function update(id: number, draft: Partial<T>) {
-    const { error } = await supabase.from(table).update(draft as never).eq('id', id);
+    const { error } = await supabase.from(table).update(withoutId(draft) as never).eq('id', id);
     if (error) return error.message;
     await reload();
     return null;
