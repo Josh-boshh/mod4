@@ -3,6 +3,7 @@
 import { AdminCrudPage } from '@/lib/admin/AdminCrudPage';
 import type { ColumnConfig } from '@/lib/admin/AdminList';
 import type { FieldConfig } from '@/lib/admin/fields';
+import { resolveImageUrl } from '@/lib/admin/resolveImageUrl';
 
 type HeroSlide = {
   id: number;
@@ -20,7 +21,7 @@ const columns: ColumnConfig<HeroSlide>[] = [
     render: (item) =>
       item.image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.image_url} alt="" className="h-12 w-20 rounded object-cover" />
+        <img src={resolveImageUrl(item.image_url)} alt="" className="h-12 w-20 rounded object-cover" />
       ) : (
         <span className="text-brand-ink-4">—</span>
       ),

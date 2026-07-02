@@ -3,6 +3,7 @@
 import { AdminCrudPage } from '@/lib/admin/AdminCrudPage';
 import type { ColumnConfig } from '@/lib/admin/AdminList';
 import type { FieldConfig } from '@/lib/admin/fields';
+import { resolveImageUrl } from '@/lib/admin/resolveImageUrl';
 
 type Director = {
   id: number;
@@ -19,7 +20,7 @@ const columns: ColumnConfig<Director>[] = [
     render: (item) =>
       item.photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.photo_url} alt="" className="h-12 w-12 rounded-full object-cover" />
+        <img src={resolveImageUrl(item.photo_url)} alt="" className="h-12 w-12 rounded-full object-cover" />
       ) : (
         <span className="text-brand-ink-4">—</span>
       ),

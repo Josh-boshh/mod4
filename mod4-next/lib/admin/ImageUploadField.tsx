@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { resolveImageUrl } from './resolveImageUrl';
 
 const inputClass =
   'w-full rounded border border-brand-line px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green';
@@ -70,7 +71,7 @@ export function ImageUploadField({
       {value && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={value}
+          src={resolveImageUrl(value)}
           alt=""
           className="h-24 w-40 rounded border border-brand-line object-cover"
           onError={(e) => (e.currentTarget.style.display = 'none')}
