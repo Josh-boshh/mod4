@@ -65,7 +65,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    const original = Buffer.from(await file.arrayBuffer());
+    // Buffer.from(arrayBuffer) creates a *view* over the same underlying
+    // memory rather than copying it. Under Node 24's fetch/formData
+    // implementation that memory can be backed by a SharedArrayBuffer,
+    // which @vercel/blob's own internal fetch() call then rejects outright
+    // ("SharedArrayBuffer is not allowed"). Wrapping in Uint8Array first
+    // forces an actual copy into a plain, non-shared buffer.
+    const original = Buffer.from(new Uint8Array(await file.arrayBuffer()));
     const { buffer, ext, mime } = await compressImage(original, file.type);
 
     const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, buffer, {
