@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { toSessionCookieOptions } from './sessionCookieOptions';
 
 // For use in Server Components, Server Actions, and Route Handlers.
 // Create a fresh client per request — never share/cache across requests.
@@ -17,7 +18,7 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, toSessionCookieOptions(options))
             );
           } catch {
             // Called from a Server Component that can't set cookies (no

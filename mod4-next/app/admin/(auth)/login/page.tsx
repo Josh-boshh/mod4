@@ -1,11 +1,21 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, type FormEvent } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
+  );
+}
+
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const timedOut = searchParams.get('reason') === 'timeout';
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +62,12 @@ export default function AdminLoginPage() {
             <h1 className="font-heading text-2xl text-brand-ink">Admin Login</h1>
             <p className="mt-1 text-sm text-brand-ink-3">Ministry of Defence — content admin</p>
           </div>
+
+          {timedOut && (
+            <p role="alert" className="mb-4 rounded border border-brand-line bg-brand-paper-3 px-3 py-2 text-sm text-brand-ink-2">
+              You were signed out after a period of inactivity. Please sign in again.
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

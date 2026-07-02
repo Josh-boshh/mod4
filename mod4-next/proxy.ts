@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { toSessionCookieOptions } from '@/lib/supabase/sessionCookieOptions';
 
 // Next.js 16 renamed `middleware.ts` -> `proxy.ts` (function renamed to
 // `proxy`). This runs on every /admin request: it refreshes the Supabase
@@ -19,7 +20,7 @@ export async function proxy(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, toSessionCookieOptions(options))
           );
         },
       },
