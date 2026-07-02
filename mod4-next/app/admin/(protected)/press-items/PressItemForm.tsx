@@ -95,7 +95,7 @@ export function PressItemForm({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Category">
               <input
                 value={draft.category}
@@ -125,7 +125,7 @@ export function PressItemForm({
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Sort Order">
               <input
                 type="number"
@@ -134,7 +134,7 @@ export function PressItemForm({
                 className={inputClass}
               />
             </Field>
-            <label className="mt-6 flex items-center gap-2 text-sm text-brand-ink-2">
+            <label className="flex items-center gap-2 text-sm text-brand-ink-2 sm:mt-6">
               <input
                 type="checkbox"
                 checked={draft.active}

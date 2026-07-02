@@ -22,16 +22,16 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-56 shrink-0">
-      <ul className="space-y-1">
+    <nav className="w-full shrink-0 md:w-56">
+      <ul className="flex gap-1 overflow-x-auto pb-2 md:block md:space-y-1 md:overflow-visible md:pb-0">
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href;
           return (
-            <li key={item.href}>
+            <li key={item.href} className="shrink-0">
               <Link
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
-                className={`block rounded px-3 py-2 text-sm transition ${
+                className={`block whitespace-nowrap rounded px-3 py-2 text-sm transition ${
                   active
                     ? 'bg-brand-green-soft font-medium text-brand-green-2'
                     : 'text-brand-ink-2 hover:bg-brand-paper-3'

@@ -46,7 +46,7 @@ export function ImageUploadField({
         placeholder="Paste an image URL, or upload a file below"
         className={inputClass}
       />
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => fileRef.current?.click()}

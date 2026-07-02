@@ -31,8 +31,8 @@ export function AdminList<T extends { id: number }>({
   }
 
   return (
-    <div className="overflow-hidden rounded border border-brand-line bg-brand-paper">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-x-auto rounded border border-brand-line bg-brand-paper">
+      <table className="w-full min-w-[640px] text-left text-sm">
         <thead className="border-b border-brand-line bg-brand-paper-3 text-xs uppercase tracking-wide text-brand-ink-3">
           <tr>
             {sortKey && <th className="px-4 py-3">Order</th>}

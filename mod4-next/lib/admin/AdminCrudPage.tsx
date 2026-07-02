@@ -58,7 +58,7 @@ export function AdminCrudPage<T extends { id: number }>({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-xl text-brand-ink">{title}</h1>
         <button
           onClick={() => setEditing('new')}
