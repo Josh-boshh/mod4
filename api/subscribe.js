@@ -1,7 +1,8 @@
 import { setJsonHeaders } from '../lib/cors.js';
 import { requireAdmin } from '../lib/auth.js';
-import { fetch as dbFetch, query as dbQuery } from '../lib/db.js';
+import { query as dbQuery } from '../lib/db.js';
 import { getSubscribers } from '../lib/content.js';
+import { sbSelectOne, sbInsert } from '../lib/supabaseAdmin.js';
 import * as spam from '../lib/spam.js';
 
 export default async function handler(req, res) {
@@ -56,16 +57,15 @@ export default async function handler(req, res) {
   if (!email) return res.status(400).json({ error: 'A valid email address is required.' });
 
   if (action === 'add') {
-    const existing = await dbFetch('SELECT 1 FROM mod_subscribers WHERE email = ? LIMIT 1', [email]);
+    const existing = await sbSelectOne('mod_subscribers', `email=eq.${encodeURIComponent(email)}&select=email`);
     if (existing) {
       // Return success so bots can't enumerate valid addresses
       return res.status(200).json({ success: true });
     }
 
-    await dbQuery(
-      'INSERT INTO mod_subscribers (email, subscribed_at) VALUES (?, NOW()) ON DUPLICATE KEY UPDATE email = email',
-      [email]
-    );
+    // resolution=ignore-duplicates is a safety net against the race between
+    // the existence check above and this insert (email has a unique constraint).
+    await sbInsert('mod_subscribers', { email }, { prefer: 'return=minimal,resolution=ignore-duplicates' });
     return res.status(200).json({ success: true });
   }
 

@@ -1,6 +1,7 @@
 import { setJsonHeaders } from '../lib/cors.js';
 import { requireAdmin } from '../lib/auth.js';
 import { query as dbQuery, safeFetchAll } from '../lib/db.js';
+import { sbInsert } from '../lib/supabaseAdmin.js';
 import * as spam from '../lib/spam.js';
 
 const ALLOWED_TYPES = ['contact', 'foi', 'servicom'];
@@ -117,11 +118,7 @@ export default async function handler(req, res) {
     }
   }
 
-  await dbQuery(
-    `INSERT INTO mod_submissions (form_type, name, email, subject, meta, submitted_at)
-     VALUES (?, ?, ?, ?, ?, NOW())`,
-    [formType, name, email, subject, JSON.stringify(meta)]
-  );
+  await sbInsert('mod_submissions', { form_type: formType, name, email, subject, meta });
 
   return res.status(200).json({ success: true });
 }
