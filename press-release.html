@@ -372,17 +372,42 @@
       }
     }
 
-    function notFound() {
+    function notFound(previewUnavailable) {
       document.getElementById('article-loading-section').style.display = 'none';
       document.getElementById('article-not-found').style.display = '';
       document.title = 'Press release not found — Ministry of Defence';
+      if (previewUnavailable) {
+        var el = document.getElementById('article-not-found');
+        var note = document.createElement('p');
+        note.style.cssText = 'margin-top:12px;font-size:.85rem;color:var(--text-3);';
+        note.textContent = 'This item can\'t be previewed yet — check "Active" in the admin panel first.';
+        el.appendChild(note);
+      }
+    }
+
+    function showPreviewBanner() {
+      var bar = document.createElement('div');
+      bar.textContent = 'Preview mode — this page is not linked from the public site.';
+      bar.style.cssText = 'background:#b8923c;color:#fff;text-align:center;font-size:.82rem;padding:8px;font-weight:600;';
+      document.body.insertBefore(bar, document.body.firstChild);
     }
 
     function boot() {
-      var params = new URLSearchParams(location.search);
-      var slug   = params.get('slug') || '';
+      var params  = new URLSearchParams(location.search);
+      var slug    = params.get('slug') || '';
+      var preview = params.get('preview') === '1';
 
       if (!slug) { notFound(); return; }
+
+      if (preview) {
+        showPreviewBanner();
+        if (!window.MOD_STORE || !window.MOD_STORE.previewPress) { notFound(true); return; }
+        window.MOD_STORE.previewPress(slug).then(function (release) {
+          if (release) render(release, [release]);
+          else notFound(true);
+        });
+        return;
+      }
 
       /* Get all press from store */
       var all = [];
@@ -405,10 +430,11 @@
       }
     }
 
-    /* Re-render when fresh DB data arrives */
+    /* Re-render when fresh DB data arrives (not applicable in preview mode) */
     window.addEventListener('mod-content-updated', function () {
       var params = new URLSearchParams(location.search);
-      var slug   = params.get('slug') || '';
+      if (params.get('preview') === '1') return;
+      var slug = params.get('slug') || '';
       if (!slug) return;
       var all = window.MOD_STORE ? (window.MOD_STORE.press() || []) : [];
       for (var i = 0; i < all.length; i++) {

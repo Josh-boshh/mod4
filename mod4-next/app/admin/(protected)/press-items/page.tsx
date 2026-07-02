@@ -1,31 +1,65 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAdminTable } from '@/lib/admin/useAdminTable';
 import { AdminList, type ColumnConfig } from '@/lib/admin/AdminList';
+import { PUBLIC_SITE_URL } from '@/lib/admin/publicSiteUrl';
 import { PressItemForm } from './PressItemForm';
 import { EMPTY_DRAFT, type PressItem, type PressItemDraft } from './types';
 
 const columns: ColumnConfig<PressItem>[] = [
   { label: 'Title', render: (item) => <span className="font-medium text-brand-ink">{item.title}</span> },
   { label: 'Category', render: (item) => item.category },
-  { label: 'Published', render: (item) => item.published_at },
+  {
+    label: 'Published',
+    render: (item) => {
+      const isFuture = item.published_at > new Date().toISOString().slice(0, 10);
+      return (
+        <span className={isFuture ? 'font-medium text-brand-gold' : undefined}>
+          {item.published_at}
+          {isFuture ? ' (scheduled)' : ''}
+        </span>
+      );
+    },
+  },
 ];
 
 export default function PressItemsPage() {
-  const { items, loading, error, insert, update, remove, move } = useAdminTable<PressItem>(
+  // Ordered by publish date (not sort_order) so backdating and scheduling
+  // "just work" without any manual reordering — the public site orders
+  // press releases the same way (see contentstore.js's loadSupabasePress).
+  const { items, loading, error, insert, update, remove } = useAdminTable<PressItem>(
     'mod_press_items',
-    'sort_order'
+    'published_at',
+    false,
+    true
   );
   const [editing, setEditing] = useState<PressItem | 'new' | null>(null);
+  const [query, setQuery] = useState('');
+
+  const visibleItems = useMemo(() => {
+    if (!query.trim()) return items;
+    const needle = query.trim().toLowerCase();
+    return items.filter(
+      (item) =>
+        item.title.toLowerCase().includes(needle) ||
+        item.category.toLowerCase().includes(needle) ||
+        item.excerpt.toLowerCase().includes(needle)
+    );
+  }, [items, query]);
 
   async function handleDelete(item: PressItem) {
-    if (!window.confirm(`Delete "${item.title}"? This cannot be undone.`)) return;
+    if (!window.confirm(`Move "${item.title}" to Trash?`)) return;
     await remove(item.id);
   }
 
   async function handleToggleActive(item: PressItem) {
     await update(item.id, { active: !item.active });
+  }
+
+  function handlePreview(item: PressItem) {
+    const url = `${PUBLIC_SITE_URL}/press-release.html?slug=${encodeURIComponent(item.slug)}&preview=1`;
+    window.open(url, '_blank', 'noopener');
   }
 
   async function handleSubmit(draft: PressItemDraft) {
@@ -44,7 +78,7 @@ export default function PressItemsPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-xl text-brand-ink">Press Items</h1>
         <button
           onClick={() => setEditing('new')}
@@ -53,6 +87,14 @@ export default function PressItemsPage() {
           + New Press Item
         </button>
       </div>
+
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search press items…"
+        className="mb-4 w-full max-w-sm rounded border border-brand-line px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"
+      />
 
       {error && (
         <p role="alert" className="mb-4 rounded border border-brand-red/20 bg-red-50 px-3 py-2 text-sm text-brand-red">
@@ -64,14 +106,15 @@ export default function PressItemsPage() {
         <p className="text-sm text-brand-ink-3">Loading…</p>
       ) : (
         <AdminList
-          items={items}
+          items={visibleItems}
           columns={columns}
-          sortKey="sort_order"
           activeKey="active"
-          onMove={move}
           onToggleActive={handleToggleActive}
           onEdit={setEditing}
           onDelete={handleDelete}
+          onPreview={handlePreview}
+          deleteLabel="Trash"
+          emptyMessage={query.trim() ? 'No items match your search.' : 'No items yet.'}
         />
       )}
 
