@@ -11,6 +11,12 @@
   const IS_ADMIN_CONTEXT = window.location.pathname.includes('/admin/');
   const CSRF_TOKEN = getCsrfToken();
 
+  // Press releases are managed through the new admin (mod4-next, backed by
+  // Supabase) instead of the legacy MySQL /api/content — this is the anon
+  // (public, RLS-restricted-to-active-rows) key, safe to expose client-side.
+  const SUPABASE_URL = "https://gsjhhbzjeiuvcjfazijw.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_ZV9IN1u6odtgBfA3vKI4GQ_4vOCuJms";
+
   const STATE = {
     content: null,
     subscribers: null,
@@ -35,7 +41,7 @@
       hero: {
         eyebrow: 'Federal Republic of Nigeria',
         headline: 'Defending the sovereignty of Nigeria.',
-        body: 'The Federal Ministry of Defence - the apex policy authority overseeing the Nigerian Armed Forces - provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.',
+        body: 'The Ministry of Defence - the apex policy authority overseeing the Nigerian Armed Forces - provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.',
       },
       slides: (D.HERO_SLIDES || []).map((s) => ({ ...s })),
       press: (D.PRESS || []).map((p) => ({ ...p })),
@@ -46,7 +52,7 @@
       },
       settings: {
         lastReviewed: 'June 2026',
-        ministryName: 'Federal Ministry of Defence',
+        ministryName: 'Ministry of Defence',
         country: 'Federal Republic of Nigeria',
       },
     };
@@ -103,6 +109,99 @@
     dispatchUpdate();
   }
 
+  function formatPressDate(raw) {
+    if (!raw) return '';
+    const ts = Date.parse(raw);
+    if (Number.isNaN(ts)) return raw;
+    return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // Mirrors the shape api/content.js produces for `press`, so nothing
+  // downstream (press.html, press-release.html, render-home.js) needs to
+  // know or care which backend the data came from.
+  async function loadSupabasePress() {
+    try {
+      const res = await fetch(
+        SUPABASE_URL + '/rest/v1/mod_press_items?select=*&active=eq.true&order=sort_order.asc',
+        {
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
+          cache: 'no-store',
+        }
+      );
+      if (!res.ok) throw new Error('Supabase press fetch failed');
+      const rows = await res.json();
+      return rows.map((item) => ({
+        title: item.title,
+        excerpt: item.excerpt,
+        body: item.body || '',
+        category: item.category,
+        date: formatPressDate(item.published_at),
+        img: item.image_url,
+        url: 'press-release.html?slug=' + encodeURIComponent(item.slug),
+        slug: item.slug,
+      }));
+    } catch (e) {
+      console.warn('[MOD_STORE] Supabase press load failed:', e);
+      return null;
+    }
+  }
+
+  async function loadSupabaseRest(path) {
+    const res = await fetch(SUPABASE_URL + path, {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('Supabase fetch failed: ' + path);
+    return res.json();
+  }
+
+  // Mirrors the hero/slides/leadership/settings shape api/content.js
+  // produces, sourced from Supabase instead of the legacy MySQL backend.
+  async function loadSupabaseSiteContent() {
+    try {
+      const [settingsRows, slideRows, leaderRows] = await Promise.all([
+        loadSupabaseRest('/rest/v1/mod_settings?select=name,value'),
+        loadSupabaseRest('/rest/v1/mod_hero_slides?select=*&active=eq.true&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_leaders?select=*&active=eq.true&order=sort_order.asc'),
+      ]);
+
+      const settings = {};
+      settingsRows.forEach((row) => { settings[row.name] = row.value; });
+
+      const leadershipMap = { minister: {}, ministerOfState: {}, permSec: {} };
+      leaderRows.forEach((item) => {
+        if (item.position_key in leadershipMap) {
+          leadershipMap[item.position_key] = {
+            title: item.title,
+            name: item.name,
+            bio: item.bio,
+            photo: item.photo_url,
+            profile_link: item.profile_link,
+          };
+        }
+      });
+
+      return {
+        hero: {
+          eyebrow: settings.hero_eyebrow,
+          headline: settings.hero_headline,
+          body: settings.hero_body,
+        },
+        slides: slideRows.map((slide) => ({
+          img: slide.image_url,
+          alt: slide.alt_text,
+          role: slide.role_text,
+          name: slide.caption_text,
+        })),
+        leadership: leadershipMap,
+        settings,
+      };
+    } catch (e) {
+      console.warn('[MOD_STORE] Supabase site content load failed:', e);
+      return null;
+    }
+  }
+
   async function loadBackendContent() {
     try {
       const res = await fetch(apiUrl('content'), { cache: 'no-store' });
@@ -118,6 +217,23 @@
       if (!STATE.content) {
         STATE.content = loadLocalContent();
       }
+    }
+
+    const [supabasePress, supabaseSite] = await Promise.all([
+      loadSupabasePress(),
+      loadSupabaseSiteContent(),
+    ]);
+
+    if (supabasePress || supabaseSite) {
+      const blob = loadContent();
+      if (supabasePress) blob.press = supabasePress;
+      if (supabaseSite) {
+        blob.hero = supabaseSite.hero;
+        blob.slides = supabaseSite.slides;
+        blob.leadership = supabaseSite.leadership;
+        blob.settings = supabaseSite.settings;
+      }
+      setContent(blob);
     }
   }
 
