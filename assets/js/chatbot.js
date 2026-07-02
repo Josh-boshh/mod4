@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — Virtual Assistant v2
+ *  MINISTRY OF DEFENCE — Virtual Assistant v2
  *  Fully client-side, no API keys, no subscriptions. Free & permanent.
  *  Features: NLP keyword scoring, context memory, typing indicator,
  *            quick-reply chips, multi-variant responses, friendly personality.
@@ -23,7 +23,7 @@
                  'afternoon','evening','night','goodnight'],
       responses: [
         'Hello! 👋 Great to see you here. I\'m the MOD Assistant — I can help with recruitment, FOI requests, contact details, procurement, and much more. What can I do for you today?',
-        'Hi there! 😊 Welcome to the Federal Ministry of Defence virtual assistant. How can I help you today?',
+        'Hi there! 😊 Welcome to the Ministry of Defence virtual assistant. How can I help you today?',
         'Good day! I\'m here to help you navigate the Ministry\'s services. Feel free to ask about recruitment, departments, tenders, veterans support — or anything else. What\'s on your mind?'
       ],
       chips: ['Recruitment','FOI Request','Contact details','Who is the Minister']
@@ -50,8 +50,8 @@
                  'are you a bot','are you human','are you real','your name',
                  'what is your name','tell me about yourself','help me'],
       responses: [
-        'I\'m the <strong>MOD Assistant</strong> — a virtual assistant for the Federal Ministry of Defence, Nigeria. 🇳🇬\n\nI can help you with:\n• Recruitment & careers\n• FOI requests\n• Contact details\n• Procurement & tenders\n• Departments & agencies\n• Veterans services\n• Press releases\n• And much more!\n\nJust ask me anything.',
-        'I\'m a virtual assistant built for the Federal Ministry of Defence website. I know about MOD\'s services, departments, key officials, and how to get things done. I can\'t replace a real officer, but I can point you in the right direction fast! What do you need?'
+        'I\'m the <strong>MOD Assistant</strong> — a virtual assistant for the Ministry of Defence, Nigeria. 🇳🇬\n\nI can help you with:\n• Recruitment & careers\n• FOI requests\n• Contact details\n• Procurement & tenders\n• Departments & agencies\n• Veterans services\n• Press releases\n• And much more!\n\nJust ask me anything.',
+        'I\'m a virtual assistant built for the Ministry of Defence website. I know about MOD\'s services, departments, key officials, and how to get things done. I can\'t replace a real officer, but I can point you in the right direction fast! What do you need?'
       ],
       chips: ['Recruitment','FOI Request','Who is the Minister','Contact details']
     },
@@ -76,7 +76,7 @@
       keywords: ['goodbye','bye','see you','see ya','later','take care',
                  'farewell','have a good','have a nice','until next'],
       responses: [
-        'Goodbye! 👋 Thank you for visiting the Federal Ministry of Defence website. Have a great day!',
+        'Goodbye! 👋 Thank you for visiting the Ministry of Defence website. Have a great day!',
         'Take care! Feel free to return anytime you need assistance. God bless Nigeria! 🇳🇬',
         'Farewell! It was a pleasure helping you. Visit us again anytime. 👋'
       ]
@@ -115,7 +115,7 @@
                  'email','reach','find you','head office','headquarters','hq',
                  'ship house','abuja','area 10','telephone','call','write to'],
       responses: [
-        '📍 <strong>Federal Ministry of Defence</strong>\nShip House, Central Business District\nArea 10, Abuja, FCT — Nigeria\n\n📞 +234 9 234 5670\n📧 <a href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>\n\nFull contact directory → <a href="contact.html">Contact page</a>',
+        '📍 <strong>Ministry of Defence</strong>\nShip House, Central Business District\nArea 10, Abuja, FCT — Nigeria\n\n📞 +234 9 234 5670\n📧 <a href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>\n\nFull contact directory → <a href="contact.html">Contact page</a>',
         'You can reach the Ministry at:\n\n🏢 Ship House, Area 10, Abuja\n📞 +234 9 234 5670\n📧 <a href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>\n\nFor <strong>media enquiries</strong>, contact the Press Office.\nFor <strong>FOI requests</strong>, use <a href="foi.html">the FOI page</a>.\nFor <strong>complaints</strong>, use <a href="servicom.html">SERVICOM</a>.'
       ],
       chips: ['FOI Request','SERVICOM complaint','Press Office']
@@ -197,7 +197,7 @@
                  'military','armed forces','coas','cns','cas','cds','chief of',
                  'nigerian army','nigerian navy','nigerian air force'],
       responses: [
-        'The Federal Ministry of Defence oversees three Service branches and the Defence Headquarters:\n\n🪖 <a href="military.html#army">Nigerian Army</a>\n⚓ <a href="military.html#navy">Nigerian Navy</a>\n✈️ <a href="military.html#airforce">Nigerian Air Force</a>\n🏛 <a href="military.html#dhq">Defence Headquarters (DHQ)</a>\n\nVisit the <a href="military.html">Components of MOD page</a> for full details on each branch.'
+        'The Ministry of Defence oversees three Service branches and the Defence Headquarters:\n\n🪖 <a href="military.html#army">Nigerian Army</a>\n⚓ <a href="military.html#navy">Nigerian Navy</a>\n✈️ <a href="military.html#airforce">Nigerian Air Force</a>\n🏛 <a href="military.html#dhq">Defence Headquarters (DHQ)</a>\n\nVisit the <a href="military.html">Components of MOD page</a> for full details on each branch.'
       ],
       chips: ['Recruitment','Operations','Agencies & bodies']
     },

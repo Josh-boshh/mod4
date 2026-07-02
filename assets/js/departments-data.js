@@ -1,6 +1,6 @@
 /* =============================================================================
  *  MOD — full department directory
- *  16 civilian departments of the Federal Ministry of Defence.
+ *  16 civilian departments of the Ministry of Defence.
  *  Director names sourced from official Ministry records (June 2026).
  * ============================================================================= */
 window.MOD_DEPARTMENTS = {
@@ -23,7 +23,7 @@ window.MOD_DEPARTMENTS = {
     role: "Director, Human Resource Management",
     email: "hr@defence.gov.ng",
     photo: "assets/images/directors/hr-director.jpg",
-    lead: "Manages recruitment, posting, promotion, discipline, training and welfare for civilian staff of the Federal Ministry of Defence.",
+    lead: "Manages recruitment, posting, promotion, discipline, training and welfare for civilian staff of the Ministry of Defence.",
     body: `<p>The Department of Human Resources Management is responsible for the human-capital lifecycle of the Ministry's civilian workforce — from recruitment and placement through training, promotion, discipline and retirement.</p>
            <ul><li>Recruitment & placement of civilian staff</li><li>Promotion, discipline & exit management</li><li>Capacity building and training</li><li>Staff welfare and conditions of service</li><li>Pensions for retired civilian staff</li></ul>`,
   },
@@ -101,7 +101,7 @@ window.MOD_DEPARTMENTS = {
     role: "Director, Legal Services",
     email: "legal@defence.gov.ng",
     photo: "assets/images/directors/legal-director.jpg",
-    lead: "Legal advisory, contracts, treaties and dispute resolution for the Federal Ministry of Defence.",
+    lead: "Legal advisory, contracts, treaties and dispute resolution for the Ministry of Defence.",
     body: `<p>The Department of Legal Services provides in-house legal advice across the Ministry — from contract drafting and review to representation in administrative proceedings and the negotiation of bilateral and multilateral defence agreements.</p>
            <ul><li>Contracts and MOUs</li><li>Defence treaties and international agreements</li><li>Dispute resolution and litigation support</li><li>Statutory interpretation and policy advice</li><li>Legal compliance audits</li></ul>`,
   },
@@ -134,7 +134,7 @@ window.MOD_DEPARTMENTS = {
     role: "Director, Information, Press & Public Relations",
     email: "press@defence.gov.ng",
     photo: "assets/images/directors/pr-director.jpg",
-    lead: "Public communications, press releases, media accreditation and citizen engagement on behalf of the Federal Ministry of Defence.",
+    lead: "Public communications, press releases, media accreditation and citizen engagement on behalf of the Ministry of Defence.",
     body: `<p>The Department of Information, Press and Public Relations is the public-facing voice of the Ministry. It publishes press releases, manages media accreditation for Ministry events, runs the Ministry's social-media presence and answers public enquiries.</p>
            <ul><li>Press releases and media briefings</li><li>Social-media engagement (Facebook, Instagram, X)</li><li>Media accreditation for Ministry events</li><li>Citizen enquiry response</li></ul>`,
   },
@@ -167,7 +167,7 @@ window.MOD_DEPARTMENTS = {
     role: "Director, Reforms Coordination & Service Improvement",
     email: "reforms@defence.gov.ng",
     photo: "assets/images/directors/reforms-director.jpeg",
-    lead: "Implementation of public-service reform and SERVICOM commitments in the Federal Ministry of Defence.",
+    lead: "Implementation of public-service reform and SERVICOM commitments in the Ministry of Defence.",
     body: `<p>The Department of Reforms Coordination and Service Improvement leads on the Federal Government's public-service reform agenda within the Ministry. It is the SERVICOM unit, the FOI focal department, and the Ministry's interface with the Bureau of Public Service Reforms.</p>
            <ul><li>SERVICOM standards and complaints</li><li>Freedom of Information Act compliance</li><li>BPSR liaison and self-assessment</li><li>Process re-engineering and service-improvement projects</li><li>Citizen engagement and customer-service standards</li></ul>`,
   },
@@ -175,7 +175,7 @@ window.MOD_DEPARTMENTS = {
     name: "Office of the Permanent Secretary",
     category: "Office of Direction",
     director: "Mr. Richard P. Pheelangwah",
-    role: "Permanent Secretary, FMOD",
+    role: "Permanent Secretary, MOD",
     email: "ps@defence.gov.ng",
     photo: "assets/images/directors/permanent-secretary.jpeg",
     lead: "The chief administrative and accounting officer of the Ministry, coordinating the work of all departments.",

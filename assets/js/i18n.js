@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — i18n
+ *  MINISTRY OF DEFENCE — i18n
  *  Production translation layer powered by Google Cloud Translation API v2.
  *
  *  • Translates every visible text node + a11y attributes on the page.

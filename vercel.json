@@ -3,7 +3,8 @@
     "api/admin/index.js": { "maxDuration": 30 },
     "api/admin/save.js": { "maxDuration": 15 },
     "api/submissions.js": { "maxDuration": 15 },
-    "api/subscribe.js": { "maxDuration": 15 }
+    "api/subscribe.js": { "maxDuration": 15 },
+    "api/translate.js": { "maxDuration": 15 }
   },
   "rewrites": [
     { "source": "/admin/api/content.php", "destination": "/api/content" },

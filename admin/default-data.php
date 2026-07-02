@@ -3,9 +3,9 @@ return [
     'settings' => [
         'hero_eyebrow' => 'Federal Republic of Nigeria',
         'hero_headline' => 'Defending the sovereignty of Nigeria.',
-        'hero_body' => 'The Federal Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.',
+        'hero_body' => 'The Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.',
         'last_reviewed' => 'June 2026',
-        'ministry_name' => 'Federal Ministry of Defence',
+        'ministry_name' => 'Ministry of Defence',
         'country' => 'Federal Republic of Nigeria',
         'social_facebook' => 'https://www.facebook.com/modinfonigeria',
         'social_twitter' => 'https://twitter.com/MODInfoNg',
@@ -58,9 +58,9 @@ return [
         ],
         [
             'img' => 'assets/images/hero/slide-1.jpg',
-            'alt' => 'Ship House — Federal Ministry of Defence headquarters, Abuja',
+            'alt' => 'Ship House — Ministry of Defence headquarters, Abuja',
             'role' => 'Ship House, Abuja',
-            'name' => 'Seat of Nigeria\'s defence policy — home of the Federal Ministry of Defence.',
+            'name' => 'Seat of Nigeria\'s defence policy — home of the Ministry of Defence.',
         ],
     ],
     'leadership' => [

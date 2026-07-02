@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
               <Image src="/brand/mod-logo.png" alt="" width={48} height={48} className="opacity-90" />
             </div>
             <h1 className="font-heading text-2xl text-brand-ink">Admin Login</h1>
-            <p className="mt-1 text-sm text-brand-ink-3">Federal Ministry of Defence — content admin</p>
+            <p className="mt-1 text-sm text-brand-ink-3">Ministry of Defence — content admin</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

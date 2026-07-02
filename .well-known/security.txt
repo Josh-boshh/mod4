@@ -1,4 +1,4 @@
-# Federal Ministry of Defence — Security disclosure policy
+# Ministry of Defence — Security disclosure policy
 # Per RFC 9116 — https://securitytxt.org
 # Canonical: https://defence.gov.ng/.well-known/security.txt
 
@@ -12,7 +12,7 @@ Encryption: https://defence.gov.ng/.well-known/pgp-key.txt
 
 # Responsible disclosure
 # If you discover a security vulnerability in this website or any related
-# public-facing service of the Federal Ministry of Defence, please report
+# public-facing service of the Ministry of Defence, please report
 # it responsibly via the contacts above.
 #
 # Do NOT publicly disclose the issue until the Ministry has had a reasonable

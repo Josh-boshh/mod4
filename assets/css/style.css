@@ -1,5 +1,5 @@
 /* =============================================================================
-   FEDERAL MINISTRY OF DEFENCE — design system
+  MINISTRY OF DEFENCE — design system
    Clean · minimalist · professional · State-House-inspired
    BPSR-compliant: appearance, accessibility, usability, responsiveness, structure.
    ============================================================================= */
@@ -489,8 +489,8 @@ body::after  { display: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.18; }
 .brand-text .ministry {
   font-family: var(--font-serif);
-  font-size: 1.1rem; font-weight: 500;
-  color: var(--ink); letter-spacing: -0.012em;
+  font-size: 1.15rem; font-weight: 500;
+  color: var(--ink); letter-spacing: 0.02em;
   white-space: nowrap;
 }
 .brand-text .country {
@@ -2459,7 +2459,7 @@ section.ink::after {
   /* Navbar brand — prevent overflow on narrow screens */
   .brand { gap: 12px; }
   .brand-logo { width: 44px; height: 44px; }
-  .brand-text .ministry { font-size: .95rem; }
+  .brand-text .ministry { font-size: 1rem; }
   .brand-text .country { font-size: .62rem; letter-spacing: .14em; }
   .nav-inner { padding: 14px 0; }
 
@@ -2506,7 +2506,7 @@ section.ink::after {
   .milestone:last-child { border-bottom: 0; }
 
   /* Brand: tighten further */
-  .brand-text .ministry { font-size: .88rem; }
+  .brand-text .ministry { font-size: .94rem; }
 }
 
 /* =============================================================================
@@ -2571,7 +2571,7 @@ section.ink::after {
   .brand-logo { width: 32px !important; height: 32px !important; }
 
   /* Ministry name: much smaller */
-  .brand-text .ministry { font-size: 0.625rem !important; line-height: 1.3; }
+  .brand-text .ministry { font-size: 0.66rem !important; line-height: 1.3; letter-spacing: 0.03em; }
 
   /* Country name: much smaller, forced single line */
   .brand-text .country {

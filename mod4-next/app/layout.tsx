@@ -17,8 +17,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "FMOD Admin",
-  description: "Federal Ministry of Defence — content admin",
+  title: "MOD Admin",
+  description: "Ministry of Defence — content admin",
 };
 
 export default function RootLayout({

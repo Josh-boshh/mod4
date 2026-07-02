@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — main JS
+ *  MINISTRY OF DEFENCE — main JS
  *  Mobile nav · counters · hero slider · a11y · search · date stamping
  * ============================================================================= */
 (function () {
@@ -245,34 +245,60 @@
     });
   }
 
-  // Populate any element marked data-social="facebook|twitter|instagram|youtube|linkedin"
-  // with the admin-managed URL from /api/content. If the API is unreachable, the
-  // static href already present in the HTML (if any) is left untouched.
-  function initSocialLinks() {
-    var els = document.querySelectorAll("[data-social]");
-    if (!els.length) return;
-    fetch("/api/content", { cache: "no-store" })
-      .then(function (res) {
-        if (!res.ok) throw new Error("API error " + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        var social = (data && data.social) || {};
-        els.forEach(function (el) {
-          var platform = el.getAttribute("data-social");
-          var url = social[platform];
-          var wrapper = el.closest("[data-social-item]") || el;
-          if (url) {
-            el.setAttribute("href", url);
-            wrapper.style.display = "";
-          } else {
-            wrapper.style.display = "none";
-          }
-        });
-      })
-      .catch(function () {
-        // PHP API not reachable (static preview) — keep existing markup as-is.
+  // Populate elements marked data-social="facebook|twitter|instagram|youtube|linkedin"
+  // and data-contact="phone|email|address" from window.MOD_STORE.settings()
+  // (Supabase-backed, admin-managed). Runs once content is available and again
+  // whenever it's refreshed, since MOD_STORE loads asynchronously.
+  function applyContactSettings() {
+    if (!window.MOD_STORE) return;
+    var settings = window.MOD_STORE.settings() || {};
+
+    var social = {
+      facebook: settings.social_facebook,
+      instagram: settings.social_instagram,
+      twitter: settings.social_twitter,
+      youtube: settings.social_youtube,
+    };
+    document.querySelectorAll("[data-social]").forEach(function (el) {
+      var platform = el.getAttribute("data-social");
+      var url = social[platform];
+      var wrapper = el.closest("[data-social-item]") || el;
+      if (platform in social) {
+        if (url) {
+          el.setAttribute("href", url);
+          wrapper.style.display = "";
+        } else {
+          wrapper.style.display = "none";
+        }
+      }
+    });
+
+    if (settings.contact_phone) {
+      document.querySelectorAll('[data-contact="phone"]').forEach(function (el) {
+        el.textContent = settings.contact_phone;
+        if (el.tagName === "A") el.setAttribute("href", "tel:" + settings.contact_phone.replace(/[^+\d]/g, ""));
       });
+    }
+    if (settings.contact_email) {
+      document.querySelectorAll('[data-contact="email"]').forEach(function (el) {
+        el.textContent = settings.contact_email;
+        if (el.tagName === "A") el.setAttribute("href", "mailto:" + settings.contact_email);
+      });
+    }
+    if (settings.contact_address) {
+      // Stored as semicolon-separated lines (each line may itself contain
+      // commas) — e.g. "Ship House, Central Business District; Area 10, ..."
+      var lines = settings.contact_address.split(";").map(function (s) { return s.trim(); }).filter(Boolean);
+      document.querySelectorAll('[data-contact="address"]').forEach(function (el) {
+        el.innerHTML = el.tagName === "SPAN" ? lines.join("<br>") : lines.join(", ");
+      });
+    }
+  }
+
+  function initSocialLinks() {
+    if (!document.querySelector("[data-social], [data-contact]")) return;
+    applyContactSettings();
+    window.addEventListener("mod-content-updated", applyContactSettings);
   }
 })();
 

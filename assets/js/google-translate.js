@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — Azure Translator integration
+ *  MINISTRY OF DEFENCE — Azure Translator integration
  *  Replaces Google Translate widget. Uses Microsoft Azure Translator API.
  *  Hooks into the existing .lang-select dropdown in the site header.
  * ============================================================================= */

@@ -53,8 +53,8 @@ window.MOD_DATA = {
     {
       img: "assets/images/hero/slide-1.jpg",
       role: "Ship House, Abuja",
-      name: "Seat of Nigeria's defence policy — home of the Federal Ministry of Defence.",
-      alt: "Ship House — Federal Ministry of Defence headquarters, Abuja",
+      name: "Seat of Nigeria's defence policy — home of the Ministry of Defence.",
+      alt: "Ship House — Ministry of Defence headquarters, Abuja",
     },
   ],
 
@@ -148,7 +148,7 @@ window.MOD_DATA = {
     },
     permSec: {
       name: "Mr. Richard P. Pheelangwah",
-      title: "Permanent Secretary, Federal Ministry of Defence",
+      title: "Permanent Secretary, Ministry of Defence",
       photo: "assets/images/headshots/permanent-secretary.jpeg",
     },
   },

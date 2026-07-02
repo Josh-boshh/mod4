@@ -19,9 +19,9 @@ try {
     $settings = [
         'hero_eyebrow' => getSetting('hero_eyebrow', 'Federal Republic of Nigeria'),
         'hero_headline' => getSetting('hero_headline', 'Defending the sovereignty of Nigeria.'),
-        'hero_body' => getSetting('hero_body', 'The Federal Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.'),
+        'hero_body' => getSetting('hero_body', 'The Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.'),
         'last_reviewed' => getSetting('last_reviewed', 'June 2026'),
-        'ministry_name' => getSetting('ministry_name', 'Federal Ministry of Defence'),
+        'ministry_name' => getSetting('ministry_name', 'Ministry of Defence'),
         'country' => getSetting('country', 'Federal Republic of Nigeria'),
     ];
     $social = getSocialLinks();

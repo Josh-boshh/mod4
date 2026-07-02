@@ -1,4 +1,4 @@
-# Federal Ministry of Defence — robots.txt
+# Ministry of Defence — robots.txt
 # https://defence.gov.ng/
 
 User-agent: *

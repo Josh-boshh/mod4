@@ -157,9 +157,9 @@ CREATE TABLE IF NOT EXISTS mod_directors (
 INSERT INTO mod_settings (name, value) VALUES
   ('hero_eyebrow', 'Federal Republic of Nigeria'),
   ('hero_headline', 'Defending the sovereignty of Nigeria.'),
-  ('hero_body', 'The Federal Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.'),
+  ('hero_body', 'The Ministry of Defence — the apex policy authority overseeing the Nigerian Armed Forces — provides strategic leadership for a modern, professional, mission-ready military in the service of more than 220 million citizens of the Federal Republic.'),
   ('last_reviewed', 'June 2026'),
-  ('ministry_name', 'Federal Ministry of Defence'),
+  ('ministry_name', 'Ministry of Defence'),
   ('country', 'Federal Republic of Nigeria');
 
 -- ---------------------------------------------------------------------------
@@ -173,7 +173,7 @@ INSERT INTO mod_hero_slides (image_url, alt_text, role_text, caption_text, sort_
   ('assets/images/hero/slide-5.jpg', 'Nigerian Air Force fighter jets taxiing in formation on the runway', 'Nigerian Air Force', 'Strike aircraft lined up and ready — the Nigerian Air Force maintains constant operational readiness.', 4, 1),
   ('assets/images/hero/slide-6.jpg', 'Nigerian Air Force fighter jets lined up on the flight line with cockpits open', 'Nigerian Air Force', 'Fighter jets on the tarmac — air power standing by in the service of Nigeria''s national security.', 5, 1),
   ('assets/images/hero/slide-7.jpg', 'Nigerian Air Force fighter jet in flight above clouds, fully armed', 'Nigerian Air Force', 'Armed and airborne — Nigeria''s air combat capability ready to defend sovereign skies.', 6, 1),
-  ('assets/images/hero/slide-1.jpg', 'Ship House — Federal Ministry of Defence headquarters, Abuja', 'Ship House, Abuja', 'Seat of Nigeria''s defence policy — home of the Federal Ministry of Defence.', 7, 1);
+  ('assets/images/hero/slide-1.jpg', 'Ship House — Ministry of Defence headquarters, Abuja', 'Ship House, Abuja', 'Seat of Nigeria''s defence policy — home of the Ministry of Defence.', 7, 1);
 
 -- ---------------------------------------------------------------------------
 -- mod_leaders  (Minister / Minister of State / Permanent Secretary cards)

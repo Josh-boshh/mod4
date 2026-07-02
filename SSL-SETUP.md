@@ -1,4 +1,4 @@
-# SSL Certificate Setup — Federal Ministry of Defence Website
+# SSL Certificate Setup — Ministry of Defence Website
 
 This guide covers everything needed to get a valid SSL certificate and
 enforce HTTPS on the live server. Two paths are provided: **Let's Encrypt**
@@ -86,7 +86,7 @@ Required if your ministry's procurement policy mandates a paid certificate
 openssl req -new -newkey rsa:2048 -nodes \
   -keyout defence.gov.ng.key \
   -out    defence.gov.ng.csr \
-  -subj "/C=NG/ST=FCT/L=Abuja/O=Federal Ministry of Defence/OU=ICT/CN=defence.gov.ng"
+  -subj "/C=NG/ST=FCT/L=Abuja/O=Ministry of Defence/OU=ICT/CN=defence.gov.ng"
 ```
 
 ### Step 2 — Submit the CSR

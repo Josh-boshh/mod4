@@ -1,5 +1,5 @@
   # =============================================================================
-  # Federal Ministry of Defence — Apache HTTP Server configuration
+  # Ministry of Defence — Apache HTTP Server configuration
   # =============================================================================
   # Place this file at the web root. Requires Apache 2.4+ with mod_rewrite,
   # mod_headers, and mod_expires enabled.

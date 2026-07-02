@@ -31,7 +31,7 @@ export default async function AdminProtectedLayout({
         <div className="flex items-center gap-3">
           <Image src="/brand/coat-of-arms.png" alt="" width={30} height={26} />
           <Image src="/brand/mod-logo.png" alt="" width={30} height={30} className="opacity-90" />
-          <span className="font-heading text-lg text-brand-ink">FMOD Admin</span>
+          <span className="font-heading text-lg text-brand-ink">MOD Admin</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-brand-ink-3">{username}</span>

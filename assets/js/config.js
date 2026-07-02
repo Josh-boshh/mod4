@@ -1,5 +1,5 @@
 /* =============================================================================
- *  FEDERAL MINISTRY OF DEFENCE — site configuration
+ *  MINISTRY OF DEFENCE — site configuration
  * =============================================================================
  *
  *  HOW TO ADD YOUR MICROSOFT AZURE TRANSLATOR KEY

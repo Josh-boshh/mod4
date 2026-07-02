@@ -39,10 +39,10 @@
           <span class="lang-status" aria-live="polite"></span>
         </span>
         <span class="social hide-mobile" aria-label="Official social media">
-          <a href="${FB}" target="_blank" rel="noopener" aria-label="Facebook">${ICON_FB}</a>
-          <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram">${ICON_IG}</a>
-          <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter">${ICON_X}</a>
-          <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube">${ICON_YT}</a>
+          <a href="${FB}" target="_blank" rel="noopener" aria-label="Facebook" data-social="facebook">${ICON_FB}</a>
+          <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram" data-social="instagram">${ICON_IG}</a>
+          <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter" data-social="twitter">${ICON_X}</a>
+          <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube" data-social="youtube">${ICON_YT}</a>
         </span>
       </div>
     </div>
@@ -50,10 +50,10 @@
 
   <nav class="navbar" aria-label="Primary">
     <div class="container nav-inner">
-      <a href="index.html" class="brand" aria-label="Federal Ministry of Defence — Home">
+      <a href="index.html" class="brand" aria-label="Ministry of Defence — Home">
         <span class="brand-logo">${COAT}</span>
         <span class="brand-text">
-          <span class="ministry" data-i18n>Federal Ministry of Defence</span>
+          <span class="ministry" data-i18n>Ministry of Defence</span>
           <span class="country" data-i18n>Federal Republic of Nigeria</span>
         </span>
       </a>
@@ -153,7 +153,7 @@
           </div>
         </li>
       </ul>
-      <img src="assets/images/mod-logo.png" class="nav-mod-logo" alt="Federal Ministry of Defence logo" />
+      <img src="assets/images/mod-logo.png" class="nav-mod-logo" alt="Ministry of Defence logo" />
     </div>
   </nav>
   `;
@@ -166,19 +166,19 @@
           <div class="footer-brand">
             <span>${COAT_FOOTER}</span>
             <div>
-              <div class="name" data-i18n>Federal Ministry of Defence</div>
+              <div class="name" data-i18n>Ministry of Defence</div>
               <div class="country" data-i18n>Federal Republic of Nigeria</div>
             </div>
           </div>
-          <p>Ship House, Central Business District, Area 10, Federal Capital Territory, Abuja, Nigeria.</p>
+          <p data-contact="address">Ship House, Central Business District, Area 10, Federal Capital Territory, Abuja, Nigeria.</p>
           <p class="footer-email">
-            <a href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>
+            <a data-contact="email" href="mailto:contact@defence.gov.ng">contact@defence.gov.ng</a>
           </p>
           <div class="footer-social" aria-label="Official social media">
-            <a href="${FB}" target="_blank" rel="noopener" aria-label="Facebook">${ICON_FB}</a>
-            <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram">${ICON_IG}</a>
-            <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter">${ICON_X}</a>
-            <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube">${ICON_YT}</a>
+            <a href="${FB}" target="_blank" rel="noopener" aria-label="Facebook" data-social="facebook">${ICON_FB}</a>
+            <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram" data-social="instagram">${ICON_IG}</a>
+            <a href="${TW}" target="_blank" rel="noopener" aria-label="X / Twitter" data-social="twitter">${ICON_X}</a>
+            <a href="${YT}" target="_blank" rel="noopener" aria-label="YouTube" data-social="youtube">${ICON_YT}</a>
           </div>
         </div>
         <div>
@@ -232,7 +232,7 @@
       </div>
 
       <div class="footer-bottom">
-        <div>&copy; <span data-current-year>2026</span> Federal Ministry of Defence · All rights reserved.</div>
+        <div>&copy; <span data-current-year>2026</span> Ministry of Defence · All rights reserved.</div>
         <div class="legal">
           <a href="accessibility.html" data-i18n>Accessibility</a>
           <a href="privacy.html" data-i18n>Privacy Policy</a>
@@ -340,7 +340,7 @@
     // ── Full site index — title, url, keywords ────────────────────────────────
     var SITE_INDEX = [
       { title: "Home",                                  url: "index.html",          keys: "home federal ministry defence" },
-      { title: "About the Ministry",                    url: "about.html",          keys: "about fmod mandate mission vision history 1958" },
+      { title: "About the Ministry",                    url: "about.html",          keys: "about mod mandate mission vision history 1958" },
       { title: "Honourable Minister of Defence",        url: "minister.html",       keys: "minister christopher gwabin musa general profile" },
       { title: "Honourable Minister of State",          url: "minister-of-state.html", keys: "minister state matawalle bello" },
       { title: "Management",                            url: "management.html",     keys: "management permanent secretary directors senior staff" },
