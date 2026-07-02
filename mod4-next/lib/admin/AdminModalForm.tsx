@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import type { FieldConfig } from './fields';
 import { ImageUploadField } from './ImageUploadField';
+import { confirmDiscard, useUnsavedChangesGuard } from './useUnsavedChangesGuard';
 
 const inputClass =
   'w-full rounded border border-brand-line px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green';
@@ -25,9 +26,15 @@ export function AdminModalForm({
   const [draft, setDraft] = useState<Draft>(initial);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isDirty = JSON.stringify(draft) !== JSON.stringify(initial);
+  useUnsavedChangesGuard(isDirty);
 
   function update(key: string, value: unknown) {
     setDraft((d) => ({ ...d, [key]: value }));
+  }
+
+  function handleCancel() {
+    if (confirmDiscard(isDirty)) onCancel();
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -126,7 +133,7 @@ export function AdminModalForm({
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onCancel}
+              onClick={handleCancel}
               className="rounded border border-brand-ink px-4 py-2 text-sm font-medium text-brand-ink hover:bg-brand-paper-3"
             >
               Cancel

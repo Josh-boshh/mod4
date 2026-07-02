@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { PressItemDraft } from './types';
 import { ImageUploadField } from '@/lib/admin/ImageUploadField';
+import { confirmDiscard, useUnsavedChangesGuard } from '@/lib/admin/useUnsavedChangesGuard';
 
 function slugify(value: string) {
   return value
@@ -27,6 +28,8 @@ export function PressItemForm({
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isDirty = JSON.stringify(draft) !== JSON.stringify(initial);
+  useUnsavedChangesGuard(isDirty);
 
   function update<K extends keyof PressItemDraft>(key: K, value: PressItemDraft[K]) {
     setDraft((d) => ({ ...d, [key]: value }));
@@ -37,6 +40,10 @@ export function PressItemForm({
     if (!slugTouched) {
       update('slug', slugify(value));
     }
+  }
+
+  function handleCancel() {
+    if (confirmDiscard(isDirty)) onCancel();
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -154,7 +161,7 @@ export function PressItemForm({
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onCancel}
+              onClick={handleCancel}
               className="rounded border border-brand-ink px-4 py-2 text-sm font-medium text-brand-ink hover:bg-brand-paper-3"
             >
               Cancel
