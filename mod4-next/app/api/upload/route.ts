@@ -8,6 +8,22 @@ import { createClient } from '@/lib/supabase/server';
 const MAX_SIZE = 4 * 1024 * 1024;
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
+// Node's Buffer.from()/allocUnsafe() below ~8KB (Buffer.poolSize) carve the
+// buffer out of a shared internal memory pool for efficiency — including,
+// it turns out, Buffer.from(new Uint8Array(...)), which still copies its
+// *destination* buffer from that same pool. Under Node 24 that pool's
+// backing ArrayBuffer can itself be a SharedArrayBuffer, which
+// @vercel/blob's internal fetch() call then rejects outright regardless of
+// how many times the bytes get copied. allocUnsafeSlow() is the one Buffer
+// API documented to always allocate its own dedicated, non-pooled
+// ArrayBuffer, so it's used here as the final step right before anything
+// gets handed to put().
+function toSafeBuffer(input: Buffer): Buffer {
+  const safe = Buffer.allocUnsafeSlow(input.length);
+  input.copy(safe);
+  return safe;
+}
+
 // Re-encodes at the image's existing dimensions (no resizing), strips EXIF,
 // and picks the output format from actual pixel data (hasAlpha) rather than
 // trusting the upload's declared MIME type — a mislabelled PNG-with-alpha
@@ -65,16 +81,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Buffer.from(arrayBuffer) creates a *view* over the same underlying
-    // memory rather than copying it. Under Node 24's fetch/formData
-    // implementation that memory can be backed by a SharedArrayBuffer,
-    // which @vercel/blob's own internal fetch() call then rejects outright
-    // ("SharedArrayBuffer is not allowed"). Wrapping in Uint8Array first
-    // forces an actual copy into a plain, non-shared buffer.
-    const original = Buffer.from(new Uint8Array(await file.arrayBuffer()));
+    const original = toSafeBuffer(Buffer.from(await file.arrayBuffer()));
     const { buffer, ext, mime } = await compressImage(original, file.type);
 
-    const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, buffer, {
+    const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, toSafeBuffer(buffer), {
       access: 'public',
       contentType: mime,
     });
