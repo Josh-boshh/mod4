@@ -112,6 +112,7 @@
 
     function render(form) {
       document.getElementById('form-loading-section').style.display = 'none';
+      document.getElementById('form-not-found').style.display = 'none';
 
       document.title = form.title + ' — Ministry of Defence';
       document.getElementById('meta-description').setAttribute('content', form.description || form.title);

@@ -85,12 +85,15 @@
 
     function notFound() {
       document.getElementById('page-loading-section').style.display = 'none';
+      document.getElementById('page-content').style.display = 'none';
+      document.getElementById('page-content-body').style.display = 'none';
       document.getElementById('page-not-found').style.display = '';
       document.title = 'Page not found — Ministry of Defence';
     }
 
     function render(page) {
       document.getElementById('page-loading-section').style.display = 'none';
+      document.getElementById('page-not-found').style.display = 'none';
 
       var pageUrl = 'https://defence.gov.ng/page.html?slug=' + encodeURIComponent(page.slug);
       document.title = page.title + ' — Ministry of Defence';
