@@ -587,6 +587,14 @@
     initVisibleCaptchas();
   }
 
+  // For forms inserted into the DOM after page load (e.g. form.html's
+  // admin-defined custom forms, rendered once their definition arrives from
+  // Supabase) — the load-time DOMContentLoaded pass above never sees them.
+  window.modRefreshFormProtection = function () {
+    stampLoadTimes();
+    initVisibleCaptchas();
+  };
+
   // ── Newsletter form ─────────────────────────────────────────────────────────
 
   window.modNewsletterSubmit = function (form, e) {
@@ -737,6 +745,87 @@
     var successMessage = form.dataset.successMessage || 'Thank you. Your submission has been received.';
 
     fetch(apiBase + 'submissions', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.success) {
+        var successEl = document.createElement('div');
+        successEl.className = 'alert green form-success-msg';
+        successEl.textContent = successMessage;
+        form.parentNode.insertBefore(successEl, form);
+        form.style.display = 'none';
+      } else {
+        showError((data && data.error) ? data.error : 'Your submission could not be sent. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitBtn._origText; }
+      }
+    })
+    .catch(function () {
+      showError('Your submission could not be sent. Please check your connection and try again.');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitBtn._origText; }
+    });
+
+    return false;
+  };
+
+  // ── Admin-defined custom forms (form.html?slug=X) ───────────────────────────
+  // Same spam-protection wiring as modFormSubmit (honeypot/timing/captcha are
+  // all server-validated), but the field set is admin-defined per form, so
+  // everything not a reserved field is nested under `data` instead of being
+  // named columns.
+  window.modCustomFormSubmit = function (form, e, formSlug) {
+    e.preventDefault();
+
+    var errorEl   = form.querySelector('.form-error');
+    var errorText = errorEl ? errorEl.querySelector('.form-error-message') : null;
+    var submitBtn = form.querySelector('button[type="submit"]');
+
+    var showError = function (message) {
+      if (errorEl) {
+        errorEl.style.display = 'flex';
+        if (errorText) { errorText.textContent = message; }
+        else           { errorEl.textContent   = message; }
+      } else {
+        alert(message);
+      }
+    };
+    var hideError = function () { if (errorEl) errorEl.style.display = 'none'; };
+    hideError();
+
+    var captchaInput = form.querySelector('.mod-captcha-response');
+    if (captchaInput && !captchaInput.value.trim()) {
+      showError('Please complete the slider puzzle to continue.');
+      return false;
+    }
+
+    var reserved = { website: 1, form_loaded_at: 1, captcha_response: 1 };
+    var payload  = { form_slug: formSlug, data: {} };
+    var elements = form.elements;
+    for (var i = 0; i < elements.length; i++) {
+      var el = elements[i];
+      if (!el.name) continue;
+      var value;
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (!el.checked) continue;
+        value = el.value;
+      } else {
+        value = el.value;
+      }
+      if (reserved[el.name]) { payload[el.name] = value; }
+      else                   { payload.data[el.name] = value; }
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled    = true;
+      submitBtn._origText   = submitBtn.textContent;
+      submitBtn.textContent = 'Sending…';
+    }
+
+    var successMessage = form.dataset.successMessage || 'Thank you. Your submission has been received.';
+
+    fetch(apiBase + 'custom-form-submit', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload)

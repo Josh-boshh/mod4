@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="theme-color" content="#007D53" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ministry of Defence</title>
+  <meta name="description" content="Ministry of Defence." id="meta-description" />
+  <link rel="canonical" href="https://defence.gov.ng/page.html" id="canonical-link" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Ministry of Defence" id="og-title" />
+  <meta property="og:description" content="Ministry of Defence." id="og-description" />
+  <meta property="og:url" content="https://defence.gov.ng/page.html" id="og-url" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
+  <link rel="stylesheet" href="assets/css/style.css?v=19" />
+  <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    .generic-not-found { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .generic-not-found h2 { color: var(--text-1); margin-bottom: 12px; }
+    .generic-loading { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .generic-loading-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .generic-body { max-width: 820px; }
+    .generic-body p { margin: 0 0 18px; }
+    .generic-body h2, .generic-body h3 { margin: 32px 0 14px; }
+    .generic-body ul, .generic-body ol { margin: 0 0 18px; padding-left: 22px; }
+  </style>
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section id="page-loading-section">
+      <div class="container">
+        <div class="generic-loading">
+          <div class="generic-loading-spinner"></div>
+          <p>Loading…</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-content" style="display:none;">
+      <div class="container">
+        <div class="crumbs"><a href="index.html">Home</a><span>›</span><span id="page-crumb"></span></div>
+        <h1 id="page-title"></h1>
+      </div>
+    </section>
+
+    <section id="page-content-body" style="display:none;">
+      <div class="container">
+        <div class="generic-body" id="page-body"></div>
+      </div>
+    </section>
+
+    <section id="page-not-found" style="display:none;">
+      <div class="container">
+        <div class="generic-not-found">
+          <h2>Page not found.</h2>
+          <p>The page you're looking for doesn't exist or the link may be incorrect.</p>
+          <a href="index.html" class="btn" style="margin-top:24px;">Back to home</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+  <div data-include="chatbot"></div>
+  <div data-include="a11y"></div>
+
+  <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
+  <script src="assets/js/partials.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/translator.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    function notFound() {
+      document.getElementById('page-loading-section').style.display = 'none';
+      document.getElementById('page-not-found').style.display = '';
+      document.title = 'Page not found — Ministry of Defence';
+    }
+
+    function render(page) {
+      document.getElementById('page-loading-section').style.display = 'none';
+
+      var pageUrl = 'https://defence.gov.ng/page.html?slug=' + encodeURIComponent(page.slug);
+      document.title = page.title + ' — Ministry of Defence';
+      document.getElementById('canonical-link').setAttribute('href', pageUrl);
+      document.getElementById('meta-description').setAttribute('content', page.metaDescription || page.title);
+      document.getElementById('og-title').setAttribute('content', page.title + ' — Ministry of Defence');
+      document.getElementById('og-description').setAttribute('content', page.metaDescription || page.title);
+      document.getElementById('og-url').setAttribute('content', pageUrl);
+
+      document.getElementById('page-crumb').textContent = page.title;
+      document.getElementById('page-title').textContent = page.title;
+      document.getElementById('page-body').innerHTML = page.body || '';
+
+      document.getElementById('page-content').style.display = '';
+      document.getElementById('page-content-body').style.display = '';
+    }
+
+    function boot() {
+      var params = new URLSearchParams(location.search);
+      var slug = params.get('slug') || '';
+      if (!slug) { notFound(); return; }
+
+      var pages = window.MOD_STORE ? (window.MOD_STORE.customPages() || []) : [];
+      var page = null;
+      for (var i = 0; i < pages.length; i++) {
+        if (pages[i].slug === slug) { page = pages[i]; break; }
+      }
+
+      if (page) render(page);
+      else notFound();
+    }
+
+    window.addEventListener('mod-content-updated', boot);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  }());
+  </script>
+</body>
+</html>

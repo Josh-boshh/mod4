@@ -56,6 +56,8 @@
       awards: [],
       annualReports: [],
       galleryImages: [],
+      customPages: [],
+      customForms: [],
       settings: {
         lastReviewed: 'June 2026',
         ministryName: 'Ministry of Defence',
@@ -105,6 +107,8 @@
       awards: Array.isArray(stored.awards) && stored.awards.length ? stored.awards : d.awards,
       annualReports: Array.isArray(stored.annualReports) && stored.annualReports.length ? stored.annualReports : d.annualReports,
       galleryImages: Array.isArray(stored.galleryImages) && stored.galleryImages.length ? stored.galleryImages : d.galleryImages,
+      customPages: Array.isArray(stored.customPages) && stored.customPages.length ? stored.customPages : d.customPages,
+      customForms: Array.isArray(stored.customForms) && stored.customForms.length ? stored.customForms : d.customForms,
       settings: Object.assign({}, d.settings, stored.settings || {}),
     };
   }
@@ -274,6 +278,33 @@
     return res.json();
   }
 
+  // Admin-authored generic content pages and forms (page.html / form.html).
+  async function loadSupabaseCustomContent() {
+    try {
+      const [pageRows, formRows] = await Promise.all([
+        loadSupabaseRest('/rest/v1/mod_custom_pages?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_custom_forms?select=*&active=eq.true&deleted_at=is.null'),
+      ]);
+      return {
+        customPages: pageRows.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          metaDescription: p.meta_description,
+          body: p.body,
+        })),
+        customForms: formRows.map((f) => ({
+          slug: f.slug,
+          title: f.title,
+          description: f.description,
+          fields: Array.isArray(f.fields) ? f.fields : [],
+        })),
+      };
+    } catch (e) {
+      console.warn('[MOD_STORE] Supabase custom pages/forms load failed:', e);
+      return null;
+    }
+  }
+
   // Mirrors the hero/slides/leadership/settings shape api/content.js
   // produces, sourced from Supabase instead of the legacy MySQL backend.
   async function loadSupabaseSiteContent() {
@@ -349,13 +380,14 @@
       }
     }
 
-    const [supabasePress, supabaseSite, supabaseExtras] = await Promise.all([
+    const [supabasePress, supabaseSite, supabaseExtras, supabaseCustom] = await Promise.all([
       loadSupabasePress(),
       loadSupabaseSiteContent(),
       loadSupabaseExtras(),
+      loadSupabaseCustomContent(),
     ]);
 
-    if (supabasePress || supabaseSite || supabaseExtras) {
+    if (supabasePress || supabaseSite || supabaseExtras || supabaseCustom) {
       const blob = loadContent();
       if (supabasePress) blob.press = supabasePress;
       if (supabaseSite) {
@@ -371,6 +403,10 @@
         blob.awards = supabaseExtras.awards;
         blob.annualReports = supabaseExtras.annualReports;
         blob.galleryImages = supabaseExtras.galleryImages;
+      }
+      if (supabaseCustom) {
+        blob.customPages = supabaseCustom.customPages;
+        blob.customForms = supabaseCustom.customForms;
       }
       setContent(blob);
     }
@@ -454,6 +490,8 @@
     awards() { return loadContent().awards; },
     annualReports() { return loadContent().annualReports; },
     galleryImages() { return loadContent().galleryImages; },
+    customPages() { return loadContent().customPages; },
+    customForms() { return loadContent().customForms; },
     hero() { return loadContent().hero; },
     settings() { return loadContent().settings; },
 

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="theme-color" content="#007D53" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ministry of Defence</title>
+  <meta name="description" content="Ministry of Defence." id="meta-description" />
+  <link rel="canonical" href="https://defence.gov.ng/form.html" id="canonical-link" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" />
+  <link rel="stylesheet" href="assets/css/style.css?v=19" />
+  <link rel="stylesheet" href="assets/css/mobile-nav.css" />
+  <style>
+    .generic-not-found { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .generic-not-found h2 { color: var(--text-1); margin-bottom: 12px; }
+    .generic-loading { text-align: center; padding: 80px 0; color: var(--text-3); }
+    .generic-loading-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .generic-form-wrap { max-width: 640px; }
+  </style>
+</head>
+<body>
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section id="form-loading-section">
+      <div class="container">
+        <div class="generic-loading">
+          <div class="generic-loading-spinner"></div>
+          <p>Loading…</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="form-content" style="display:none;">
+      <div class="container">
+        <div class="crumbs"><a href="index.html">Home</a><span>›</span><span id="form-crumb"></span></div>
+        <h1 id="form-title"></h1>
+        <p class="lead" id="form-description"></p>
+        <div class="generic-form-wrap" id="form-mount" style="margin-top:24px;"></div>
+      </div>
+    </section>
+
+    <section id="form-not-found" style="display:none;">
+      <div class="container">
+        <div class="generic-not-found">
+          <h2>Form not found.</h2>
+          <p>This form doesn't exist, is no longer active, or the link may be incorrect.</p>
+          <a href="index.html" class="btn" style="margin-top:24px;">Back to home</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+  <div data-include="chatbot"></div>
+  <div data-include="a11y"></div>
+
+  <script src="assets/js/realdata.js"></script>
+  <script src="assets/js/contentstore.js"></script>
+  <script src="assets/js/partials.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/translator.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var rendered = false;
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function notFound() {
+      document.getElementById('form-loading-section').style.display = 'none';
+      document.getElementById('form-not-found').style.display = '';
+      document.title = 'Form not found — Ministry of Defence';
+    }
+
+    function fieldHtml(field, i) {
+      var id = 'cf-' + i;
+      var req = field.required ? 'required' : '';
+      var labelHtml = '<label for="' + id + '">' + esc(field.label) + (field.required ? ' *' : '') + '</label>';
+
+      if (field.type === 'textarea') {
+        return '<div class="full">' + labelHtml + '<textarea id="' + id + '" name="' + esc(field.key) + '" ' + req + '></textarea></div>';
+      }
+      if (field.type === 'select') {
+        var opts = (field.options || []).map(function (o) {
+          return '<option value="' + esc(o) + '">' + esc(o) + '</option>';
+        }).join('');
+        return '<div class="full">' + labelHtml + '<select id="' + id + '" name="' + esc(field.key) + '" ' + req + '>' +
+          '<option value="">Select…</option>' + opts + '</select></div>';
+      }
+      if (field.type === 'checkbox') {
+        return '<div class="full"><label style="display:flex;align-items:center;gap:8px;">' +
+          '<input type="checkbox" id="' + id + '" name="' + esc(field.key) + '" value="yes" ' + req + ' />' + esc(field.label) +
+          (field.required ? ' *' : '') + '</label></div>';
+      }
+      var type = field.type === 'email' ? 'email' : 'text';
+      return '<div class="full">' + labelHtml + '<input type="' + type + '" id="' + id + '" name="' + esc(field.key) + '" ' + req + ' /></div>';
+    }
+
+    function render(form) {
+      document.getElementById('form-loading-section').style.display = 'none';
+
+      document.title = form.title + ' — Ministry of Defence';
+      document.getElementById('meta-description').setAttribute('content', form.description || form.title);
+      document.getElementById('form-crumb').textContent = form.title;
+      document.getElementById('form-title').textContent = form.title;
+      document.getElementById('form-description').textContent = form.description || '';
+
+      var fieldsHtml = (form.fields || []).map(fieldHtml).join('');
+
+      document.getElementById('form-mount').innerHTML =
+        '<form class="form-grid" data-success-message="Thank you. Your submission has been received." ' +
+        'onsubmit="return window.modCustomFormSubmit(this, event, ' + JSON.stringify(form.slug) + ');">' +
+          fieldsHtml +
+          '<div class="full">' +
+            '<div class="form-error" role="alert" aria-live="assertive" style="display:none; align-items:center; gap:8px; margin-top:8px; font-size:.83rem; color:var(--red);">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+              '<span class="form-error-message"></span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="full">' +
+            '<div class="mod-captcha-widget"></div>' +
+            '<input type="hidden" name="captcha_response" class="mod-captcha-response" value="" />' +
+          '</div>' +
+          '<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" />' +
+          '<input type="hidden" name="form_loaded_at" class="mod-form-ts" value="" />' +
+          '<div class="full"><button class="btn btn-green" type="submit">Submit</button></div>' +
+        '</form>';
+
+      if (window.modRefreshFormProtection) window.modRefreshFormProtection();
+
+      document.getElementById('form-content').style.display = '';
+      rendered = true;
+    }
+
+    function boot() {
+      if (rendered) return; // form state (in-progress edits) shouldn't be wiped by a later data refresh
+      var params = new URLSearchParams(location.search);
+      var slug = params.get('slug') || '';
+      if (!slug) { notFound(); return; }
+
+      var forms = window.MOD_STORE ? (window.MOD_STORE.customForms() || []) : [];
+      var form = null;
+      for (var i = 0; i < forms.length; i++) {
+        if (forms[i].slug === slug) { form = forms[i]; break; }
+      }
+
+      if (form) render(form);
+      else notFound();
+    }
+
+    window.addEventListener('mod-content-updated', boot);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  }());
+  </script>
+</body>
+</html>
