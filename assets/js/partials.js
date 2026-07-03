@@ -64,6 +64,7 @@
         <span class="mobile-toggle-label">Menu</span>
         <span class="mobile-toggle-icon" aria-hidden="true">☰</span>
       </button>
+      <div class="nav-right">
       <ul class="menu" role="menubar">
         <li><a href="index.html" data-i18n>Home</a></li>
         <li><a href="about.html">The Ministry
@@ -157,6 +158,7 @@
         </li>
       </ul>
       <img src="assets/images/mod-logo.png" class="nav-mod-logo" alt="Ministry of Defence logo" />
+      </div>
     </div>
   </nav>
   `;

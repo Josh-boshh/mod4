@@ -480,6 +480,11 @@ body::after  { display: none; }
   flex-wrap: nowrap;
   padding: 14px 0; gap: 12px;
 }
+/* Groups the nav menu and the second (MOD) logo together so they move as one
+   unit against the brand lockup — without this, `justify-content: space-between`
+   on .nav-inner's three children spreads the logo far from the menu on wide
+   screens, leaving it looking disconnected at the far right edge. */
+.nav-right { display: flex; align-items: center; gap: 28px; min-width: 0; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; }
 .brand-logo {
   width: 56px; height: 56px; flex-shrink: 0;
