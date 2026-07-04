@@ -39,7 +39,7 @@ const fields: FieldConfig[] = [
   { key: 'category', label: 'Category', type: 'text' },
   { key: 'method', label: 'Method', type: 'text' },
   { key: 'closes_at', label: 'Closes At', type: 'date' },
-  { key: 'doc_url', label: 'Document URL', type: 'text' },
+  { key: 'doc_url', label: 'Document', type: 'text', documentUpload: true },
   { key: 'description', label: 'Description', type: 'textarea', rows: 4 },
   { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'active', label: 'Active', type: 'checkbox' },

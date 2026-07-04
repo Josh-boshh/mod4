@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import type { FieldConfig } from './fields';
 import { ImageUploadField } from './ImageUploadField';
+import { DocumentUploadField } from './DocumentUploadField';
 import { confirmDiscard, useUnsavedChangesGuard } from './useUnsavedChangesGuard';
 
 const inputClass =
@@ -108,8 +109,16 @@ export function AdminModalForm({
                   />
                 )}
 
+                {field.type === 'text' && field.documentUpload && (
+                  <DocumentUploadField
+                    value={(value as string) ?? ''}
+                    onChange={(url) => update(field.key, url)}
+                  />
+                )}
+
                 {(field.type === 'text' || field.type === 'number' || field.type === 'date') &&
-                  !field.imagePreview && (
+                  !field.imagePreview &&
+                  !field.documentUpload && (
                     <input
                       type={field.type}
                       required={field.required}

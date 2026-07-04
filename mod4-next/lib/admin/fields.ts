@@ -8,4 +8,5 @@ export type FieldConfig = {
   options?: string[]; // for 'select'
   rows?: number; // for 'textarea'
   imagePreview?: boolean; // renders a thumbnail below the input
+  documentUpload?: boolean; // renders an "Upload document" button (PDF/DOC/XLS/ZIP)
 };

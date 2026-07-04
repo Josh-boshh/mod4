@@ -5,8 +5,20 @@ import sharp from 'sharp';
 import { createClient } from '@/lib/supabase/server';
 
 // Vercel serverless functions cap request bodies well under 5MB — stay clear of that.
-const MAX_SIZE = 4 * 1024 * 1024;
-const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+const MAX_DOC_SIZE = 10 * 1024 * 1024;
+
+const ALLOWED_IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+const DOC_EXT_BY_MIME: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'application/zip': 'zip',
+  'application/x-zip-compressed': 'zip',
+};
 
 // Node's Buffer.from()/allocUnsafe() below ~8KB (Buffer.poolSize) carve the
 // buffer out of a shared internal memory pool for efficiency — including,
@@ -73,18 +85,40 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 });
   }
-  if (!ALLOWED_MIME.has(file.type)) {
-    return NextResponse.json({ error: 'Unsupported file type — use JPEG, PNG, WebP or GIF' }, { status: 400 });
+
+  const isImage = ALLOWED_IMAGE_MIME.has(file.type);
+  const docExt = DOC_EXT_BY_MIME[file.type];
+
+  if (!isImage && !docExt) {
+    return NextResponse.json(
+      { error: 'Unsupported file type — use JPEG/PNG/WebP/GIF for images or PDF/DOC/DOCX/XLS/XLSX/ZIP for documents' },
+      { status: 400 }
+    );
   }
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 });
+
+  const maxSize = isImage ? MAX_IMAGE_SIZE : MAX_DOC_SIZE;
+  if (file.size > maxSize) {
+    return NextResponse.json(
+      { error: `File too large (max ${isImage ? '4MB' : '10MB'})` },
+      { status: 400 }
+    );
   }
 
   try {
     const original = toSafeBuffer(Buffer.from(await file.arrayBuffer()));
-    const { buffer, ext, mime } = await compressImage(original, file.type);
 
-    const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, toSafeBuffer(buffer), {
+    let finalBuffer: Buffer;
+    let ext: string;
+    let mime: string;
+    if (isImage) {
+      ({ buffer: finalBuffer, ext, mime } = await compressImage(original, file.type));
+    } else {
+      finalBuffer = original;
+      ext = docExt;
+      mime = file.type;
+    }
+
+    const blob = await put(`admin-uploads/${randomUUID()}.${ext}`, toSafeBuffer(finalBuffer), {
       access: 'public',
       contentType: mime,
     });

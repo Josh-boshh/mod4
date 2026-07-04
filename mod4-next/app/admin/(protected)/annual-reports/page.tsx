@@ -34,7 +34,7 @@ const fields: FieldConfig[] = [
   { key: 'year', label: 'Year', type: 'number', required: true },
   { key: 'title', label: 'Title', type: 'text', required: true },
   { key: 'description', label: 'Description', type: 'textarea', rows: 4 },
-  { key: 'doc_url', label: 'Document URL', type: 'text' },
+  { key: 'doc_url', label: 'Document', type: 'text', documentUpload: true },
   { key: 'status', label: 'Status', type: 'select', options: ['latest', 'published', 'archived'] },
   { key: 'sort_order', label: 'Sort Order', type: 'number' },
   { key: 'active', label: 'Active', type: 'checkbox' },
