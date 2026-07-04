@@ -9,6 +9,7 @@ type FormSubmission = {
   form_slug: string;
   data: Record<string, string> | null;
   submitted_at: string;
+  handled: boolean;
 };
 
 function summarize(data: Record<string, string> | null) {
@@ -19,7 +20,11 @@ function summarize(data: Record<string, string> | null) {
 }
 
 export default function FormSubmissionsPage() {
-  const { items, loading, error, remove } = useAdminTable<FormSubmission>('mod_form_submissions', 'submitted_at', false);
+  const { items, loading, error, update, remove } = useAdminTable<FormSubmission>(
+    'mod_form_submissions',
+    'submitted_at',
+    false
+  );
   const [expanded, setExpanded] = useState<number | null>(null);
 
   function handleExport() {
@@ -28,6 +33,7 @@ export default function FormSubmissionsPage() {
       items.map((item) => ({
         form_slug: item.form_slug,
         submitted_at: item.submitted_at,
+        handled: item.handled ? 'yes' : 'no',
         data: item.data ? JSON.stringify(item.data) : '',
       }))
     );
@@ -65,19 +71,20 @@ export default function FormSubmissionsPage() {
         <p className="text-sm text-brand-ink-3">No submissions yet.</p>
       ) : (
         <div className="overflow-x-auto rounded border border-brand-line bg-brand-paper">
-          <table className="w-full min-w-[640px] text-left text-sm">
+          <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-brand-line bg-brand-paper-3 text-xs uppercase tracking-wide text-brand-ink-3">
               <tr>
                 <th className="px-4 py-3">Form</th>
                 <th className="px-4 py-3">Preview</th>
                 <th className="px-4 py-3">Submitted</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {items.map((item) => (
                 <Fragment key={item.id}>
-                  <tr className="border-b border-brand-line last:border-0">
+                  <tr className={`border-b border-brand-line last:border-0 ${item.handled ? 'opacity-60' : ''}`}>
                     <td className="px-4 py-3 text-brand-ink">
                       <code className="text-xs">{item.form_slug}</code>
                     </td>
@@ -85,6 +92,18 @@ export default function FormSubmissionsPage() {
                       <span className="line-clamp-1 max-w-xs">{summarize(item.data)}</span>
                     </td>
                     <td className="px-4 py-3 text-brand-ink-2">{new Date(item.submitted_at).toLocaleString()}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => update(item.id, { handled: !item.handled })}
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          item.handled
+                            ? 'bg-brand-paper-3 text-brand-ink-3'
+                            : 'bg-brand-green-soft text-brand-green-2'
+                        }`}
+                      >
+                        {item.handled ? 'Handled' : 'New'}
+                      </button>
+                    </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <button
                         onClick={() => setExpanded(expanded === item.id ? null : item.id)}
@@ -102,7 +121,7 @@ export default function FormSubmissionsPage() {
                   </tr>
                   {expanded === item.id && (
                     <tr className="border-b border-brand-line bg-brand-paper-3">
-                      <td colSpan={4} className="px-4 py-3">
+                      <td colSpan={5} className="px-4 py-3">
                         <pre className="overflow-x-auto text-xs text-brand-ink-2">
                           {JSON.stringify(item.data, null, 2)}
                         </pre>

@@ -37,7 +37,7 @@ export default function SubmissionsPage() {
   return (
     <div>
       <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-xl text-brand-ink">Submissions</h1>
+        <h1 className="font-heading text-xl text-brand-ink">Contact Us Submissions</h1>
         {items.length > 0 && (
           <button
             onClick={handleExport}

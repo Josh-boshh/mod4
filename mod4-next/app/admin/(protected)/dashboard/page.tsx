@@ -11,6 +11,9 @@ type Section = {
   description: string;
   readOnly?: boolean;
   accent: 'green' | 'gold' | 'ink';
+  // Shows an "N new" badge sourced from a `handled` boolean column, instead
+  // of (or alongside) the plain item count.
+  tracksHandled?: boolean;
 };
 
 const SECTIONS: Section[] = [
@@ -24,11 +27,11 @@ const SECTIONS: Section[] = [
   { label: 'Annual Reports', href: '/admin/annual-reports', table: 'mod_annual_reports', description: 'Yearly reports and accounts.', accent: 'green' },
   { label: 'Pages', href: '/admin/pages', table: 'mod_custom_pages', description: 'Standalone content pages (page.html?slug=…).', accent: 'green' },
   { label: 'Forms', href: '/admin/forms', table: 'mod_custom_forms', description: 'Custom forms with configurable fields (form.html?slug=…).', accent: 'green' },
-  { label: 'Form Submissions', href: '/admin/form-submissions', table: 'mod_form_submissions', description: 'Responses to custom forms.', readOnly: true, accent: 'ink' },
+  { label: 'Form Submissions', href: '/admin/form-submissions', table: 'mod_form_submissions', description: 'Responses to custom forms.', readOnly: true, accent: 'ink', tracksHandled: true },
   { label: 'Settings', href: '/admin/settings', table: 'mod_settings', description: 'Site-wide text — hero copy, footer info.', accent: 'gold' },
   { label: 'Trash', href: '/admin/trash', table: '', description: 'Recently deleted items, restorable for 7 days.', accent: 'gold' },
   { label: 'Subscribers', href: '/admin/subscribers', table: 'mod_subscribers', description: 'Newsletter signups.', readOnly: true, accent: 'ink' },
-  { label: 'Submissions', href: '/admin/submissions', table: 'mod_submissions', description: 'Contact form submissions.', readOnly: true, accent: 'ink' },
+  { label: 'Contact Us Submissions', href: '/admin/submissions', table: 'mod_submissions', description: 'Contact form submissions.', readOnly: true, accent: 'ink', tracksHandled: true },
 ];
 
 const ACCENT_DOT: Record<Section['accent'], string> = {
@@ -84,6 +87,7 @@ function timeAgo(iso: string) {
 
 export default function AdminDashboardPage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [unattended, setUnattended] = useState<Record<string, number>>({});
   const [activity, setActivity] = useState<ActivityEntry[] | null>(null);
 
   useEffect(() => {
@@ -99,6 +103,19 @@ export default function AdminDashboardPage() {
       setCounts(Object.fromEntries(results));
     }
 
+    async function loadUnattended() {
+      const results = await Promise.all(
+        SECTIONS.filter((s) => s.tracksHandled).map(async (s) => {
+          const { count } = await supabase
+            .from(s.table)
+            .select('*', { count: 'exact', head: true })
+            .eq('handled', false);
+          return [s.table, count ?? 0] as const;
+        })
+      );
+      setUnattended(Object.fromEntries(results));
+    }
+
     async function loadActivity() {
       const { data, error } = await supabase
         .from('mod_activity_log')
@@ -109,6 +126,7 @@ export default function AdminDashboardPage() {
     }
 
     loadCounts();
+    loadUnattended();
     loadActivity();
   }, []);
 
@@ -171,6 +189,14 @@ export default function AdminDashboardPage() {
               <h2 className="font-heading text-base text-brand-ink group-hover:text-brand-green-2">
                 {s.label}
               </h2>
+              {s.tracksHandled && Boolean(unattended[s.table]) && (
+                <span
+                  className="shrink-0 rounded-full bg-brand-red px-2 py-0.5 text-[10px] font-semibold text-white"
+                  aria-label={`${unattended[s.table]} new, unattended`}
+                >
+                  {unattended[s.table]} new
+                </span>
+              )}
               {s.readOnly && (
                 <span className="ml-auto shrink-0 rounded-full bg-brand-paper-3 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-brand-ink-3">
                   Read-only
