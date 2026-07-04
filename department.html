@@ -135,6 +135,21 @@
     <div id="dept-content" style="display:none;">
       <section>
         <div class="container">
+          <div class="leader">
+            <div class="leader-photo">
+              <img id="dept-director-bio-photo" src="" alt="" />
+            </div>
+            <div class="leader-text">
+              <div class="role-line" id="dept-director-bio-role">Director</div>
+              <h2 id="dept-director-bio-name">Director Name</h2>
+              <p class="lead" id="dept-director-bio-text"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
           <div class="two-col">
             <div>
               <span class="eyebrow">Mandate</span>
@@ -248,6 +263,7 @@
           if (ov.director)  data[s].director = ov.director;
           if (ov.role)      data[s].role     = ov.role;
           if (ov.photo_url) data[s].photo    = ov.photo_url;
+          if (ov.bio)       data[s].bio      = ov.bio;
         }
       });
     }
@@ -274,6 +290,20 @@
       document.getElementById('dept-category').textContent = dept.category;
       document.getElementById('dept-title').textContent  = dept.name + '.';
       document.getElementById('dept-lead').textContent   = dept.lead;
+
+      // ── Director bio (shown before the department's own info) ──
+      var bioPhoto = document.getElementById('dept-director-bio-photo');
+      if (dept.photo) {
+        bioPhoto.src = dept.photo;
+        bioPhoto.alt = dept.director || '';
+        bioPhoto.closest('.leader-photo').style.display = '';
+      } else {
+        bioPhoto.closest('.leader-photo').style.display = 'none';
+      }
+      document.getElementById('dept-director-bio-name').textContent = dept.director || '—';
+      document.getElementById('dept-director-bio-role').textContent = dept.role || 'Director';
+      document.getElementById('dept-director-bio-text').textContent =
+        dept.bio || 'A biography for this director has not been added yet.';
 
       // ── Body ──
       document.getElementById('dept-body').innerHTML = dept.body || '<p>Information coming soon.</p>';

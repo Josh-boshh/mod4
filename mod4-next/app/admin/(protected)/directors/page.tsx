@@ -11,6 +11,7 @@ type Director = {
   director: string;
   role: string;
   photo_url: string;
+  bio: string;
   updated_at: string;
 };
 
@@ -37,6 +38,7 @@ const fields: FieldConfig[] = [
   { key: 'director', label: 'Director Name', type: 'text', required: true },
   { key: 'role', label: 'Role', type: 'text' },
   { key: 'photo_url', label: 'Photo', type: 'text', imagePreview: true },
+  { key: 'bio', label: 'Bio', type: 'textarea', rows: 5 },
 ];
 
 const emptyDraft = {
@@ -44,6 +46,7 @@ const emptyDraft = {
   director: '',
   role: '',
   photo_url: '',
+  bio: '',
 };
 
 export default function DirectorsPage() {

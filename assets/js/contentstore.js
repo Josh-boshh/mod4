@@ -338,6 +338,7 @@
           director: item.director,
           role: item.role,
           photo_url: item.photo_url,
+          bio: item.bio,
         };
       });
 
