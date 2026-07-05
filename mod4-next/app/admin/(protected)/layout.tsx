@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { LogoutButton } from '../_components/LogoutButton';
 import { AdminNav } from '../_components/AdminNav';
 import { SessionTimeoutGuard } from '../_components/SessionTimeoutGuard';
+import { PUBLIC_SITE_URL } from '@/lib/admin/publicSiteUrl';
 
 export default async function AdminProtectedLayout({
   children,
@@ -36,6 +37,14 @@ export default async function AdminProtectedLayout({
           <span className="font-heading text-base text-brand-ink sm:text-lg">MOD Admin</span>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
+          <a
+            href={PUBLIC_SITE_URL}
+            target="_blank"
+            rel="noopener"
+            className="rounded border border-brand-line px-3 py-1.5 text-sm font-medium text-brand-ink-2 transition hover:bg-brand-paper-3"
+          >
+            View Site ↗
+          </a>
           <span className="hidden text-sm text-brand-ink-3 sm:inline">{username}</span>
           <LogoutButton />
         </div>

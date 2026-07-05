@@ -77,7 +77,7 @@
     <section id="downloads">
       <div class="container">
         <div class="section-head"><span class="eyebrow">03 · Downloads</span><h2>Documents & forms.</h2></div>
-        <div class="grid grid-2">
+        <div class="grid grid-2" id="downloads-grid">
           <a class="card" href="foi.html"><div class="index">PDF · Charter</div><h3>MOD Service Charter</h3><p>The full Service Charter of the Ministry of Defence. Request a copy via the FOI desk or contact us directly.</p></a>
           <a class="card" href="foi.html"><div class="index">Online · Form</div><h3>Freedom of Information request</h3><p>Submit your FOI request online through the Ministry's secure FOI form.</p></a>
           <a class="card" href="servicom.html"><div class="index">Online · Form</div><h3>SERVICOM complaint</h3><p>Lodge a complaint about Ministry service standards through the SERVICOM online form.</p></a>
@@ -98,6 +98,46 @@
   <script src="assets/js/translator.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/chatbot.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var STATIC_CARD_COUNT = 4;
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function renderCustomForms() {
+      var grid = document.getElementById('downloads-grid');
+      if (!grid) return;
+
+      // Drop any previously-appended form cards before re-rendering, so a
+      // later mod-content-updated pass doesn't duplicate them.
+      while (grid.children.length > STATIC_CARD_COUNT) {
+        grid.removeChild(grid.lastElementChild);
+      }
+
+      var forms = (window.MOD_STORE && window.MOD_STORE.customForms()) || [];
+      forms.forEach(function (form) {
+        var a = document.createElement('a');
+        a.className = 'card';
+        a.href = 'form.html?slug=' + encodeURIComponent(form.slug);
+        a.innerHTML =
+          '<div class="index">Online · Form</div>' +
+          '<h3>' + esc(form.title) + '</h3>' +
+          '<p>' + esc(form.description || 'Submit this form online.') + '</p>';
+        grid.appendChild(a);
+      });
+    }
+
+    renderCustomForms();
+    window.addEventListener('mod-content-updated', renderCustomForms);
+  }());
+  </script>
 </body>
 </html>
 
