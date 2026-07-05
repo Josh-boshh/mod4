@@ -159,7 +159,7 @@ export default function AdminDashboardPage() {
         .from('mod_activity_log')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(8);
       setActivity(error ? [] : (data as ActivityEntry[]));
     }
 
