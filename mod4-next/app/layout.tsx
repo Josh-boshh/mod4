@@ -21,6 +21,18 @@ export const metadata: Metadata = {
   description: "Ministry of Defence — content admin",
 };
 
+// The nonce-based CSP in proxy.ts only works for dynamically-rendered
+// pages — Next stamps the per-request nonce onto its injected <script>
+// tags by reading it back out of the response header, which only exists
+// per-request. A statically prerendered page (as /admin/login was, having
+// no server-side dynamic data of its own) bakes its <script> tags in at
+// build time with no nonce at all, so the CSP's 'strict-dynamic' then
+// blocks every script outright — the entire page fails to hydrate, and
+// with no fallback non-JS content, that's a blank white screen in
+// production only (next dev always renders per-request, so it never
+// reproduced there).
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
