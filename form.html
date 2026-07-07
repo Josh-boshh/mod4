@@ -86,6 +86,13 @@
       document.title = 'Form not found — Ministry of Defence';
     }
 
+    function showPreviewBanner() {
+      var bar = document.createElement('div');
+      bar.textContent = 'Preview mode — this form is not linked from the public site.';
+      bar.style.cssText = 'background:#b8923c;color:#fff;text-align:center;font-size:.82rem;padding:8px;font-weight:600;';
+      document.body.insertBefore(bar, document.body.firstChild);
+    }
+
     function fieldHtml(field, i) {
       var id = 'cf-' + i;
       var req = field.required ? 'required' : '';
@@ -149,9 +156,22 @@
 
     function boot() {
       if (rendered) return; // form state (in-progress edits) shouldn't be wiped by a later data refresh
-      var params = new URLSearchParams(location.search);
-      var slug = params.get('slug') || '';
+      var params  = new URLSearchParams(location.search);
+      var slug    = params.get('slug') || '';
+      var preview = params.get('preview') === '1';
+      var token   = params.get('token') || '';
+
       if (!slug) { notFound(); return; }
+
+      if (preview) {
+        showPreviewBanner();
+        if (!window.MOD_STORE || !window.MOD_STORE.previewCustomForm) { notFound(); return; }
+        window.MOD_STORE.previewCustomForm(slug, token).then(function (form) {
+          if (form) render(form);
+          else notFound();
+        });
+        return;
+      }
 
       var forms = window.MOD_STORE ? (window.MOD_STORE.customForms() || []) : [];
       var form = null;

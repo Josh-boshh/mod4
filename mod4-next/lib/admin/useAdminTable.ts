@@ -104,6 +104,42 @@ export function useAdminTable<T extends { id: number }>(
     return true;
   }
 
+  // Bulk counterparts to update()/remove() — one query + one reload + one
+  // activity-log entry for the whole selection, instead of N of each.
+  async function bulkUpdate(ids: number[], draft: Partial<T>) {
+    if (ids.length === 0) return null;
+    const clean = withoutId(draft as Record<string, unknown>);
+    const { error } = await supabase.from(table).update(clean as never).in('id', ids);
+    if (error) return error.message;
+    logActivity('update', table, null, { ...clean, count: ids.length });
+    await reload();
+    return null;
+  }
+
+  async function bulkRemove(ids: number[]) {
+    if (ids.length === 0) return true;
+    if (softDelete) {
+      const { error } = await supabase
+        .from(table)
+        .update({ deleted_at: new Date().toISOString() } as never)
+        .in('id', ids);
+      if (error) {
+        setError(error.message);
+        return false;
+      }
+      logActivity('trash', table, null, { count: ids.length });
+    } else {
+      const { error } = await supabase.from(table).delete().in('id', ids);
+      if (error) {
+        setError(error.message);
+        return false;
+      }
+      logActivity('delete', table, null, { count: ids.length });
+    }
+    await reload();
+    return true;
+  }
+
   async function move(item: T, direction: 'up' | 'down', orderKey: keyof T = orderBy) {
     const index = items.findIndex((i) => i.id === item.id);
     const swapItem = items[direction === 'up' ? index - 1 : index + 1];
@@ -123,5 +159,5 @@ export function useAdminTable<T extends { id: number }>(
     await reload();
   }
 
-  return { items, loading, error, setError, reload, insert, update, remove, move };
+  return { items, loading, error, setError, reload, insert, update, remove, bulkUpdate, bulkRemove, move };
 }

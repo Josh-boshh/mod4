@@ -3,6 +3,9 @@
 import { Fragment, useState } from 'react';
 import { useAdminTable } from '@/lib/admin/useAdminTable';
 import { downloadCsv } from '@/lib/admin/exportCsv';
+import { usePagination } from '@/lib/admin/usePagination';
+import { Pagination } from '@/lib/admin/Pagination';
+import { BulkActionBar } from '@/lib/admin/BulkActionBar';
 
 type Submission = {
   id: number;
@@ -16,13 +19,50 @@ type Submission = {
 };
 
 export default function SubmissionsPage() {
-  const { items, loading, error, update } = useAdminTable<Submission>('mod_submissions', 'submitted_at', false);
+  const { items, loading, error, update, bulkUpdate, bulkRemove } = useAdminTable<Submission>(
+    'mod_submissions',
+    'submitted_at',
+    false
+  );
   const [expanded, setExpanded] = useState<number | null>(null);
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<Set<number>>(new Set());
 
   const filtered = search.trim()
     ? items.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
     : items;
+
+  const { page, setPage, pageCount, pageItems } = usePagination(filtered);
+
+  function toggleOne(id: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAllOnPage() {
+    const pageIds = pageItems.map((i) => i.id);
+    const allSelected = pageIds.every((id) => selected.has(id));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      pageIds.forEach((id) => (allSelected ? next.delete(id) : next.add(id)));
+      return next;
+    });
+  }
+
+  async function handleBulkMark(handled: boolean) {
+    await bulkUpdate(Array.from(selected), { handled } as Partial<Submission>);
+    setSelected(new Set());
+  }
+
+  async function handleBulkDelete() {
+    if (!window.confirm(`Delete ${selected.size} submission(s)? This cannot be undone.`)) return;
+    await bulkRemove(Array.from(selected));
+    setSelected(new Set());
+  }
 
   function handleExport() {
     downloadCsv(
@@ -64,6 +104,14 @@ export default function SubmissionsPage() {
         />
       )}
 
+      <BulkActionBar
+        count={selected.size}
+        onMarkHandled={() => handleBulkMark(true)}
+        onMarkNew={() => handleBulkMark(false)}
+        onDelete={handleBulkDelete}
+        onClear={() => setSelected(new Set())}
+      />
+
       {error && (
         <p role="alert" className="mb-4 rounded border border-brand-red/20 bg-red-50 px-3 py-2 text-sm text-brand-red">
           {error}
@@ -81,6 +129,15 @@ export default function SubmissionsPage() {
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-brand-line bg-brand-paper-3 text-xs uppercase tracking-wide text-brand-ink-3">
               <tr>
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={pageItems.length > 0 && pageItems.every((i) => selected.has(i.id))}
+                    onChange={toggleAllOnPage}
+                    aria-label="Select all on this page"
+                    className="h-4 w-4 rounded border-brand-line text-brand-green focus:ring-brand-green"
+                  />
+                </th>
                 <th className="px-4 py-3">Form</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Email</th>
@@ -91,9 +148,18 @@ export default function SubmissionsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((item) => (
+              {pageItems.map((item) => (
                 <Fragment key={item.id}>
                   <tr className={`border-b border-brand-line last:border-0 ${item.handled ? 'opacity-60' : ''}`}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(item.id)}
+                        onChange={() => toggleOne(item.id)}
+                        aria-label={`Select submission from ${item.name}`}
+                        className="h-4 w-4 rounded border-brand-line text-brand-green focus:ring-brand-green"
+                      />
+                    </td>
                     <td className="px-4 py-3 capitalize text-brand-ink-2">{item.form_type}</td>
                     <td className="px-4 py-3 text-brand-ink">{item.name}</td>
                     <td className="px-4 py-3 text-brand-ink-2">{item.email}</td>
@@ -126,7 +192,7 @@ export default function SubmissionsPage() {
                   </tr>
                   {expanded === item.id && item.meta && (
                     <tr className="border-b border-brand-line bg-brand-paper-3">
-                      <td colSpan={7} className="px-4 py-3">
+                      <td colSpan={8} className="px-4 py-3">
                         <pre className="overflow-x-auto text-xs text-brand-ink-2">
                           {JSON.stringify(item.meta, null, 2)}
                         </pre>
@@ -139,6 +205,8 @@ export default function SubmissionsPage() {
           </table>
         </div>
       )}
+
+      <Pagination page={page} pageCount={pageCount} onChange={setPage} />
     </div>
   );
 }

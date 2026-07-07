@@ -10,9 +10,12 @@ export type PressItem = {
   slug: string;
   sort_order: number;
   active: boolean;
+  // DB-generated (see supabase/migrations/0002_preview_tokens.sql) — never
+  // set from the client, so it's excluded from the draft/insert/update shape.
+  preview_token: string;
 };
 
-export type PressItemDraft = Omit<PressItem, 'id'>;
+export type PressItemDraft = Omit<PressItem, 'id' | 'preview_token'>;
 
 export const EMPTY_DRAFT: PressItemDraft = {
   title: '',

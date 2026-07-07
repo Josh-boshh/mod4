@@ -27,9 +27,12 @@ export type CustomForm = {
   description: string;
   fields: CustomFormField[];
   active: boolean;
+  // DB-generated (see supabase/migrations/0002_preview_tokens.sql) — never
+  // set from the client, so it's excluded from the draft/insert/update shape.
+  preview_token: string;
 };
 
-export type CustomFormDraft = Omit<CustomForm, 'id'>;
+export type CustomFormDraft = Omit<CustomForm, 'id' | 'preview_token'>;
 
 export const EMPTY_FIELD_EDIT: CustomFormFieldEditState = {
   key: '',

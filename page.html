@@ -91,6 +91,13 @@
       document.title = 'Page not found — Ministry of Defence';
     }
 
+    function showPreviewBanner() {
+      var bar = document.createElement('div');
+      bar.textContent = 'Preview mode — this page is not linked from the public site.';
+      bar.style.cssText = 'background:#b8923c;color:#fff;text-align:center;font-size:.82rem;padding:8px;font-weight:600;';
+      document.body.insertBefore(bar, document.body.firstChild);
+    }
+
     function render(page) {
       document.getElementById('page-loading-section').style.display = 'none';
       document.getElementById('page-not-found').style.display = 'none';
@@ -111,7 +118,7 @@
       document.getElementById('page-content-body').style.display = '';
     }
 
-    function boot() {
+    function renderFromStore() {
       var params = new URLSearchParams(location.search);
       var slug = params.get('slug') || '';
       if (!slug) { notFound(); return; }
@@ -126,7 +133,33 @@
       else notFound();
     }
 
-    window.addEventListener('mod-content-updated', boot);
+    function boot() {
+      var params  = new URLSearchParams(location.search);
+      var slug    = params.get('slug') || '';
+      var preview = params.get('preview') === '1';
+      var token   = params.get('token') || '';
+
+      if (!slug) { notFound(); return; }
+
+      if (preview) {
+        showPreviewBanner();
+        if (!window.MOD_STORE || !window.MOD_STORE.previewCustomPage) { notFound(); return; }
+        window.MOD_STORE.previewCustomPage(slug, token).then(function (page) {
+          if (page) render(page);
+          else notFound();
+        });
+        return;
+      }
+
+      renderFromStore();
+    }
+
+    // Re-render when fresh DB data arrives (not applicable in preview mode).
+    window.addEventListener('mod-content-updated', function () {
+      var params = new URLSearchParams(location.search);
+      if (params.get('preview') === '1') return;
+      renderFromStore();
+    });
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot);

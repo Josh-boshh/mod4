@@ -172,38 +172,69 @@
     }
   }
 
-  // Used by press-release.html's admin preview link (?preview=1): fetches a
-  // single item by slug without the active-date/deleted_at cutoff so a
-  // scheduled (future-dated) item can be reviewed before it goes live.
-  // Row-level security still hides items where active=false, so previewing
-  // a draft that hasn't been activated yet isn't possible from here.
-  async function loadSupabasePressPreview(slug) {
+  // Admin preview links (page.html/form.html/press-release.html's
+  // ?preview=1&token=... URLs) fetch a single row by slug regardless of its
+  // active flag or publish date — but only with the exact per-row
+  // preview_token, via the mod4_preview_row RPC (see
+  // supabase/migrations/0002_preview_tokens.sql). Anon SELECT on these
+  // tables is unchanged and still requires active=true, so this is the only
+  // way to reach a draft row, and only if you have its specific link.
+  async function previewRow(table, slug, token) {
+    if (!slug || !token) return null;
     try {
-      const res = await fetch(
-        SUPABASE_URL + '/rest/v1/mod_press_items?select=*&slug=eq.' + encodeURIComponent(slug) + '&deleted_at=is.null&limit=1',
-        {
-          headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
-          cache: 'no-store',
-        }
-      );
+      const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/mod4_preview_row', {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ p_table: table, p_slug: slug, p_token: token }),
+        cache: 'no-store',
+      });
       if (!res.ok) return null;
-      const rows = await res.json();
-      if (!rows.length) return null;
-      const item = rows[0];
-      return {
-        title: item.title,
-        excerpt: item.excerpt,
-        body: item.body || '',
-        category: item.category,
-        date: formatPressDate(item.published_at),
-        img: item.image_url,
-        url: 'press-release.html?slug=' + encodeURIComponent(item.slug),
-        slug: item.slug,
-      };
+      return await res.json();
     } catch (e) {
-      console.warn('[MOD_STORE] Supabase press preview load failed:', e);
+      console.warn('[MOD_STORE] preview fetch failed:', e);
       return null;
     }
+  }
+
+  async function loadSupabasePressPreview(slug, token) {
+    const item = await previewRow('mod_press_items', slug, token);
+    if (!item) return null;
+    return {
+      title: item.title,
+      excerpt: item.excerpt,
+      body: item.body || '',
+      category: item.category,
+      date: formatPressDate(item.published_at),
+      img: item.image_url,
+      url: 'press-release.html?slug=' + encodeURIComponent(item.slug),
+      slug: item.slug,
+    };
+  }
+
+  async function previewCustomPage(slug, token) {
+    const item = await previewRow('mod_custom_pages', slug, token);
+    if (!item) return null;
+    return {
+      slug: item.slug,
+      title: item.title,
+      metaDescription: item.meta_description,
+      body: item.body,
+    };
+  }
+
+  async function previewCustomForm(slug, token) {
+    const item = await previewRow('mod_custom_forms', slug, token);
+    if (!item) return null;
+    return {
+      slug: item.slug,
+      title: item.title,
+      description: item.description,
+      fields: Array.isArray(item.fields) ? item.fields : [],
+    };
   }
 
   function formatShortDate(raw) {
@@ -484,6 +515,8 @@
     slides() { return loadContent().slides; },
     press() { return loadContent().press; },
     previewPress: loadSupabasePressPreview,
+    previewCustomPage,
+    previewCustomForm,
     leadership() { return loadContent().leadership; },
     directors() { return loadContent().directors; },
     operations() { return loadContent().operations; },

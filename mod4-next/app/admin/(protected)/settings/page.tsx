@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/admin/activityLog';
 import { useUnsavedChangesGuard } from '@/lib/admin/useUnsavedChangesGuard';
+import { SecuritySection } from './SecuritySection';
 
 type Setting = { name: string; value: string };
 
@@ -99,6 +100,8 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      <SecuritySection />
     </div>
   );
 }

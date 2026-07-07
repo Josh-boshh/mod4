@@ -10,6 +10,8 @@ function summarize(draft: Record<string, unknown> | undefined): string | null {
     const value = draft[key];
     if (typeof value === 'string' && value.trim()) return value.trim();
   }
+  // Bulk operations pass a `count` instead of a single named row.
+  if (typeof draft.count === 'number') return `${draft.count} item${draft.count === 1 ? '' : 's'}`;
   return null;
 }
 

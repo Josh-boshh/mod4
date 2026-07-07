@@ -3,6 +3,7 @@
 import { AdminCrudPage } from '@/lib/admin/AdminCrudPage';
 import type { ColumnConfig } from '@/lib/admin/AdminList';
 import type { FieldConfig } from '@/lib/admin/fields';
+import { PUBLIC_SITE_URL } from '@/lib/admin/publicSiteUrl';
 
 type CustomPage = {
   id: number;
@@ -12,6 +13,9 @@ type CustomPage = {
   body: string;
   active: boolean;
   sort_order: number;
+  // DB-generated (see supabase/migrations/0002_preview_tokens.sql) — never
+  // set from the client.
+  preview_token: string;
 };
 
 const columns: ColumnConfig<CustomPage>[] = [
@@ -51,6 +55,9 @@ export default function CustomPagesPage() {
       activeKey="active"
       softDelete
       searchKeys={['title', 'slug']}
+      previewUrl={(item) =>
+        `${PUBLIC_SITE_URL}/page.html?slug=${encodeURIComponent(item.slug)}&preview=1&token=${item.preview_token}`
+      }
     />
   );
 }

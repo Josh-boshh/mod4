@@ -19,6 +19,7 @@ export function AdminCrudPage<T extends { id: number }>({
   sortable = true,
   softDelete = false,
   searchKeys,
+  previewUrl,
 }: {
   title: string;
   singularLabel: string;
@@ -38,6 +39,8 @@ export function AdminCrudPage<T extends { id: number }>({
   // Fields to match against the search box, e.g. ['title', 'category'].
   // Omit to hide the search box entirely.
   searchKeys?: (keyof T)[];
+  // Opens a public-site preview link for the item. Omit to hide the button.
+  previewUrl?: (item: T) => string;
 }) {
   const { items, loading, error, insert, update, remove, move } = useAdminTable<T>(
     table,
@@ -66,6 +69,11 @@ export function AdminCrudPage<T extends { id: number }>({
   async function handleToggleActive(item: T) {
     if (!activeKey) return;
     await update(item.id, { [activeKey]: !item[activeKey] } as Partial<T>);
+  }
+
+  function handlePreview(item: T) {
+    if (!previewUrl) return;
+    window.open(previewUrl(item), '_blank', 'noopener');
   }
 
   async function handleSubmit(draft: Record<string, unknown>) {
@@ -122,6 +130,7 @@ export function AdminCrudPage<T extends { id: number }>({
           onToggleActive={activeKey ? handleToggleActive : undefined}
           onEdit={setEditing}
           onDelete={handleDelete}
+          onPreview={previewUrl ? handlePreview : undefined}
           deleteLabel={softDelete ? 'Trash' : 'Delete'}
           emptyMessage={query.trim() ? 'No items match your search.' : 'No items yet.'}
         />

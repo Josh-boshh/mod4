@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAdminTable } from '@/lib/admin/useAdminTable';
 import { AdminList, type ColumnConfig } from '@/lib/admin/AdminList';
+import { PUBLIC_SITE_URL } from '@/lib/admin/publicSiteUrl';
 import { CustomFormForm } from './CustomFormForm';
 import { EMPTY_DRAFT, type CustomForm, type CustomFormDraft } from './types';
 
@@ -28,6 +29,11 @@ export default function CustomFormsPage() {
 
   async function handleToggleActive(item: CustomForm) {
     await update(item.id, { active: !item.active });
+  }
+
+  function handlePreview(item: CustomForm) {
+    const url = `${PUBLIC_SITE_URL}/form.html?slug=${encodeURIComponent(item.slug)}&preview=1&token=${item.preview_token}`;
+    window.open(url, '_blank', 'noopener');
   }
 
   async function handleSubmit(draft: CustomFormDraft) {
@@ -72,6 +78,7 @@ export default function CustomFormsPage() {
           onToggleActive={handleToggleActive}
           onEdit={setEditing}
           onDelete={handleDelete}
+          onPreview={handlePreview}
           deleteLabel="Trash"
         />
       )}

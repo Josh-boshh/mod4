@@ -58,7 +58,7 @@ export default function PressItemsPage() {
   }
 
   function handlePreview(item: PressItem) {
-    const url = `${PUBLIC_SITE_URL}/press-release.html?slug=${encodeURIComponent(item.slug)}&preview=1`;
+    const url = `${PUBLIC_SITE_URL}/press-release.html?slug=${encodeURIComponent(item.slug)}&preview=1&token=${item.preview_token}`;
     window.open(url, '_blank', 'noopener');
   }
 

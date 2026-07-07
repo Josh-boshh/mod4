@@ -396,13 +396,14 @@
       var params  = new URLSearchParams(location.search);
       var slug    = params.get('slug') || '';
       var preview = params.get('preview') === '1';
+      var token   = params.get('token') || '';
 
       if (!slug) { notFound(); return; }
 
       if (preview) {
         showPreviewBanner();
         if (!window.MOD_STORE || !window.MOD_STORE.previewPress) { notFound(true); return; }
-        window.MOD_STORE.previewPress(slug).then(function (release) {
+        window.MOD_STORE.previewPress(slug, token).then(function (release) {
           if (release) render(release, [release]);
           else notFound(true);
         });
