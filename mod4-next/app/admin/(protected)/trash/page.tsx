@@ -16,6 +16,8 @@ const TRASH_TABLES = [
   { table: 'mod_operations', label: 'Operations', nameKey: 'name' },
   { table: 'mod_tenders', label: 'Tenders', nameKey: 'title' },
   { table: 'mod_annual_reports', label: 'Annual Reports', nameKey: 'title' },
+  { table: 'mod_custom_pages', label: 'Pages', nameKey: 'title' },
+  { table: 'mod_custom_forms', label: 'Forms', nameKey: 'title' },
 ] as const;
 
 type TrashRow = {
