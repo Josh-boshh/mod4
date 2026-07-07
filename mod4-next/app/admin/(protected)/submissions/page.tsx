@@ -18,11 +18,16 @@ type Submission = {
 export default function SubmissionsPage() {
   const { items, loading, error, update } = useAdminTable<Submission>('mod_submissions', 'submitted_at', false);
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [search, setSearch] = useState('');
+
+  const filtered = search.trim()
+    ? items.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : items;
 
   function handleExport() {
     downloadCsv(
       'submissions.csv',
-      items.map((item) => ({
+      filtered.map((item) => ({
         form_type: item.form_type,
         name: item.name,
         email: item.email,
@@ -37,7 +42,7 @@ export default function SubmissionsPage() {
   return (
     <div>
       <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-xl text-brand-ink">Contact Us Submissions</h1>
+        <h1 className="font-heading text-xl text-brand-ink">Submissions</h1>
         {items.length > 0 && (
           <button
             onClick={handleExport}
@@ -49,6 +54,16 @@ export default function SubmissionsPage() {
       </div>
       <p className="mb-4 text-sm text-brand-ink-3">Contact/form submissions from the public site.</p>
 
+      {items.length > 0 && (
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name…"
+          className="mb-4 w-full max-w-xs rounded border border-brand-line px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"
+        />
+      )}
+
       {error && (
         <p role="alert" className="mb-4 rounded border border-brand-red/20 bg-red-50 px-3 py-2 text-sm text-brand-red">
           {error}
@@ -59,6 +74,8 @@ export default function SubmissionsPage() {
         <p className="text-sm text-brand-ink-3">Loading…</p>
       ) : items.length === 0 ? (
         <p className="text-sm text-brand-ink-3">No submissions yet.</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-brand-ink-3">No submissions match “{search}”.</p>
       ) : (
         <div className="overflow-x-auto rounded border border-brand-line bg-brand-paper">
           <table className="w-full min-w-[720px] text-left text-sm">
@@ -74,7 +91,7 @@ export default function SubmissionsPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {filtered.map((item) => (
                 <Fragment key={item.id}>
                   <tr className={`border-b border-brand-line last:border-0 ${item.handled ? 'opacity-60' : ''}`}>
                     <td className="px-4 py-3 capitalize text-brand-ink-2">{item.form_type}</td>

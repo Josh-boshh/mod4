@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { label: 'Settings', href: '/admin/settings' },
   { label: 'Trash', href: '/admin/trash' },
   { label: 'Subscribers (read-only)', href: '/admin/subscribers' },
-  { label: 'Contact Us Submissions', href: '/admin/submissions', countTable: 'mod_submissions' },
+  { label: 'Submissions', href: '/admin/submissions', countTable: 'mod_submissions' },
 ] as const;
 
 const COUNT_TABLES = Array.from(

@@ -123,8 +123,8 @@
       var fieldsHtml = (form.fields || []).map(fieldHtml).join('');
 
       document.getElementById('form-mount').innerHTML =
-        '<form class="form-grid" data-success-message="Thank you. Your submission has been received." ' +
-        'onsubmit="return window.modCustomFormSubmit(this, event, ' + JSON.stringify(form.slug) + ');">' +
+        '<form class="form-grid" data-slug="' + esc(form.slug) + '" data-success-message="Thank you. Your submission has been received." ' +
+        'onsubmit="return window.modCustomFormSubmit(this, event, this.dataset.slug);">' +
           fieldsHtml +
           '<div class="full">' +
             '<div class="form-error" role="alert" aria-live="assertive" style="display:none; align-items:center; gap:8px; margin-top:8px; font-size:.83rem; color:var(--red);">' +

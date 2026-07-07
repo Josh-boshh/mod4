@@ -16,6 +16,7 @@ export function createClient() {
       {
         cookies: {
           getAll() {
+            if (typeof document === 'undefined') return [];
             const parsed = parse(document.cookie);
             return Object.entries(parsed)
               .filter((entry): entry is [string, string] => entry[1] !== undefined)
@@ -24,6 +25,7 @@ export function createClient() {
           // Auth cookies are forced to session-only (see toSessionCookieOptions)
           // so signing in on this device doesn't survive a browser restart.
           setAll(cookiesToSet) {
+            if (typeof document === 'undefined') return;
             cookiesToSet.forEach(({ name, value, options }) => {
               document.cookie = serialize(name, value, toSessionCookieOptions(options));
             });

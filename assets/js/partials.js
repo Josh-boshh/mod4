@@ -127,7 +127,7 @@
           <ul class="submenu">
             <li><a href="services.html#recruitment" data-i18n>Recruitment</a></li>
             <li><a href="services.html#charter" data-i18n>Service Charter</a></li>
-            <li><a href="services.html#downloads" data-i18n>Downloads</a></li>
+            <li><a href="services.html#downloads" data-i18n>Documents & Forms</a></li>
             <li><a href="veterans.html" data-i18n>Veterans</a></li>
             <li><a href="procurement.html" data-i18n>Procurement</a></li>
             <li><a href="foi.html" data-i18n>Freedom of Information</a></li>
