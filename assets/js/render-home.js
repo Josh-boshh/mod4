@@ -127,6 +127,37 @@
     });
   }
 
+  // Milestone counters ("Years of service since 1958" etc.) — admin-edited
+  // via the generic Settings page (mod_settings rows named stat_*). Values
+  // are stored exactly as displayed (e.g. "135K+"); the leading number
+  // drives main.js's count-up animation via data-count, and whatever
+  // follows it becomes data-suffix. Only the attributes are touched, not
+  // textContent — main.js's IntersectionObserver reads them lazily when the
+  // section scrolls into view, so this just needs to land before then.
+  function renderMilestones() {
+    const settings = window.MOD_STORE.settings();
+    if (!settings) return;
+
+    const statKeys = {
+      years_of_service: 'stat_years_of_service',
+      personnel_under_oversight: 'stat_personnel_under_oversight',
+      active_joint_operations: 'stat_active_joint_operations',
+      peacekeeping_missions: 'stat_peacekeeping_missions',
+    };
+
+    Object.entries(statKeys).forEach(([statKey, settingName]) => {
+      const raw = settings[settingName];
+      if (!raw) return;
+      const match = String(raw).match(/^([\d.,]+)(.*)$/);
+      if (!match) return;
+      const el = document.querySelector(`[data-stat="${statKey}"]`);
+      if (!el) return;
+      el.setAttribute('data-count', match[1].replace(/,/g, ''));
+      if (match[2]) el.setAttribute('data-suffix', match[2].trim());
+      else el.removeAttribute('data-suffix');
+    });
+  }
+
   function escapeHTML(s) { return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
   function escapeAttr(s) { return escapeHTML(s); }
 
@@ -134,6 +165,7 @@
     renderHeroText();
     renderHero();
     renderLeadership();
+    renderMilestones();
     renderPress();
   }
 

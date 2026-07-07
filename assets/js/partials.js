@@ -83,6 +83,7 @@
               <a href="military.html#army" data-i18n>Nigerian Army</a>
               <a href="military.html#navy" data-i18n>Nigerian Navy</a>
               <a href="military.html#airforce" data-i18n>Nigerian Air Force</a>
+              <a href="operations.html" data-i18n>Joint Operations</a>
             </li>
             <li class="submenu-group"><span class="group-label">Civilian Components</span>
               <a href="department.html?dept=joint-services" data-i18n>Joint Services</a>

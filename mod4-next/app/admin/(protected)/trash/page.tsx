@@ -8,6 +8,7 @@ const RETENTION_DAYS = 7;
 
 const TRASH_TABLES = [
   { table: 'mod_press_items', label: 'Press Items', nameKey: 'title' },
+  { table: 'mod_speeches', label: 'Speeches', nameKey: 'quote' },
   { table: 'mod_hero_slides', label: 'Hero Slides', nameKey: 'caption_text' },
   { table: 'mod_leaders', label: 'Leaders', nameKey: 'name' },
   { table: 'mod_directors', label: 'Directors', nameKey: 'director' },

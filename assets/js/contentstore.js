@@ -56,6 +56,7 @@
       awards: [],
       annualReports: [],
       galleryImages: [],
+      speeches: [],
       customPages: [],
       customForms: [],
       settings: {
@@ -107,6 +108,7 @@
       awards: Array.isArray(stored.awards) && stored.awards.length ? stored.awards : d.awards,
       annualReports: Array.isArray(stored.annualReports) && stored.annualReports.length ? stored.annualReports : d.annualReports,
       galleryImages: Array.isArray(stored.galleryImages) && stored.galleryImages.length ? stored.galleryImages : d.galleryImages,
+      speeches: Array.isArray(stored.speeches) && stored.speeches.length ? stored.speeches : d.speeches,
       customPages: Array.isArray(stored.customPages) && stored.customPages.length ? stored.customPages : d.customPages,
       customForms: Array.isArray(stored.customForms) && stored.customForms.length ? stored.customForms : d.customForms,
       settings: Object.assign({}, d.settings, stored.settings || {}),
@@ -268,11 +270,12 @@
   // public pages' render functions don't need to change.
   async function loadSupabaseExtras() {
     try {
-      const [opsRows, tenderRows, reportRows, galleryRows] = await Promise.all([
+      const [opsRows, tenderRows, reportRows, galleryRows, speechRows] = await Promise.all([
         loadSupabaseRest('/rest/v1/mod_operations?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
         loadSupabaseRest('/rest/v1/mod_tenders?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
         loadSupabaseRest('/rest/v1/mod_annual_reports?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
         loadSupabaseRest('/rest/v1/mod_gallery_images?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
+        loadSupabaseRest('/rest/v1/mod_speeches?select=*&active=eq.true&deleted_at=is.null&order=sort_order.asc'),
       ]);
 
       return {
@@ -292,6 +295,11 @@
           caption: g.caption,
           event_date: formatLongDate(g.event_date),
           category: g.category,
+        })),
+        speeches: speechRows.map((s) => ({
+          category: s.category,
+          quote: s.quote,
+          description: s.description,
         })),
       };
     } catch (e) {
@@ -435,6 +443,7 @@
         blob.awards = supabaseExtras.awards;
         blob.annualReports = supabaseExtras.annualReports;
         blob.galleryImages = supabaseExtras.galleryImages;
+        blob.speeches = supabaseExtras.speeches;
       }
       if (supabaseCustom) {
         blob.customPages = supabaseCustom.customPages;
@@ -524,6 +533,7 @@
     awards() { return loadContent().awards; },
     annualReports() { return loadContent().annualReports; },
     galleryImages() { return loadContent().galleryImages; },
+    speeches() { return loadContent().speeches; },
     customPages() { return loadContent().customPages; },
     customForms() { return loadContent().customForms; },
     hero() { return loadContent().hero; },

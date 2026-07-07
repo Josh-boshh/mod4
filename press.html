@@ -195,23 +195,8 @@
           <span class="eyebrow">Speeches</span>
           <h2>Statements from the Minister.</h2>
         </div>
-        <div class="grid grid-3">
-          <div class="card">
-            <div class="index">Assumption of Duty</div>
-            <h3>"The protection of Nigeria's territorial integrity is non-negotiable."</h3>
-            <p>Address to officials of the Ministry on assumption of duty as Honourable Minister of Defence.</p>
-          </div>
-          <div class="card">
-            <div class="index">National Security</div>
-            <h3>"Every Nigerian has a role in national security."</h3>
-            <p>Remarks to the Veritas University delegation, Ship House, May 2026.</p>
-          </div>
-          <div class="card">
-            <div class="index">Regional</div>
-            <h3>"Collective security in West Africa is a Nigerian priority."</h3>
-            <p>Statement at the West African Defence Ministers' regional security meeting, May 2026.</p>
-          </div>
-        </div>
+        <div class="grid grid-3" id="speeches-grid"></div>
+        <p id="speeches-empty" style="display:none;color:var(--text-3);">No speeches published yet.</p>
       </div>
     </section>
 
@@ -360,10 +345,32 @@
       }
     }
 
+    /* ── Speeches ── */
+    var speechesGrid  = document.getElementById('speeches-grid');
+    var speechesEmpty = document.getElementById('speeches-empty');
+
+    function renderSpeeches() {
+      var speeches = window.MOD_STORE ? (window.MOD_STORE.speeches() || []) : [];
+      if (!speeches.length) {
+        speechesGrid.innerHTML = '';
+        speechesEmpty.style.display = '';
+        return;
+      }
+      speechesEmpty.style.display = 'none';
+      speechesGrid.innerHTML = speeches.map(function (s) {
+        return '<div class="card">' +
+          (s.category ? '<div class="index">' + esc(s.category) + '</div>' : '') +
+          '<h3>&ldquo;' + esc(s.quote) + '&rdquo;</h3>' +
+          (s.description ? '<p>' + esc(s.description) + '</p>' : '') +
+        '</div>';
+      }).join('');
+    }
+
     function render() {
       loadingEl.style.display = 'none';
       renderFilters();
       renderList();
+      renderSpeeches();
     }
 
     /* ── Search input ── */
@@ -379,6 +386,8 @@
         if (fresh.length) {
           allPress = fresh;
           render();
+        } else {
+          renderSpeeches();
         }
       }
     });
